@@ -1,28 +1,29 @@
 package uk.ac.cam.UROP.twentyfourteen;
 
 public class GitRepoManager {
-	
+
 	/**
-	 * Pulls in student repo and tick repo and hands over relevant files to be tested.
+	 * Creates a new GitRepo.
+	 * 
+	 * @param name Name of the repository to be created
+	 *  
+	 * @return A newly created repository.
 	 */
-	public void submit() {
-		
+	public GitRepo newRepo(String name) {
+		return new GitRepo(); //TODO fill in this method
 	}
 	
-	/**
-	 * Saves test results into mongo database.
-	 * <p>
-	 * Needs to store commit number or similar, so that the test results cannot be changed.
-	 */
-	public void saveTestResults() {
-		
-	}
 	
 	/**
-	 * Returns requested test results.
+	 * Forks the appropriate tick repository, including the files that the student needs to access only. 
+	 * 
+	 * @param name Name of the repository to be created
+	 * @param origin Repository to be forked
+	 * 
+	 * @returns A forked repository.
 	 */
-	public void getTestResults() {
-		
+	public GitRepo forkRepo(String name, GitRepo origin) {
+		return new GitRepo(); //TODO fill in this method
 	}
 
 }
