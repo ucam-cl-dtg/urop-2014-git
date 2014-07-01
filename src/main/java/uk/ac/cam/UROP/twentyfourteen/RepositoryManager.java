@@ -8,23 +8,23 @@ import java.util.List;
  * @author Kovacsics Robert <rmk35@cam.ac.uk>
  * @version 0.1
  */
-public class GitRepoManager {
+public class RepositoryManager {
 
     /**
-     * Creates a new GitRepo.
+     * Creates a new Repository.
      * 
      * @param name Name of the repository to be created
      * @param users List of users with access permissions to this repository
      *  
      * @return A newly created repository.
      */
-    public GitRepo newRepo(String name, List<String> users) {
+    public Repository newRepo(String name, List<String> users) {
         /* TODO: implement
          *
          * 1) Create new GitRepo class
          * 2) Add repository to database via ConfigDatabase
          */
-        return new GitRepo();
+        return new Repository();
     }
     
     
@@ -36,13 +36,13 @@ public class GitRepoManager {
      * 
      * @returns A forked repository.
      */
-    public GitRepo forkRepo(String name, GitRepo origin) {
+    public Repository forkRepo(String name, Repository origin) {
         /* TODO: implement
          *
          * 1) Clone repository into new directory, with a depth of one
          * 2) Create a new GitRepo class
          */
-        return new GitRepo(); //TODO fill in this method
+        return new Repository(); //TODO fill in this method
     }
 
 }

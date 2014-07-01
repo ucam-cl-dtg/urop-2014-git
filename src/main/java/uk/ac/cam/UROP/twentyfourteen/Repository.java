@@ -6,7 +6,7 @@ package uk.ac.cam.UROP.twentyfourteen;
  * @author Kovacsics Robert <rmk35@cam.ac.uk>
  * @version 0.1
  */
-public class GitRepo {
+public class Repository {
     
     /**
      * Pulls in student repo and tick repo and hands over relevant files to be tested.
@@ -15,7 +15,7 @@ public class GitRepo {
     public void submit() {
         /* TODO: implement
          * 
-         * 1) Pull in student's repo (the one this clas is encapsulating)
+         * 1) Pull in student's repo (the one this class is encapsulating)
          * 2) Pull in ticker's repo (the one the origin of this class)
          * 3) Package up in some format for the testers' API to call
          * 4) Call the testers' test function
