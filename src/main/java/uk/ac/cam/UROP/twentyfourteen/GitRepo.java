@@ -1,4 +1,4 @@
-/* vim: set et st=4 sts=4 tw=72 : */
+/* vim: set et ts=4 sts=4 tw=72 : */
 package uk.ac.cam.UROP.twentyfourteen;
 
 /**
@@ -9,7 +9,8 @@ package uk.ac.cam.UROP.twentyfourteen;
 public class GitRepo {
     
     /**
-     * Pulls in student repo and tick repo and hands over relevant files to be tested
+     * Pulls in student repo and tick repo and hands over relevant files to be tested.
+     *
      */
     public void submit() {
         /* TODO: implement

@@ -1,4 +1,4 @@
-/* vim: set et st=4 sts=4 tw=72 : */
+/* vim: set et ts=4 sts=4 tw=72 : */
 package uk.ac.cam.UROP.twentyfourteen;
 
 import java.util.List;
