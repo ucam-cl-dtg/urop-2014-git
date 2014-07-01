@@ -5,4 +5,16 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>UROP_GIT</name>
   <description>Git integration for UROP 2014 at Cambridge CL, DTG.</description>
+  <dependencies>
+  	<dependency>
+		<groupId>org.eclipse.jgit</groupId>
+		<artifactId>org.eclipse.jgit</artifactId>
+		<version>3.4.1.201406201815-r</version>
+	</dependency>
+	<dependency>
+		<groupId>org.mongodb</groupId>
+		<artifactId>mongo-java-driver</artifactId>
+		<version>2.12.2</version>
+	</dependency>
+  </dependencies>
 </project>
