@@ -1,7 +1,11 @@
 package uk.ac.cam.UROP.twentyfourteen;
 
+/**
+ * @author Isaac Dunn <ird28@cam.ac.uk>
+ * @author Kovacsics Robert <rmk35@cam.ac.uk>
+ * @version 0.1
+ */
 public class UserDatabase {
-	
 	
 	/**
 	 * Generates config file for gitolite.
