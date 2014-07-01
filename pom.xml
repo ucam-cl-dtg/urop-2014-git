@@ -1,0 +1,8 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.ac.cam.urop.2014</groupId>
+  <artifactId>UROP_GIT</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>UROP_GIT</name>
+  <description>Git integration for UROP 2014 at Cambridge CL, DTG.</description>
+</project>
