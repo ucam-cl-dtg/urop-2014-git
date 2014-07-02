@@ -35,12 +35,13 @@ public class ConfigDatabase {
 		output.append("    RW = admin\n");
 		output.append("    R  = u2");
 		try {
-			File configFile = new File("/home/ird28/test.conf");
+			String home = System.getProperty("user.home");
+			File configFile = new File(home+"/test.conf");
 			BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
 			buffWriter.write(output.toString());
 			buffWriter.close();
-			Process p = Runtime.getRuntime().exec("/home/ird28/.gitolite/hooks/gitolite-admin/post-update",
-						new String[] {"HOME=/home/ird28", "PATH=/home/ird28/bin/:/bin:/usr/bin", "GL_LIBDIR=/home/ird28/git/gitolite/src/lib"});
+			Process p = Runtime.getRuntime().exec(home+"/.gitolite/hooks/gitolite-admin/post-update",
+						new String[] {"HOME="+home, "PATH="+home+"/bin/:/bin:/usr/bin", "GL_LIBDIR="+home+"/git/gitolite/src/lib"});
 			
 			BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 			BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
