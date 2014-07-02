@@ -1,6 +1,10 @@
-/* vim: set et ts=4 sts=4 sw=4 tw=4 : */
+/* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen;
+
+import uk.ac.cam.UROP.twentyfourteen.database.*;
+
+import java.util.List;
 
 /**
  * @author Isaac Dunn <ird28@cam.ac.uk>
@@ -8,6 +12,10 @@ package uk.ac.cam.UROP.twentyfourteen;
  * @version 0.1
  */
 public class Repository {
+
+    private final RepoDB parent = new GitDB();
+    private final RepoDB parent_hidden = new GitDB();
+    private final RepoDB repo = new GitDB();
     
     /**
      * Pulls in student repo and tick repo and hands over relevant files to be tested.
@@ -47,7 +55,7 @@ public class Repository {
      * 
      * @param request Specifies which results are wanted
      * 
-     * @returns The requested test results
+     * @return The requested test results
      */
     public Object getTestResults(String request) { // these types will change
         /* TODO: implement
@@ -57,6 +65,21 @@ public class Repository {
          * 3) Return files and comments
          */
         return new Object();
+    }
+
+    /**
+     * Returns a list of the source files in the repository
+     *
+     * @return The list of source files, (TODO: as specified by the tick setter?)
+     */
+    public List<String> getSources()
+    {
+        /* TODO: implement
+         *
+         * 1) Walk the three repositories
+         * 2) Filter out sources, somehow
+         * 3) Return as a list (or collection?)
+         */
     }
 
 }

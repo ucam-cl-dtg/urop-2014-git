@@ -1,4 +1,4 @@
-/* vim: set et ts=4 sts=4 sw=4 tw=4 : */
+/* vim: set et ts=4 sts=4 sw=4 tw=72 */
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen;
 
@@ -8,7 +8,7 @@ package uk.ac.cam.UROP.twentyfourteen;
  * @version 0.1
  */
 public class ConfigDatabase {
-	
+
 	/**
 	 * Generates config file for gitolite.
 	 * <p>

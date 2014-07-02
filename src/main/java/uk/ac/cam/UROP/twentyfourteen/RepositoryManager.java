@@ -1,4 +1,4 @@
-/* vim: set et ts=4 sts=4 sw=4 tw=4 : */
+/* vim: set et ts=4 sts=4 sw=4 tw=72 */
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen;
 
@@ -15,11 +15,10 @@ public class RepositoryManager {
      * Creates a new Repository.
      * 
      * @param name Name of the repository to be created
-     * @param users List of users with access permissions to this repository
      *  
      * @return A newly created repository.
      */
-    public Repository newRepo(String name, List<String> users) {
+    public Repository newRepo(String name) {
         /* TODO: implement
          *
          * 1) Create new GitRepo class
