@@ -8,8 +8,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Cursor;
 import com.mongodb.DBCollection;
@@ -41,10 +44,19 @@ public class ConfigDatabase {
 		StringBuilder output = new StringBuilder();
 		Cursor allRepos = Mongo.getDB().getCollection("repos").find();
 		while (allRepos.hasNext()) {
-			//DBObject repoDoc = allRepos.next();
-			output.append("repo " + allRepos.next().get("repoName") + "\n");
-			output.append("    RW = admin\n");
-			output.append("    R  = u1\n\n");
+			DBObject repoDoc = allRepos.next();
+			output.append("repo " + repoDoc.get("repoName") + "\n");
+			output.append("    RW = ");
+			BasicDBList readWriteCRSIDs = (BasicDBList) repoDoc.get("readWrite");
+			for (Object id : readWriteCRSIDs) {
+				output.append(id + " ");
+			}
+			output.append("\n    R  = ");
+			BasicDBList readOnlyCRSIDs = (BasicDBList) repoDoc.get("readOnly");
+			for (Object id : readOnlyCRSIDs) {
+				output.append(id + " ");
+			}
+			output.append("\n");
 		}
 		try {
 			String home = System.getProperty("user.home");
@@ -68,10 +80,12 @@ public class ConfigDatabase {
 		}
 	}
 	
-	public static void addRepo(String repoName) {
+	public static void addRepo(String repoName, List<String> readOnlyCRSIDs, List<String> readWriteCRSIDs) {
 		DBCollection repoTable = Mongo.getDB().getCollection("repos");
 		BasicDBObject repoDoc = new BasicDBObject();
 		repoDoc.put("repoName", repoName);
+		repoDoc.put("readOnly", readOnlyCRSIDs);
+		repoDoc.put("readWrite", readWriteCRSIDs);
 		repoTable.insert(repoDoc);
 	}
 	
@@ -79,8 +93,8 @@ public class ConfigDatabase {
 		DBCollection repoTable = Mongo.getDB().getCollection("repos");
 		if (repoTable != null)
 			repoTable.remove(new BasicDBObject());
-		addRepo("test-repo-one");
-		addRepo("test-repo-two");
+		addRepo("test-repo-one", (List) new ArrayList<String>(Arrays.asList(new String[] {"ird28", "prv22"})), (List) new ArrayList<String>(Arrays.asList(new String[] {"sg648", "ret56", "gh107"})));
+		addRepo("test-repo-two", (List) new ArrayList<String>(Arrays.asList(new String[] {"ird28"})), (List) new ArrayList<String>(Arrays.asList(new String[] {"prv22"})));
 		generateConfigFile();
 		System.out.println("Done");
 	}
