@@ -36,4 +36,18 @@ public interface TesterInterface
      * @param
      */
     public void saveTestResults(Object results);
+
+    /**
+     * Gets the CRSID of the repository owner
+     *
+     * @return CRSID of the repository owner
+     */
+    public String getCRSID();
+
+    /**
+     * Gets the name of the repository
+     *
+     * @return Name of the repository
+     */
+    public String getName();
 }

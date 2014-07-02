@@ -2,6 +2,6 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen.database;
 
-public class GitDB implements RepoDB {
+public interface RepoDb {
 
 }

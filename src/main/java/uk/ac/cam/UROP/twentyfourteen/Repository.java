@@ -8,6 +8,8 @@ import uk.ac.cam.UROP.twentyfourteen.public_interfaces.*;
 import java.util.Collection;
 import java.util.Map;
 
+import java.io.IOException;
+
 /**
  * @author Isaac Dunn <ird28@cam.ac.uk>
  * @author Kovacsics Robert <rmk35@cam.ac.uk>
@@ -15,9 +17,18 @@ import java.util.Map;
  */
 public class Repository implements TesterInterface, FrontendRepositoryInterface
 { 
-    private final RepoDB parent = new GitDB();
-    private final RepoDB parent_hidden = new GitDB();
-    private final RepoDB repo = new GitDB();
+    private final String parent;
+    private final String parent_hidden;
+    private final String repo;
+    private final String crsid;
+
+    public Repository(String name, String owner_crsid) throws IOException
+    {
+        parent = null;
+        parent_hidden = null;
+        repo = name;
+        crsid = owner_crsid;
+    }
     
     /**
      * Pulls in student repo and tick repo and hands over relevant files to be tested.
@@ -95,4 +106,18 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     {
         return null;
     }
+
+    /**
+     * Gets the CRSID of the repository owner
+     *
+     * @return CRSID of the repository owner
+     */
+    public String getCRSID() { return this.crsid; }
+
+    /**
+     * Gets the name of the repository
+     *
+     * @return Name of the repository
+     */
+    public String getName() { return this.crsid; }
 }

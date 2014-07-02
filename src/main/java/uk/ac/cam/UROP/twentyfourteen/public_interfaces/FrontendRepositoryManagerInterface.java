@@ -2,6 +2,9 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen.public_interfaces;
 
+import java.io.IOException;
+import java.util.Collection;
+
 /**
  * @author kr2
  *
@@ -17,7 +20,14 @@ public interface FrontendRepositoryManagerInterface
      *  
      * @return A newly created repository.
      */
-    public FrontendRepositoryInterface newRepo(String name);
+    public FrontendRepositoryInterface newRepo(String name, String crsid) throws IOException;
+
+    /**
+     * Lists all repositories available
+     *
+     * @return Available repositories
+     */
+    public Collection<FrontendRepositoryInterface> listRepositories ();
 
     /**
      * Forks the appropriate tick repository, including the files that the student needs to access only. 
@@ -27,5 +37,5 @@ public interface FrontendRepositoryManagerInterface
      * 
      * @returns A forked repository.
      */
-    public FrontendRepositoryInterface forkRepo(String name, FrontendRepositoryInterface origin);
+    public FrontendRepositoryInterface forkRepo(String name, FrontendRepositoryInterface origin, String crsid) throws IOException;
 }

@@ -18,4 +18,18 @@ public interface FrontendRepositoryInterface
      * @return List of source files
      */
     public Collection<String> getSources();
+
+    /**
+     * Gets the CRSID of the repository owner
+     *
+     * @return CRSID of the repository owner
+     */
+    public String getCRSID();
+
+    /**
+     * Gets the name of the repository
+     *
+     * @return Name of the repository
+     */
+    public String getName();
 }

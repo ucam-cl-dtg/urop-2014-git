@@ -4,6 +4,9 @@ package uk.ac.cam.UROP.twentyfourteen;
 
 import uk.ac.cam.UROP.twentyfourteen.public_interfaces.*;
 
+import java.io.IOException;
+import java.util.Collection;
+
 /**
  * @author Isaac Dunn <ird28@cam.ac.uk>
  * @author Kovacsics Robert <rmk35@cam.ac.uk>
@@ -19,13 +22,14 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      *  
      * @return A newly created repository.
      */
-    public Repository newRepo(String name) {
+    public Repository newRepo(String name, String crsid) throws IOException
+    {
         /* TODO: implement
          *
          * 1) Create new GitRepo class
          * 2) Add repository to database via ConfigDatabase
          */
-        return new Repository();
+        return new Repository(name, crsid);
     }
     
     
@@ -37,13 +41,15 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      * 
      * @returns A forked repository.
      */
-    public FrontendRepositoryInterface forkRepo(String name, FrontendRepositoryInterface origin) {
+    public FrontendRepositoryInterface forkRepo(String name, FrontendRepositoryInterface origin, String crsid) throws IOException
+    {
         /* TODO: implement
          *
          * 1) Clone repository into new directory, with a depth of one
          * 2) Create a new GitRepo class
          */
-        return new Repository(); //TODO fill in this method
+        return new Repository(name, crsid);
     }
 
+    public Collection<FrontendRepositoryInterface> listRepositories () { return null; }
 }
