@@ -2,14 +2,15 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen;
 
-import java.util.List;
+import uk.ac.cam.UROP.twentyfourteen.public_interfaces.*;
 
 /**
  * @author Isaac Dunn <ird28@cam.ac.uk>
  * @author Kovacsics Robert <rmk35@cam.ac.uk>
  * @version 0.1
  */
-public class RepositoryManager {
+public class RepositoryManager implements FrontendRepositoryManagerInterface
+{
 
     /**
      * Creates a new Repository.
@@ -36,7 +37,7 @@ public class RepositoryManager {
      * 
      * @returns A forked repository.
      */
-    public Repository forkRepo(String name, Repository origin) {
+    public FrontendRepositoryInterface forkRepo(String name, FrontendRepositoryInterface origin) {
         /* TODO: implement
          *
          * 1) Clone repository into new directory, with a depth of one

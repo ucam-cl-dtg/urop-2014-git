@@ -3,16 +3,18 @@
 package uk.ac.cam.UROP.twentyfourteen;
 
 import uk.ac.cam.UROP.twentyfourteen.database.*;
+import uk.ac.cam.UROP.twentyfourteen.public_interfaces.*;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Isaac Dunn <ird28@cam.ac.uk>
  * @author Kovacsics Robert <rmk35@cam.ac.uk>
  * @version 0.1
  */
-public class Repository {
-
+public class Repository implements TesterInterface, FrontendRepositoryInterface
+{ 
     private final RepoDB parent = new GitDB();
     private final RepoDB parent_hidden = new GitDB();
     private final RepoDB repo = new GitDB();
@@ -72,7 +74,7 @@ public class Repository {
      *
      * @return The list of source files, (TODO: as specified by the tick setter?)
      */
-    public List<String> getSources()
+    public Collection<String> getSources()
     {
         /* TODO: implement
          *
@@ -80,6 +82,17 @@ public class Repository {
          * 2) Filter out sources, somehow
          * 3) Return as a list (or collection?)
          */
+        return null;
     }
 
+    /**
+     * Returns a map of test files and a list of required files for
+     * those tests to run
+     *
+     * @return Map of test files and a list of the test's dependencies
+     */
+    public Map<String, Collection<String>> getTests()
+    {
+        return null;
+    }
 }
