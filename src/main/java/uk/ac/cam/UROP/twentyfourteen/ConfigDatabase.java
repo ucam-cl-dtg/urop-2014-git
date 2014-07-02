@@ -46,17 +46,23 @@ public class ConfigDatabase {
 		while (allRepos.hasNext()) {
 			DBObject repoDoc = allRepos.next();
 			output.append("repo " + repoDoc.get("repoName") + "\n");
-			output.append("    RW = ");
 			BasicDBList readWriteCRSIDs = (BasicDBList) repoDoc.get("readWrite");
-			for (Object id : readWriteCRSIDs) {
-				output.append(id + " ");
+			if (readWriteCRSIDs.size() > 0) {
+				output.append("    RW = ");
+				for (Object id : readWriteCRSIDs) {
+					output.append(id + " ");
+				}
+				output.append("\n");
 			}
-			output.append("\n    R  = ");
 			BasicDBList readOnlyCRSIDs = (BasicDBList) repoDoc.get("readOnly");
-			for (Object id : readOnlyCRSIDs) {
-				output.append(id + " ");
+			if (readOnlyCRSIDs.size() > 0) {
+				output.append("    R  = ");
+				for (Object id : readOnlyCRSIDs) {
+					output.append(id + " ");
+				}
+				output.append("\n");
 			}
-			output.append("\n");
+			
 		}
 		try {
 			String home = System.getProperty("user.home");
