@@ -6,8 +6,13 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
- * @author kr2
+ * This is the interface the front end of the project should use.
+ * <p>
+ * For a concrete implementation
  *
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
+ * @version 0.2
  */
 public interface FrontendRepositoryManagerInterface
 {
@@ -17,8 +22,12 @@ public interface FrontendRepositoryManagerInterface
      * For the moment it is world read/writeable, this will change
      * 
      * @param name Name of the repository to be created
+     * @param crsid The CRSID of the owned of the repository
      *  
      * @return A newly created repository.
+     *
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
      */
     public FrontendRepositoryInterface newRepo(String name, String crsid) throws IOException;
 
@@ -35,8 +44,12 @@ public interface FrontendRepositoryManagerInterface
      * @param name Name of the repository to be created
      * @param origin Repository to be forked
      * @param origin_hidden Repository to be overlaid on submission (but not visible to student)
+     * @param crsid The CRSID of the owned of the repository
      * 
-     * @returns A forked repository.
+     * @return A forked repository.
+     *
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
      */
     public FrontendRepositoryInterface forkRepo(String name, String origin, String origin_hidden, String crsid) throws IOException;
 }

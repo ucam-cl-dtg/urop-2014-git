@@ -10,9 +10,10 @@ import java.io.IOException;
  * This is the interface the testing end of the project should use.
  * <p>
  * For a concrete implementation
- * @author Isaac Dunn <ird28@cam.ac.uk>
- * @author Kovacsics Robert <rmk35@cam.ac.uk>
- * @version 0.1
+ *
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
+ * @version 0.2
  */
 public interface TesterInterface
 {
@@ -20,6 +21,9 @@ public interface TesterInterface
      * Gets the source files
      *
      * @return List of source files
+     *
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
      */
     public Collection<String> getSources() throws IOException;
 
@@ -34,7 +38,8 @@ public interface TesterInterface
     /**
      * Callback to let the repository store the test result
      *
-     * @param
+     * @param results The object file encapsulating the results of the
+     * test.
      */
     public void saveTestResults(Object results);
 

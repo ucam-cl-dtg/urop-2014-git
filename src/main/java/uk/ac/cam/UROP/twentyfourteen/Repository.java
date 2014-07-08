@@ -15,8 +15,8 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @author Isaac Dunn <ird28@cam.ac.uk>
- * @author Kovacsics Robert <rmk35@cam.ac.uk>
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @version 0.1
  */
 public class Repository implements TesterInterface, FrontendRepositoryInterface
@@ -56,10 +56,18 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     }
 
     /**
-     * Clones repository to specified directory, if it camn get access.
+     * Clones repository to specified directory, if it can get
+     * repository access.
      * <p>
-     * It tries to get access via the admin key, so it expects to have
-     * access to it.
+     * It tries to access the repository with the id_rsa key.
+     *
+     * @param directory The empty directory to which you want to clone
+     * into.
+     *
+     * @throws EmptyDirectoryExpectedException The File given is either
+     * not a directory or not empty.
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
      */
     public void cloneTo(File directory) throws EmptyDirectoryExpectedException, IOException
     {
@@ -157,6 +165,9 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      *
      * @param filter Filter files according to this
      * @return The list of source files, (TODO: as specified by the tick setter?)
+     *
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
      */
     public Collection<String> getSources(String filter) throws IOException
     {

@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.Collection;
 
 /**
- * @author Isaac Dunn <ird28@cam.ac.uk>
- * @author Kovacsics Robert <rmk35@cam.ac.uk>
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @version 0.1
  */
 public class RepositoryManager implements FrontendRepositoryManagerInterface
@@ -40,7 +40,7 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      * @param origin Repository to be forked
      * @param origin_hidden Repository to be overlaid on submission (but not visible to student)
      * 
-     * @returns A forked repository.
+     * @return A forked repository.
      */
     public Repository forkRepo(String name, String origin, String origin_hidden, String crsid) throws IOException
     {
