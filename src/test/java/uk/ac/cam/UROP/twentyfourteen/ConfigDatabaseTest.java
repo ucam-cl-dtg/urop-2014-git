@@ -24,10 +24,10 @@ import com.mongodb.DBCollection;
  * @author ird28
  *
  */
-public class generatingConfigFilesTest {
+public class ConfigDatabaseTest {
 
 	@Test
-	public void test() {
+	public void generatingConfigFilesTest() {
 		DBCollection repoTable = Mongo.getDB().getCollection("repos");
 		if (repoTable != null)
 			repoTable.remove(new BasicDBObject());
@@ -59,5 +59,23 @@ public class generatingConfigFilesTest {
 			e.printStackTrace();
 		}
 	}
+	
+	@Test
+	public void addingSSHKeysTest() {
+		String key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDS5IkY7Z8NQxsdDna/SW1X0PkHlW/KlXmGyhk8gufIdGrrJSTKfUH+45NvHTcSEnao1wxJVMQd4hbh/Ym+NxjuJSB+4qiEpwMYGD+cEu7aYAt8kaYTCSblRWpO4iNhikLXLv6fNapSxFzppxzGzFwLZyNwR6pkdLgUNkxmNke/Cm/9jMFp0fd1vklEXkeGaHJ5l6prH+zeDq40iInqrsb3CF4SbJaM+LMtVO3cMgvayjHI3Qwcp/gmvEWjMLSTg56mfS78MCiDEXp5QowICQv5XperPPG0oUrpPPgRnrgmI5Rr8R8qRLl03tmQjTKZMu7u71KsPf1022IsoDGx0PQf ird28@pccl067";
+		ConfigDatabase.addSSHKey(key, "unittestuser");
+		try {
+			BufferedReader buffRead = new BufferedReader(new FileReader(System.getProperty("user.home")+"/.gitolite/keydir/UROP/unittestuser.pub"));
+			assertTrue(buffRead.readLine().equals(key));
+			buffRead.close();
+		} catch (FileNotFoundException e) {
+			fail("The file that should have been written was not found.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 }
