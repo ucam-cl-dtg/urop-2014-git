@@ -29,19 +29,13 @@ import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
 public class ConfigDatabase {
 
 	/**
-	 * Generates config file for gitolite.
+	 * Generates config file for gitolite and writes it to ~/test.conf
 	 * <p>
-	 * Accesses mongoDB look up relevant information.
-	 * 
-	 * @return The gitolite config file
+	 * Accesses mongoDB to find repositories and the relevant users with their access permissions.
+	 * The main conf file should have an include test.conf statement so that when the hook is called, the updates are made.
+	 * The hook is called at the end of this method.
 	 */
 	public static void generateConfigFile() {
-		/* TODO: implement
-         *
-         * 1) Create a new StringBuilder
-         * 2) Fill in StringBuilder according to a template
-         * 3) Write file to disk
-         */
 		StringBuilder output = new StringBuilder();
 		Cursor allRepos = Mongo.getDB().getCollection("repos").find();
 		while (allRepos.hasNext()) {
@@ -86,7 +80,13 @@ public class ConfigDatabase {
 			e.printStackTrace();
 		}
 	}
-	
+	/**
+	 * Adds a new repository to the mongo database for inclusion in the conf file when generated.
+	 * 
+	 * @param repoName The name of the repository to be added
+	 * @param readOnlyCRSIDs A list of the CRSIDs of the users who have read and only read (git clone only) access to the repository
+	 * @param readWriteCRSIDs A list of the CRSIDs of the users who have both read and write (git clone and push) access to the repository
+	 */
 	public static void addRepo(String repoName, List<String> readOnlyCRSIDs, List<String> readWriteCRSIDs) {
 		DBCollection repoTable = Mongo.getDB().getCollection("repos");
 		BasicDBObject repoDoc = new BasicDBObject();
@@ -102,7 +102,7 @@ public class ConfigDatabase {
 	
 	
 	/**
-	 * Adds student SSH public key.
+	 * Takes public key and username as strings, writes the key to keydir/UROP/username.pub, and calls the hook.
 	 * 
 	 * @param key The SSH key to be added
 	 * @param username The name of the user to be added
