@@ -106,7 +106,8 @@ public class GitDb
     /**
      * Clone a repository and return a GitDb object.
      * <p>
-     * Note, you may wish to delete the directory after you have finished with it!
+     * Note, you may wish to delete the directory after you have finished with it.
+     * This is entirely your responsibility!
      *
      * @param src Source repository path
      * @param dest Destination directory
