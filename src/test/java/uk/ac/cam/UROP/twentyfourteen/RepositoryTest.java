@@ -16,13 +16,19 @@ import java.io.IOException;
 public class RepositoryTest
 {
 
+    /**
+     * Clones the testing repository and checks the README.md and
+     * Test.java file, then deletes the repository.
+     */
 	@Test
-	public void test()
+	public void testing_repository()
 	{
         try
         {
             Repository testRepo = new Repository("testing", "rmk35");
             File tmpDir = createTempDirectory();
+            assertTrue(tmpDir.exists());
+
             testRepo.cloneTo(tmpDir);
             assertNotNull(testRepo.handle);
             assertNotNull(testRepo.workingCommit);
@@ -32,6 +38,9 @@ public class RepositoryTest
                 assertEquals("Checking for the existence of README.md", s, "README.md");
             for (String s : testRepo.getSources("java"))
                 assertEquals("Checking for the existence of Test.java", s, "src/main/java/Test.java");
+
+            recursiveDelete(tmpDir);
+            assertFalse(tmpDir.exists());
         }
         catch (IOException e)
         {
@@ -60,5 +69,26 @@ public class RepositoryTest
         }
 
         return (temp);
+    }
+
+    private static void recursiveDelete(File f)
+    {
+        if (f.isDirectory())
+        {
+            if (f.list().length == 0)
+                f.delete();
+            else
+            {
+                for (String child : f.list())
+                    recursiveDelete(new File(f, child));
+                f.delete();
+            }
+
+        }
+        else
+        {
+            f.delete();
+        }
+        
     }
 }
