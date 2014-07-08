@@ -8,5 +8,5 @@ package uk.ac.cam.UROP.twentyfourteen;
  */
 public class EmptyDirectoryExpectedException extends Exception
 {
-
+    static final long serialVersionUID = 1L;
 }
