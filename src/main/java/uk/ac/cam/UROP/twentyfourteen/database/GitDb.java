@@ -39,12 +39,13 @@ import com.jcraft.jsch.JSchException;
 /**
  * This class is a representation of the Git Database and provides some helper
  * methods to allow file access.
- * 
+ *
  * It is responsible for providing basic functionality to search a specified Git
  * Repository and find files based on a given SHA.
- * 
+ *
  */
-public class GitDb  implements RepoDb{
+public class GitDb
+{
 	private static final Logger log = LoggerFactory.getLogger(GitDb.class);
 
 	private final String privateKey;
@@ -54,10 +55,10 @@ public class GitDb  implements RepoDb{
 
 	/**
 	 * Create a new instance of a GitDb object
-	 * 
+	 *
 	 * This will immediately try and connect to the Git folder specified to
 	 * check its validity.
-	 * 
+	 *
 	 * @param repoLocation
 	 *            - location of the local git repository
 	 * @throws IOException
@@ -74,13 +75,13 @@ public class GitDb  implements RepoDb{
 
 	/**
 	 * Create a new instance of a GitDb object
-	 * 
+	 *
 	 * This will immediately try and connect to the Git folder specified to
 	 * check its validity.
-	 * 
+	 *
 	 * This constructor is only necessary if we want to access a private
 	 * repository.
-	 * 
+	 *
 	 * @param repoLocation
 	 *            - location of the local git repository
 	 * @param sshFetchUrl
@@ -102,12 +103,65 @@ public class GitDb  implements RepoDb{
 		gitHandle = Git.open(new File(repoLocation));
 	}
 
+    /**
+     * Clone a repository and return a GitDb object.
+     *
+     * @param src Source repository path
+     * @param dest Destination directory
+     * @param bare Clone bare?
+     * @param branch Branch to clone
+     */
+    public GitDb(String src, File dest, boolean bare, String branch, final String privateKey) throws IOException
+    {
+        this.privateKey = privateKey;
+        this.sshFetchUrl = src;
+
+		try {
+			SshSessionFactory factory = new JschConfigSessionFactory() {
+				@Override
+				public void configure(Host hc, com.jcraft.jsch.Session session) {
+                    // // TODO: Bad!
+                    // session.setConfig("StrictHostKeyChecking", "no");
+				}
+
+				@Override
+				protected JSch getJSch(final OpenSshConfig.Host hc,
+						org.eclipse.jgit.util.FS fs) throws JSchException {
+					JSch jsch = super.getJSch(hc, fs);
+					jsch.removeAllIdentity();
+
+					if (null != privateKey) {
+						jsch.addIdentity(privateKey);
+					}
+
+					return jsch;
+				}
+			};
+
+			if (src != null)
+				SshSessionFactory.setInstance(factory);
+
+            this.gitHandle =  Git.cloneRepository()
+                .setURI(src)
+                .setDirectory(dest)
+                .setBare(bare)
+                .setBranch(branch)
+                .call();
+            this.gitHandle = Git.open(dest);
+
+		} catch (GitAPIException e) {
+			log.error(
+					"Error while trying to clone the repository.",
+					e);
+		}
+    }
+
 	/**
 	 * Create a new instance of a GitDb object.
-	 * 
+	 *
 	 * This is meant to be used for unit testing, allowing injection of a mocked
 	 * Git object.
-	 * 
+	 *
 	 * @param gitHandle
 	 *            - The (probably mocked) Git object to use.
 	 */
@@ -122,11 +176,11 @@ public class GitDb  implements RepoDb{
 
 	/**
 	 * getFileByCommitSHA
-	 * 
+	 *
 	 * This method will access the git repository given a particular SHA and
 	 * will attempt to locate a unique file and return a bytearrayoutputstream
 	 * of the files contents.
-	 * 
+	 *
 	 * @param SHA
 	 *            to search in.
 	 * @param Full
@@ -164,7 +218,41 @@ public class GitDb  implements RepoDb{
 	/**
 	 * This method will configure a treewalk object that can be used to navigate
 	 * the git repository.
-	 * 
+	 *
+	 * @param sha
+	 *            - the version that the treewalk should be configured to search
+	 *            within.
+	 * @return A preconfigured treewalk object.
+	 * @throws IOException
+	 * @throws UnsupportedOperationException
+	 */
+	public TreeWalk getTreeWalk(String sha)
+			throws IOException, UnsupportedOperationException {
+		Validate.notBlank(sha);
+
+		ObjectId commitId = gitHandle.getRepository().resolve(sha);
+		if (null == commitId) {
+			log.error("Failed to buildGitIndex - Unable to locate resource with SHA: "
+					+ sha);
+		} else {
+			RevWalk revWalk = new RevWalk(gitHandle.getRepository());
+			RevCommit commit = revWalk.parseCommit(commitId);
+
+			RevTree tree = commit.getTree();
+
+			TreeWalk treeWalk = new TreeWalk(gitHandle.getRepository());
+			treeWalk.addTree(tree);
+			treeWalk.setRecursive(true);
+
+			return treeWalk;
+		}
+		return null;
+	}
+
+	/**
+	 * This method will configure a treewalk object that can be used to navigate
+	 * the git repository.
+	 *
 	 * @param sha
 	 *            - the version that the treewalk should be configured to search
 	 *            within.
@@ -202,7 +290,7 @@ public class GitDb  implements RepoDb{
 
 	/**
 	 * Get the git handle for the database
-	 * 
+	 *
 	 * @return
 	 */
 	public Repository getGitRepository() {
@@ -212,7 +300,7 @@ public class GitDb  implements RepoDb{
 	/**
 	 * Attempt to verify if an object exists in the git repository for a given
 	 * sha and full path.
-	 * 
+	 *
 	 * @param sha
 	 * @param fullfilePath
 	 * @return True if we can successfully find the object, false if not. False
@@ -231,7 +319,7 @@ public class GitDb  implements RepoDb{
 
 	/**
 	 * Check that a commit sha exists within the git repository.
-	 * 
+	 *
 	 * @param sha
 	 * @return True if we have found the git sha false if not.
 	 */
@@ -266,7 +354,7 @@ public class GitDb  implements RepoDb{
 
 	/**
 	 * Get the time of the commit specified
-	 * 
+	 *
 	 * @param sha
 	 *            - to search for.
 	 * @return integer value representing time since epoch.
@@ -299,10 +387,10 @@ public class GitDb  implements RepoDb{
 
 	/**
 	 * Gets a complete list of commits with the most recent commit first.
-	 * 
+	 *
 	 * Will return null if there is a problem and will write a log to the
 	 * configured logger with the stack trace.
-	 * 
+	 *
 	 * @return List of the commit shas we have found in the git repository.
 	 */
 	public List<RevCommit> listCommits() {
@@ -331,7 +419,7 @@ public class GitDb  implements RepoDb{
 	/**
 	 * This method will execute a fetch on the configured remote git repository
 	 * and will return the latest sha.
-	 * 
+	 *
 	 * @return The version id of the latest version after the fetch.
 	 */
 	public synchronized String pullLatestFromRemote() {
@@ -339,6 +427,7 @@ public class GitDb  implements RepoDb{
 			SshSessionFactory factory = new JschConfigSessionFactory() {
 				@Override
 				public void configure(Host hc, com.jcraft.jsch.Session session) {
+                    // TODO: Bad!
 					session.setConfig("StrictHostKeyChecking", "no");
 				}
 
@@ -378,7 +467,7 @@ public class GitDb  implements RepoDb{
 	/**
 	 * Retrieve the SHA that is at the head of the repository (based on all
 	 * fetched commits)
-	 * 
+	 *
 	 * @return String of sha id
 	 */
 	public String getHeadSha() {
@@ -405,7 +494,7 @@ public class GitDb  implements RepoDb{
 	/**
 	 * Will find an object from the git repository if given a sha and a full git
 	 * path.
-	 * 
+	 *
 	 * @param sha
 	 * @param filename
 	 * @return ObjectId which will allow you to access information about the
