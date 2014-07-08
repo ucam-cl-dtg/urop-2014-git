@@ -49,5 +49,10 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
 		</dependency>
+		<dependency>
+   			<groupId>org.mongojack</groupId>
+    		<artifactId>mongojack</artifactId>
+    		<version>2.0.0</version>
+		</dependency>
     </dependencies>
 </project>
