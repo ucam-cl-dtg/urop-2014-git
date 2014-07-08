@@ -5,9 +5,13 @@ package uk.ac.cam.UROP.twentyfourteen;
 import uk.ac.cam.UROP.twentyfourteen.database.*;
 import uk.ac.cam.UROP.twentyfourteen.public_interfaces.*;
 
-import java.util.Collection;
-import java.util.Map;
+import org.eclipse.jgit.treewalk.*;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -20,14 +24,59 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     private final String parent;
     private final String parent_hidden;
     private final String repo;
+    private final String host;
     private final String crsid;
+
+    String workingCommit;
+    GitDb handle;
+
+    private String getRepoPath()
+    { return "ssh://" + crsid + "@" + host + "/" + repo + ".git"; }
+    private String getRepoPathAsUser(String user)
+    { return "ssh://" + user  + "@" + host + "/" + repo + ".git"; }
 
     public Repository(String name, String owner_crsid) throws IOException
     {
         parent = null;
         parent_hidden = null;
         repo = name;
+        // TODO: 
+        host = "127.0.0.1";
         crsid = owner_crsid;
+    }
+
+    public Repository(String name, String owner_crsid, String parent, String parent_hidden) throws IOException
+    {
+        this.parent = parent;
+        this.parent_hidden = parent_hidden;
+        repo = name;
+        // TODO: 
+        host = "127.0.0.1";
+        crsid = owner_crsid;
+    }
+
+    /**
+     * Clones repository to specified directory, if it camn get access.
+     * <p>
+     * It tries to get access via the admin key, so it expects to have
+     * access to it.
+     */
+    public void cloneTo(File directory) throws EmptyDirectoryExpectedException, IOException
+    {
+        if (directory.listFiles() == null || directory.listFiles().length != 0)
+            throw new EmptyDirectoryExpectedException();
+
+        // TODO: Proper gitolite username
+        handle = new GitDb(
+                 /* src            */ getRepoPathAsUser("gitolite")
+                ,/* dest           */ directory 
+                ,/* bare           */ false
+                ,/* branch         */ "master"
+                ,/* remote         */ "origin"
+                ,/* privateKeyPath */ "~/.ssh/id_rsa" /* TODO: proper key path */);
+
+        if (workingCommit == null)
+            workingCommit = handle.getHeadSha();
     }
     
     /**
@@ -81,19 +130,45 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     }
 
     /**
-     * Returns a list of the source files in the repository
+     * Returns a list of the source files in the repository.
+     * <p>
+     * Repository must first be cloned using cloneTo!
      *
      * @return The list of source files, (TODO: as specified by the tick setter?)
      */
-    public Collection<String> getSources()
+    public Collection<String> getSources() throws IOException
     {
-        /* TODO: implement
-         *
-         * 1) Walk the three repositories
-         * 2) Filter out sources, somehow
-         * 3) Return as a list (or collection?)
-         */
-        return null;
+        List<String> rtn = new LinkedList<String>();
+
+        if (handle == null || workingCommit == null)
+            throw new NullPointerException("You did not clone git repository!");
+
+        TreeWalk tw = handle.getTreeWalk(workingCommit);
+        while (tw.next())
+            rtn.add(tw.getNameString());
+        return rtn;
+    }
+
+    /**
+     * Returns a list of the source files in the repository, filtered
+     * according to filter.
+     * <p>
+     * Repository must first be cloned using cloneTo!
+     *
+     * @param filter Filter files according to this
+     * @return The list of source files, (TODO: as specified by the tick setter?)
+     */
+    public Collection<String> getSources(String filter) throws IOException
+    {
+        List<String> rtn = new LinkedList<String>();
+
+        if (handle == null || workingCommit == null)
+            throw new NullPointerException("You did not clone git repository!");
+
+        TreeWalk tw = handle.getTreeWalk(workingCommit, filter);
+        while (tw.next())
+            rtn.add(tw.getPathString());
+        return rtn;
     }
 
     /**
@@ -104,6 +179,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      */
     public Map<String, Collection<String>> getTests()
     {
+        /* TODO: implement
+         */
         return null;
     }
 

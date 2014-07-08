@@ -105,13 +105,15 @@ public class GitDb
 
     /**
      * Clone a repository and return a GitDb object.
+     * <p>
+     * Note, you may wish to delete the directory after you have finished with it!
      *
      * @param src Source repository path
      * @param dest Destination directory
      * @param bare Clone bare?
      * @param branch Branch to clone
      */
-    public GitDb(String src, File dest, boolean bare, String branch, final String privateKey) throws IOException
+    public GitDb(String src, File dest, boolean bare, String branch, String remote, final String privateKey) throws IOException
     {
         this.privateKey = privateKey;
         this.sshFetchUrl = src;
@@ -146,12 +148,16 @@ public class GitDb
                 .setDirectory(dest)
                 .setBare(bare)
                 .setBranch(branch)
+                .setRemote(remote)
                 .call();
             this.gitHandle = Git.open(dest);
 
 		} catch (GitAPIException e) {
 			log.error(
 					"Error while trying to clone the repository.",
+					e);
+            throw new RuntimeException(
+					"Error while trying to clone the repository."+
 					e);
 		}
     }

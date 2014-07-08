@@ -3,6 +3,7 @@
 package uk.ac.cam.UROP.twentyfourteen.public_interfaces;
 
 import java.util.Collection;
+import java.io.IOException;
 
 /**
  * @author Isaac Dunn <ird28@cam.ac.uk>
@@ -17,7 +18,7 @@ public interface FrontendRepositoryInterface
      *
      * @return List of source files
      */
-    public Collection<String> getSources();
+    public Collection<String> getSources() throws IOException;
 
     /**
      * Gets the CRSID of the repository owner

@@ -4,6 +4,7 @@ package uk.ac.cam.UROP.twentyfourteen.public_interfaces;
 
 import java.util.Map;
 import java.util.Collection;
+import java.io.IOException;
 
 /**
  * This is the interface the testing end of the project should use.
@@ -20,7 +21,7 @@ public interface TesterInterface
      *
      * @return List of source files
      */
-    public Collection<String> getSources();
+    public Collection<String> getSources() throws IOException;
 
     /**
      * Returns a map of test files and a list of required files for

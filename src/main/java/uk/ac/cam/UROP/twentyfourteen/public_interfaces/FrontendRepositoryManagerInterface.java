@@ -34,8 +34,9 @@ public interface FrontendRepositoryManagerInterface
      * 
      * @param name Name of the repository to be created
      * @param origin Repository to be forked
+     * @param origin_hidden Repository to be overlaid on submission (but not visible to student)
      * 
      * @returns A forked repository.
      */
-    public FrontendRepositoryInterface forkRepo(String name, FrontendRepositoryInterface origin, String crsid) throws IOException;
+    public FrontendRepositoryInterface forkRepo(String name, String origin, String origin_hidden, String crsid) throws IOException;
 }
