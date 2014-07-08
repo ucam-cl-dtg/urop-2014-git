@@ -4,6 +4,8 @@ package uk.ac.cam.UROP.twentyfourteen.public_interfaces;
 
 import java.util.Collection;
 import java.io.IOException;
+import java.io.File;
+import uk.ac.cam.UROP.twentyfourteen.EmptyDirectoryExpectedException;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -13,6 +15,22 @@ import java.io.IOException;
 
 public interface FrontendRepositoryInterface
 {
+    /**
+     * Clones repository to specified directory, if it can get
+     * repository access.
+     * <p>
+     * It tries to access the repository with the id_rsa key.
+     *
+     * @param directory The empty directory to which you want to clone
+     * into.
+     *
+     * @throws EmptyDirectoryExpectedException The File given is either
+     * not a directory or not empty.
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
+     */
+    public void cloneTo(File directory) throws EmptyDirectoryExpectedException, IOException;
+
     /**
      * Gets the source files
      *
