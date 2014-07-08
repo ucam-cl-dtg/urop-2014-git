@@ -38,17 +38,18 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      * 
      * @param name Name of the repository to be created
      * @param origin Repository to be forked
+     * @param origin_hidden Repository to be overlaid on submission (but not visible to student)
      * 
      * @returns A forked repository.
      */
-    public FrontendRepositoryInterface forkRepo(String name, FrontendRepositoryInterface origin, String crsid) throws IOException
+    public Repository forkRepo(String name, String origin, String origin_hidden, String crsid) throws IOException
     {
         /* TODO: implement
          *
          * 1) Clone repository into new directory, with a depth of one
          * 2) Create a new GitRepo class
          */
-        return new Repository(name, crsid);
+        return new Repository(name, crsid, origin, origin_hidden);
     }
 
     public Collection<FrontendRepositoryInterface> listRepositories () { return null; }
