@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +73,7 @@ public class ConfigDatabase {
 			buffWriter.close();
 			Process p = Runtime.getRuntime().exec(home+"/.gitolite/hooks/gitolite-admin/post-update",
 						new String[] {"HOME="+home, "PATH="+home+"/bin/:/bin:/usr/bin", "GL_LIBDIR="+home+"/git/gitolite/src/lib"});
-						BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 			BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line;
 			while ((line = outputReader.readLine()) != null) {
@@ -96,13 +97,7 @@ public class ConfigDatabase {
 	}
 	
 	public static void main(String[] args) {
-		DBCollection repoTable = Mongo.getDB().getCollection("repos");
-		if (repoTable != null)
-			repoTable.remove(new BasicDBObject());
-		addRepo("test-repo-one", (List) new ArrayList<String>(Arrays.asList(new String[] {"ird28", "prv22"})), (List) new ArrayList<String>(Arrays.asList(new String[] {"sg648", "ret56", "gh107"})));
-		addRepo("test-repo-two", (List) new ArrayList<String>(Arrays.asList(new String[] {"ird28"})), (List) new ArrayList<String>(Arrays.asList(new String[] {"prv22"})));
-		generateConfigFile();
-		System.out.println("Done");
+		addSSHKey("THIS SHOULD BE A PUBLIC KEY", "exampleuser");
 	}
 	
 	
@@ -110,12 +105,24 @@ public class ConfigDatabase {
 	 * Adds student SSH public key.
 	 * 
 	 * @param key The SSH key to be added
+	 * @param username The name of the user to be added
 	 */
-	public void addSSHKey(String key) {
-		/* TODO: implement
-         *
-         * See gitolite §11.5
-         */
+	public static void addSSHKey(String key, String username) {
+		try {
+			String home = System.getProperty("user.home");
+			File keyFile = new File(home + "/.gitolite/keydir/UROP/" + username + ".pub");
+			if (!keyFile.exists()) {
+				keyFile.createNewFile();
+			}
+			BufferedWriter buffWriter = new BufferedWriter(new FileWriter(keyFile));
+			buffWriter.write(key);
+			buffWriter.close();
+			Runtime.getRuntime().exec(home+"/.gitolite/hooks/gitolite-admin/post-update",
+					new String[] {"HOME="+home, "PATH="+home+"/bin/:/bin:/usr/bin", "GL_LIBDIR="+home+"/git/gitolite/src/lib"});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 }
