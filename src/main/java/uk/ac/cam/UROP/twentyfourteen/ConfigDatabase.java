@@ -96,10 +96,6 @@ public class ConfigDatabase {
 		repoTable.insert(repoDoc);
 	}
 	
-	public static void main(String[] args) {
-		addSSHKey("THIS SHOULD BE A PUBLIC KEY", "exampleuser");
-	}
-	
 	
 	/**
 	 * Takes public key and username as strings, writes the key to keydir/UROP/username.pub, and calls the hook.
