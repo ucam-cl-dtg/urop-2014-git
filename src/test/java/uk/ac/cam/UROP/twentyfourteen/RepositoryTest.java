@@ -10,8 +10,8 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @author kr2
- *
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
+ * @version 0.1
  */
 public class RepositoryTest
 {

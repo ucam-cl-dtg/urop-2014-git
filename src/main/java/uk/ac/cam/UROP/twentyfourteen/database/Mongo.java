@@ -22,6 +22,8 @@ public class Mongo {
 	
 	/**
 	 * Returns a handle to the local mongoDB instance
+     *
+     * @return The single Mongo DB object instance
 	 */
 	public static DB getDB() {
 		return db;

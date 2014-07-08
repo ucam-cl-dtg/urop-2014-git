@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.io.IOException;
 
 /**
- * @author Isaac Dunn <ird28@cam.ac.uk>
- * @author Kovacsics Robert <rmk35@cam.ac.uk>
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @version 0.1
  */
 
@@ -17,6 +17,9 @@ public interface FrontendRepositoryInterface
      * Gets the source files
      *
      * @return List of source files
+     *
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
      */
     public Collection<String> getSources() throws IOException;
 
