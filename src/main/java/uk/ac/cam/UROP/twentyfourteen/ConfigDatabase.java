@@ -98,10 +98,13 @@ public class ConfigDatabase {
 	 *
 	 * @param repo The repository to be added
 	 * @throws IOException 
+	 * @throws com.mongodb.MongoException.DuplicateKey
 	 */
-	public static void addRepo(Repository repo) {
+	public static void addRepo(Repository repo) throws com.mongodb.MongoException.DuplicateKey {
 		JacksonDBCollection<Repository, String> repoCollection =
 				JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		BasicDBObject query = new BasicDBObject("name", 1);
+		repoCollection.ensureIndex(query, null, true);
 		repoCollection.insert(repo);
 	}
 	
