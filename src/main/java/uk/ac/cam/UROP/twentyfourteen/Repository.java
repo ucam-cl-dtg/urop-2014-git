@@ -14,6 +14,10 @@ import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 
+import com.fasterxml.jackson.annotation.*;
+import org.mongojack.Id;
+import org.mongojack.ObjectId;
+
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
@@ -25,34 +29,41 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     private final String parent_hidden;
     private final String repo;
     private final String host;
-    private final String crsid;
+    private final String owner;
+    private final List<String> read_write;
+    private final List<String> read_only;
 
     String workingCommit;
     GitDb handle;
 
-    private String getRepoPath()
-    { return "ssh://" + crsid + "@" + host + "/" + repo + ".git"; }
     private String getRepoPathAsUser(String user)
     { return "ssh://" + user  + "@" + host + "/" + repo + ".git"; }
 
-    public Repository(String name, String owner_crsid) throws IOException
-    {
-        parent = null;
-        parent_hidden = null;
-        repo = name;
-        // TODO: 
-        host = "127.0.0.1";
-        crsid = owner_crsid;
-    }
-
-    public Repository(String name, String owner_crsid, String parent, String parent_hidden) throws IOException
+    /**
+     * Creates a repository object, to be added to the repository
+     * database with ConfigDatabase.addRepo(Repository r).
+     * 
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
+     */
+    @JsonCreator
+    public Repository
+        ( @Id @ObjectId                  String name
+        , @JsonProperty("owner")         String crsid
+        , @JsonProperty("rw")            List<String> read_write
+        , @JsonProperty("r")             List<String> read_only
+        , @JsonProperty("parent")        String parent
+        , @JsonProperty("parent_hidden") String parent_hidden
+        ) throws IOException
     {
         this.parent = parent;
         this.parent_hidden = parent_hidden;
-        repo = name;
+        this.repo = name;
         // TODO: 
         host = "127.0.0.1";
-        crsid = owner_crsid;
+        this.read_write = read_write;
+        this.read_only = read_only;
+        owner = crsid;
     }
 
     /**
@@ -200,12 +211,62 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      *
      * @return CRSID of the repository owner
      */
-    public String getCRSID() { return this.crsid; }
+    @JsonProperty("owner")
+    public String getCRSID() { return owner; }
 
     /**
      * Gets the name of the repository
      *
      * @return Name of the repository
      */
-    public String getName() { return this.crsid; }
+    @ObjectId
+    @Id
+    public String getName() { return this.repo; }
+
+    /**
+     * Gets the read &amp; write capable users or groups, for
+     * serialization.
+     *
+     * @return Read &amp; write capable users or groups.
+     */
+    @JsonProperty("rw")
+    public List<String> getReadWrite() { return this.read_write; }
+
+    /**
+     * Gets the read only capable users or groups, for serialization.
+     *
+     * @return Read only capable users or groups.
+     */
+    @JsonProperty("r")
+    public List<String> getReadOnly() { return this.read_only; }
+
+    /**
+     * Gets the parent of this repository, or null if this repository
+     * has no parent.
+     *
+     * @return Parent or null
+     */
+    @JsonProperty("parent")
+    public String parent() { return this.parent; }
+
+    /**
+     * Gets the hidden parent of this repository, or null if this
+     * repository has no hidden parent.
+     * 
+     * @return Hidden parent or null
+     */
+    @JsonProperty("parent_hidden")
+    public String parent_hidden() { return this.parent_hidden; }
+
+    /**
+     * Gives the string representation of the repository, to be used in
+     * conjuction with Gitolite.
+     *
+     * @return Gitolite config compatible string representation of the
+     * repository
+     */
+    @Override
+    public String toString()
+    {
+    }
 }
