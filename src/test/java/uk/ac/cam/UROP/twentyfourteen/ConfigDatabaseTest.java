@@ -26,6 +26,11 @@ import com.mongodb.DBCollection;
  */
 public class ConfigDatabaseTest {
 
+	
+	/**
+	 * Adds a couple of repositories to an empty mongoDB table,
+	 * then generates the appropriate conf file and checks it is as expected.
+	 */
 	@Test
 	public void generatingConfigFilesTest() {
 		DBCollection repoTable = Mongo.getDB().getCollection("repos");
@@ -60,6 +65,9 @@ public class ConfigDatabaseTest {
 		}
 	}
 	
+	/**
+	 * Adds a new SSH key and checks everything worked as expected
+	 */
 	@Test
 	public void addingSSHKeysTest() {
 		String key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDS5IkY7Z8NQxsdDna/SW1X0PkHlW/KlXmGyhk8gufIdGrrJSTKfUH+45NvHTcSEnao1wxJVMQd4hbh/Ym+NxjuJSB+4qiEpwMYGD+cEu7aYAt8kaYTCSblRWpO4iNhikLXLv6fNapSxFzppxzGzFwLZyNwR6pkdLgUNkxmNke/Cm/9jMFp0fd1vklEXkeGaHJ5l6prH+zeDq40iInqrsb3CF4SbJaM+LMtVO3cMgvayjHI3Qwcp/gmvEWjMLSTg56mfS78MCiDEXp5QowICQv5XperPPG0oUrpPPgRnrgmI5Rr8R8qRLl03tmQjTKZMu7u71KsPf1022IsoDGx0PQf ird28@pccl067";

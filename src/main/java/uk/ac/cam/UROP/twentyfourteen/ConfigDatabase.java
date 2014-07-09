@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
+
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Cursor;
@@ -22,6 +25,7 @@ import com.mongodb.DBObject;
 import org.mongojack.JacksonDBCollection;
 
 import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import uk.ac.cam.UROP.twentyfourteen.mongojack.MyPOJO;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -33,14 +37,16 @@ public class ConfigDatabase {
 	/**
 	 * Generates config file for gitolite and writes it to ~/test.conf
 	 * <p>
-	 * Accesses mongoDB to find repositories and the relevant users with their access permissions.
+	 * Accesses mongoDB to find repositories and assumes the Repository.toString() returns the appropriate representation.
 	 * The main conf file should have an include test.conf statement so that when the hook is called, the updates are made.
 	 * The hook is called at the end of this method.
 	 */
 	public static void generateConfigFile() {
 		StringBuilder output = new StringBuilder();
-		Cursor allRepos = Mongo.getDB().getCollection("repos").find();
+		JacksonDBCollection<Repository, String> repoCollection = JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		DBCursor<Repository> allRepos = repoCollection.find();
 		while (allRepos.hasNext()) {
+			/* old implementation
 			DBObject repoDoc = allRepos.next();
 			output.append("repo " + repoDoc.get("repoName") + "\n");
 			BasicDBList readWriteCRSIDs = (BasicDBList) repoDoc.get("readWrite");
@@ -59,11 +65,14 @@ public class ConfigDatabase {
 				}
 				output.append("\n");
 			}
-			
+			*/
+			Repository currentRepo = allRepos.next();
+			output.append(currentRepo.toString());
+			output.append("\n");
 		}
 		try {
 			String home = System.getProperty("user.home");
-			File configFile = new File(home+"/test.conf");
+			File configFile = new File(home+"/UROP.conf");
 			BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
 			buffWriter.write(output.toString());
 			buffWriter.close();
@@ -82,17 +91,49 @@ public class ConfigDatabase {
 			e.printStackTrace();
 		}
 	}
+	
 	/**
 	 * Adds a new repository to the mongo database for inclusion in the conf file when generated.
 	 *
 	 * @param repoName The name of the repository to be added
 	 * @param readOnlyCRSIDs A list of the CRSIDs of the users who have read and only read (git clone only) access to the repository
 	 * @param readWriteCRSIDs A list of the CRSIDs of the users who have both read and write (git clone and push) access to the repository
+	 * @throws IOException 
 	 */
+<<<<<<< HEAD
+	public static void addRepo(String repoName, List<String> readOnlyCRSIDs, List<String> readWriteCRSIDs) throws IOException {
+		/* Old implementation
+		DBCollection repoTable = Mongo.getDB().getCollection("repos");
+		BasicDBObject repoDoc = new BasicDBObject();
+		repoDoc.put("repoName", repoName);
+		repoDoc.put("readOnly", readOnlyCRSIDs);
+		repoDoc.put("readWrite", readWriteCRSIDs);
+		repoTable.insert(repoDoc);
+		*/
+		Repository toBeAdded = new Repository(repoName, "CRSID"); //TODO implement properly
+		addRepo(toBeAdded);
+	}
+	
+	public static void addRepo(Repository repo) {
+		JacksonDBCollection<Repository, String> repoCollection = JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		repoCollection.insert(repo);
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Repository toBeTested = new Repository("test-name", "someCRSID");
+		addRepo(toBeTested);
+		JacksonDBCollection<Repository, String> repoCollection = JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		DBCursor<Repository> allRepos = repoCollection.find();
+		while (allRepos.hasNext()) {
+			Repository currentRepo = allRepos.next();
+			System.out.println("Name: " + currentRepo.getName() + " CRSID: " + currentRepo.getCRSID());
+		}
+=======
 	public static void addRepo(Repository repo) {
         JacksonDBCollection<Repository, String> coll = JacksonDBCollection.wrap
             (Mongo.getDB().getCollection("repos"), Repository.class, String.class);
 		coll.insert(repo);
+>>>>>>> 6fcd8d2aa35dd5c96cbf5e08fc1564af6340c3ae
 	}
 	
 	
