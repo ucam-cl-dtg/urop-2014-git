@@ -309,6 +309,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
             for ( String name : read_write)
                 strb.append(name);
         }
+        strb.append("\n");
 
         if (read_only.size() > 0)
         {
@@ -317,6 +318,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
             for ( String name : read_only)
                 strb.append(name);
         }
+        strb.append("\n");
 
         return strb.toString();
     }
