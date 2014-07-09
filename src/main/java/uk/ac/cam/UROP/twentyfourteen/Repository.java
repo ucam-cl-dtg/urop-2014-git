@@ -23,7 +23,7 @@ import org.mongojack.ObjectId;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @version 0.1
  */
-public class Repository //implements TesterInterface, FrontendRepositoryInterface
+public class Repository implements TesterInterface, FrontendRepositoryInterface
 { 
     private final String parent;
     private final String parent_hidden;
@@ -43,9 +43,6 @@ public class Repository //implements TesterInterface, FrontendRepositoryInterfac
     /**
      * Creates a repository object, to be added to the repository
      * database with ConfigDatabase.addRepo(Repository r).
-     * 
-     * @throws IOException Something went wrong (typically not
-     * recoverable).
      */
     @JsonCreator
     public Repository
@@ -55,7 +52,7 @@ public class Repository //implements TesterInterface, FrontendRepositoryInterfac
         , @JsonProperty("r")             List<String> read_only
         , @JsonProperty("parent")        String parent
         , @JsonProperty("parent_hidden") String parent_hidden
-        ) throws IOException
+        )
     {
         this.parent = parent;
         this.parent_hidden = parent_hidden;
