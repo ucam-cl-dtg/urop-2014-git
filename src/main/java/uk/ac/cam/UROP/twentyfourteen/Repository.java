@@ -226,7 +226,6 @@ public class Repository //implements TesterInterface, FrontendRepositoryInterfac
      *
      * @return Name of the repository
      */
-    
     @JsonProperty("name")
     public String getName() { return this.repo; }
 
@@ -256,11 +255,21 @@ public class Repository //implements TesterInterface, FrontendRepositoryInterfac
     @JsonProperty("parent")
     public String parent() { return this.parent; }
     
+    /**
+     * For storing this in MongoDB
+     *
+     * @return ID of this object in MongoDB
+     */
     @Id @ObjectId
-    public String get_id() { return this._id; }
+    String get_id() { return this._id; }
     
+    /**
+     * For storing this in MongoDB
+     *
+     * @param id Object ID to set
+     */
     @Id @ObjectId
-    public void set_id(String id) { _id = id; }
+    void set_id(String id) { _id = id; }
 
     /**
      * Gets the hidden parent of this repository, or null if this
