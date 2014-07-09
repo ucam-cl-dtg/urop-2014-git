@@ -32,6 +32,8 @@ public class ConfigDatabase {
      * main conf file should have an include test.conf statement so that
      * when the hook is called, the updates are made. The hook is
      * called at the end of this method.
+     *
+     * @throws IOException Typically an unrecoverable problem.
      */
     public static void generateConfigFile() throws IOException {
         StringBuilder output = new StringBuilder();
@@ -60,7 +62,6 @@ public class ConfigDatabase {
      * conf file when generated.
      *
      * @param repo The repository to be added
-     * @throws IOException
      * @throws DuplicateKeyException A repository with this name already
      * exists.
      */
