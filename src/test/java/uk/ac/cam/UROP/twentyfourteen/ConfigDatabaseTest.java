@@ -6,84 +6,95 @@
 package uk.ac.cam.UROP.twentyfourteen;
 
 import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.easymock.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
+import com.mongodb.DuplicateKeyException;
+
+import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
 
 /**
  * @author ird28
  *
  */
-public class ConfigDatabaseTest {
-
+public class ConfigDatabaseTest extends EasyMockSupport {
 	
-	/**
-	 * Adds a couple of repositories to an empty mongoDB table,
-	 * then generates the appropriate conf file and checks it is as expected.
-	 */
-	@Test
-	public void generatingConfigFilesTest() {
-		DBCollection repoTable = Mongo.getDB().getCollection("repos");
-		if (repoTable != null)
-			repoTable.remove(new BasicDBObject());
-		ArrayList<String> group1 = new ArrayList<String>();
-		group1.add("ird28");
-		group1.add("rmk35");
-		ArrayList<String> group2 = new ArrayList<String>();
-		group2.add("prv22");
-		group2.add("gk349");
-		group2.add("ft267");
-		ArrayList<String> group3 = new ArrayList<String>();
-		group3.add("jag205");
-		ConfigDatabase.addRepo("exampleRepository", group2, group1);
-		ConfigDatabase.addRepo("anotherRepository", group3, new ArrayList<String>());
-		ConfigDatabase.generateConfigFile();
-		
-		try {
-			BufferedReader buffRead = new BufferedReader(new FileReader(System.getProperty("user.home")+"/test.conf"));
-			assertTrue(buffRead.readLine().equals("repo exampleRepository"));
-			assertTrue(buffRead.readLine().equals("    RW = ird28 rmk35 "));
-			assertTrue(buffRead.readLine().equals("    R  = prv22 gk349 ft267 "));
-			assertTrue(buffRead.readLine().equals("repo anotherRepository"));
-			assertTrue(buffRead.readLine().equals("    R  = jag205 "));
-			buffRead.close();
-		} catch (FileNotFoundException e) {
-			fail("The file that should have been written was not found.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private List<String> readOnlys;
+	private List<String> readAndWrites;
+	private List<String> emptyList;
+	
+	@Before
+	public void setUp() {
+		readOnlys = new LinkedList<String>();
+		readAndWrites = new LinkedList<String>();
+		emptyList = new LinkedList<String>();
+		readOnlys.add("readonlyUser1");
+		readOnlys.add("readonlyUser2");
+		readAndWrites.add("adminUser");
 	}
 	
 	/**
-	 * Adds a new SSH key and checks everything worked as expected
+	 * Adds a new repository to the mongoDB, checks that the number of repos
+	 * stored in the database increases by one, and checks that the repository
+	 * is the same when retrieved as when inserted.
 	 */
 	@Test
-	public void addingSSHKeysTest() {
-		String key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDS5IkY7Z8NQxsdDna/SW1X0PkHlW/KlXmGyhk8gufIdGrrJSTKfUH+45NvHTcSEnao1wxJVMQd4hbh/Ym+NxjuJSB+4qiEpwMYGD+cEu7aYAt8kaYTCSblRWpO4iNhikLXLv6fNapSxFzppxzGzFwLZyNwR6pkdLgUNkxmNke/Cm/9jMFp0fd1vklEXkeGaHJ5l6prH+zeDq40iInqrsb3CF4SbJaM+LMtVO3cMgvayjHI3Qwcp/gmvEWjMLSTg56mfS78MCiDEXp5QowICQv5XperPPG0oUrpPPgRnrgmI5Rr8R8qRLl03tmQjTKZMu7u71KsPf1022IsoDGx0PQf ird28@pccl067";
-		ConfigDatabase.addSSHKey(key, "unittestuser");
-		try {
-			BufferedReader buffRead = new BufferedReader(new FileReader(System.getProperty("user.home")+"/.gitolite/keydir/UROP/unittestuser.pub"));
-			assertTrue(buffRead.readLine().equals(key));
-			buffRead.close();
-		} catch (FileNotFoundException e) {
-			fail("The file that should have been written was not found.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void testMongoRepoStorage() {
+		JacksonDBCollection<Repository, String> repoCollection = 
+				JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		repoCollection.remove(new BasicDBObject("name", "example-repo-name"));
+		DBCursor<Repository> allRepos = repoCollection.find();
+		int originalSize = allRepos.size();
+		Repository testRepo = new Repository("example-repo-name",
+		         "repository-owner", readAndWrites, readOnlys, 
+		         "example-parent-repo", "hidden-eg-parent");
+		ConfigDatabase.addRepo(testRepo);
+		assertTrue(repoCollection.find(new BasicDBObject("name", "example-repo-name")).size() == 1);
+		allRepos = repoCollection.find();
+		assertTrue(allRepos.size() == originalSize+1); // should have added one repo to the database
+		Repository hopefullyOurRepo = repoCollection.findOne(new BasicDBObject("name", "example-repo-name"));
+		assertEquals(testRepo.getCRSID(), hopefullyOurRepo.getCRSID());
+		assertEquals(testRepo.toString(), hopefullyOurRepo.toString());
+		assertEquals(testRepo.parent_hidden(), hopefullyOurRepo.parent_hidden());
 	}
 	
-	
+	/**
+	 * Checks that when two repositories of the same name are inserted,
+	 * the second is not added and an exception is raised.
+	 */
+	@Test
+	public void testOnlyOneRepoPerName() {
+	    JacksonDBCollection<Repository, String> repoCollection = 
+                JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+        repoCollection.remove(new BasicDBObject("name", "test-name"));
+        Repository testRepo = new Repository("test-name",
+                "repository-owner", readAndWrites, readOnlys, 
+                "example-parent-repo", "hidden-eg-parent");
+        ConfigDatabase.addRepo(testRepo);
+        DBCursor<Repository> allRepos = repoCollection.find();
+        int repoNumber = allRepos.size();
+        Repository testRepo2 = new Repository("test-name",
+                "other-owner", readAndWrites, readAndWrites, 
+                "other-parent-repo", "other-hidden-parent");
+        try {
+            ConfigDatabase.addRepo(testRepo2);
+            fail("An exception should have been raised because a repo with this name already exists");
+        } catch (DuplicateKeyException dke) {
+            // This should happen - fail otherwise
+        }
+        allRepos = repoCollection.find();
+        assertTrue(allRepos.size() == repoNumber); // The number of repositories should not have changed        
+	}
 
 }
