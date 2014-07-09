@@ -100,7 +100,6 @@ public class ConfigDatabase {
 	 * @param readWriteCRSIDs A list of the CRSIDs of the users who have both read and write (git clone and push) access to the repository
 	 * @throws IOException 
 	 */
-<<<<<<< HEAD
 	public static void addRepo(String repoName, List<String> readOnlyCRSIDs, List<String> readWriteCRSIDs) throws IOException {
 		/* Old implementation
 		DBCollection repoTable = Mongo.getDB().getCollection("repos");
@@ -128,13 +127,8 @@ public class ConfigDatabase {
 			Repository currentRepo = allRepos.next();
 			System.out.println("Name: " + currentRepo.getName() + " CRSID: " + currentRepo.getCRSID());
 		}
-=======
-	public static void addRepo(Repository repo) {
-        JacksonDBCollection<Repository, String> coll = JacksonDBCollection.wrap
-            (Mongo.getDB().getCollection("repos"), Repository.class, String.class);
-		coll.insert(repo);
->>>>>>> 6fcd8d2aa35dd5c96cbf5e08fc1564af6340c3ae
 	}
+
 	
 	
 	/**
