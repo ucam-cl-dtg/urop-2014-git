@@ -36,7 +36,7 @@ public interface FrontendRepositoryManagerInterface
      *
      * @return Available repositories
      */
-    public Collection<FrontendRepositoryInterface> listRepositories ();
+    public Collection<? extends FrontendRepositoryInterface> listRepositories ();
 
     /**
      * Forks the appropriate tick repository, including the files that the student needs to access only. 

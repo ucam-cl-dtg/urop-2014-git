@@ -31,7 +31,7 @@ public class ConfigDatabase {
      *
      * @return List of repository objects in the database
      */
-    public static List<Repository> getRepositories()
+    public static List<Repository> getRepos()
     {   /* TODO: Test ordered-ness or repositories. */
         List<Repository> rtn = new LinkedList<Repository>();
 
@@ -64,7 +64,7 @@ public class ConfigDatabase {
     public static void generateConfigFile() throws IOException {
         StringBuilder output = new StringBuilder();
 
-        for (Repository r : getRepositories())
+        for (Repository r : getRepos())
             output.append(r.toString() + "\n");
 
         /* Write out file */

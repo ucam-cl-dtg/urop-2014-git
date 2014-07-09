@@ -37,9 +37,6 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     String workingCommit;
     GitDb handle;
 
-    private String getRepoPathAsUser(String user)
-    { return "ssh://" + user  + "@" + host + "/" + repo + ".git"; }
-
     /**
      * Creates a repository object, to be added to the repository
      * database with ConfigDatabase.addRepo(Repository r).
@@ -322,5 +319,10 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         }
 
         return strb.toString();
+    }
+
+    private String getRepoPathAsUser(String user)
+    {
+        return "ssh://" + user  + "@" + host + "/" + repo + ".git";
     }
 }

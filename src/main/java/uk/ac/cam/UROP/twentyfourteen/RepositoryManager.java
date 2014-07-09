@@ -14,6 +14,15 @@ import java.util.Collection;
  */
 public class RepositoryManager implements FrontendRepositoryManagerInterface
 {
+    /**
+     * Lists all the available repositories.
+     *
+     * @return List of repositories.
+     */
+    public Collection<Repository> listRepositories()
+    {
+        return ConfigDatabase.getRepos();
+    }
 
     /**
      * Creates a new Repository.
@@ -24,12 +33,9 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      */
     public Repository newRepo(String name, String crsid) throws IOException
     {
-        /* TODO: implement
-         *
-         * 1) Create new GitRepo class
-         * 2) Add repository to database via ConfigDatabase
-         */
-        return new Repository(name, crsid);
+        Repository rtn = new Repository(name, crsid, null, null, null, null);
+        ConfigDatabase.addRepo(rtn);
+        return rtn;
     }
     
     
@@ -44,13 +50,8 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      */
     public Repository forkRepo(String name, String origin, String origin_hidden, String crsid) throws IOException
     {
-        /* TODO: implement
-         *
-         * 1) Clone repository into new directory, with a depth of one
-         * 2) Create a new GitRepo class
-         */
-        return new Repository(name, crsid, origin, origin_hidden);
+        Repository rtn = new Repository(name, crsid, null, null, origin, origin_hidden);
+        ConfigDatabase.addRepo(rtn);
+        return rtn;
     }
-
-    public Collection<FrontendRepositoryInterface> listRepositories () { return null; }
 }
