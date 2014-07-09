@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.mongojack.DBCursor;
@@ -25,7 +26,6 @@ import com.mongodb.DBObject;
 import org.mongojack.JacksonDBCollection;
 
 import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
-import uk.ac.cam.UROP.twentyfourteen.mongojack.MyPOJO;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -43,7 +43,8 @@ public class ConfigDatabase {
 	 */
 	public static void generateConfigFile() {
 		StringBuilder output = new StringBuilder();
-		JacksonDBCollection<Repository, String> repoCollection = JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		JacksonDBCollection<Repository, String> repoCollection = 
+				JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
 		DBCursor<Repository> allRepos = repoCollection.find();
 		while (allRepos.hasNext()) {
 			/* old implementation
@@ -95,33 +96,21 @@ public class ConfigDatabase {
 	/**
 	 * Adds a new repository to the mongo database for inclusion in the conf file when generated.
 	 *
-	 * @param repoName The name of the repository to be added
-	 * @param readOnlyCRSIDs A list of the CRSIDs of the users who have read and only read (git clone only) access to the repository
-	 * @param readWriteCRSIDs A list of the CRSIDs of the users who have both read and write (git clone and push) access to the repository
+	 * @param repo The repository to be added
 	 * @throws IOException 
 	 */
-	public static void addRepo(String repoName, List<String> readOnlyCRSIDs, List<String> readWriteCRSIDs) throws IOException {
-		/* Old implementation
-		DBCollection repoTable = Mongo.getDB().getCollection("repos");
-		BasicDBObject repoDoc = new BasicDBObject();
-		repoDoc.put("repoName", repoName);
-		repoDoc.put("readOnly", readOnlyCRSIDs);
-		repoDoc.put("readWrite", readWriteCRSIDs);
-		repoTable.insert(repoDoc);
-		*/
-		Repository toBeAdded = new Repository(repoName, "CRSID"); //TODO implement properly
-		addRepo(toBeAdded);
-	}
-	
 	public static void addRepo(Repository repo) {
-		JacksonDBCollection<Repository, String> repoCollection = JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		JacksonDBCollection<Repository, String> repoCollection =
+				JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
 		repoCollection.insert(repo);
 	}
 	
 	public static void main(String[] args) throws IOException {
-		Repository toBeTested = new Repository("test-name", "someCRSID");
+		Repository toBeTested = new Repository("testname", "someCRSID",
+				new LinkedList<String>(), new LinkedList<String>(), "test-parent", "test-hidden-parent");
 		addRepo(toBeTested);
-		JacksonDBCollection<Repository, String> repoCollection = JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		JacksonDBCollection<Repository, String> repoCollection = 
+				JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
 		DBCursor<Repository> allRepos = repoCollection.find();
 		while (allRepos.hasNext()) {
 			Repository currentRepo = allRepos.next();

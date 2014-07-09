@@ -32,6 +32,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     private final String owner;
     private final List<String> read_write;
     private final List<String> read_only;
+    private String _id;
 
     String workingCommit;
     GitDb handle;
@@ -48,7 +49,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      */
     @JsonCreator
     public Repository
-        ( @Id @ObjectId                  String name
+        ( @JsonProperty("name")                 String name
         , @JsonProperty("owner")         String crsid
         , @JsonProperty("rw")            List<String> read_write
         , @JsonProperty("r")             List<String> read_only
@@ -64,6 +65,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         this.read_write = read_write;
         this.read_only = read_only;
         owner = crsid;
+    
     }
 
     /**
@@ -248,6 +250,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      */
     @JsonProperty("parent")
     public String parent() { return this.parent; }
+    
+    public String _id() { return this._id; }
 
     /**
      * Gets the hidden parent of this repository, or null if this
