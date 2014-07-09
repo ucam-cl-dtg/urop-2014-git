@@ -60,13 +60,13 @@ public class ConfigDatabaseEasyMockTest extends EasyMockSupport {
 		         "repository-owner", readAndWrites, readOnlys, 
 		         "example-parent-repo", "hidden-eg-parent");
 		ConfigDatabase.addRepo(testRepo);
+		assertTrue(repoCollection.find(new BasicDBObject("name", "example-repo-name")).size() == 1);
 		allRepos = repoCollection.find();
 		assertTrue(allRepos.size() == originalSize+1); // should have added one repo to the database
 		Repository hopefullyOurRepo = repoCollection.findOne(new BasicDBObject("name", "example-repo-name"));
-		assertTrue(testRepo.getCRSID() == hopefullyOurRepo.getCRSID());
-		assertTrue(testRepo.get_id() == hopefullyOurRepo.get_id());
-		assertTrue(testRepo.toString() == hopefullyOurRepo.toString());
-		assertTrue(testRepo.parent_hidden() == hopefullyOurRepo.parent_hidden());
+		assertEquals(testRepo.getCRSID(), hopefullyOurRepo.getCRSID());
+		assertEquals(testRepo.toString(), hopefullyOurRepo.toString());
+		assertEquals(testRepo.parent_hidden(), hopefullyOurRepo.parent_hidden());
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class ConfigDatabaseEasyMockTest extends EasyMockSupport {
 	public void testOnlyOneRepoPerName() {
 	    JacksonDBCollection<Repository, String> repoCollection = 
                 JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
-        repoCollection.remove(new BasicDBObject("name", "example-repo-name"));
+        repoCollection.remove(new BasicDBObject("name", "test-name"));
         Repository testRepo = new Repository("test-name",
                 "repository-owner", readAndWrites, readOnlys, 
                 "example-parent-repo", "hidden-eg-parent");
