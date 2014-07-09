@@ -22,6 +22,8 @@ import com.mongodb.Cursor;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 
+import org.mongojack.JacksonDBCollection;
+
 import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
 import uk.ac.cam.UROP.twentyfourteen.mongojack.MyPOJO;
 
@@ -92,12 +94,13 @@ public class ConfigDatabase {
 	
 	/**
 	 * Adds a new repository to the mongo database for inclusion in the conf file when generated.
-	 * 
+	 *
 	 * @param repoName The name of the repository to be added
 	 * @param readOnlyCRSIDs A list of the CRSIDs of the users who have read and only read (git clone only) access to the repository
 	 * @param readWriteCRSIDs A list of the CRSIDs of the users who have both read and write (git clone and push) access to the repository
 	 * @throws IOException 
 	 */
+<<<<<<< HEAD
 	public static void addRepo(String repoName, List<String> readOnlyCRSIDs, List<String> readWriteCRSIDs) throws IOException {
 		/* Old implementation
 		DBCollection repoTable = Mongo.getDB().getCollection("repos");
@@ -125,12 +128,18 @@ public class ConfigDatabase {
 			Repository currentRepo = allRepos.next();
 			System.out.println("Name: " + currentRepo.getName() + " CRSID: " + currentRepo.getCRSID());
 		}
+=======
+	public static void addRepo(Repository repo) {
+        JacksonDBCollection<Repository, String> coll = JacksonDBCollection.wrap
+            (Mongo.getDB().getCollection("repos"), Repository.class, String.class);
+		coll.insert(repo);
+>>>>>>> 6fcd8d2aa35dd5c96cbf5e08fc1564af6340c3ae
 	}
 	
 	
 	/**
 	 * Takes public key and username as strings, writes the key to keydir/UROP/username.pub, and calls the hook.
-	 * 
+	 *
 	 * @param key The SSH key to be added
 	 * @param username The name of the user to be added
 	 */
