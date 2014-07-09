@@ -43,6 +43,20 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     /**
      * Creates a repository object, to be added to the repository
      * database with ConfigDatabase.addRepo(Repository r).
+     *
+     * @param name The name of the repository. This must identify it
+     * uniquely.
+     * @param crsid The CRSID of the repository owner. The owner
+     * automatically has read/write (but not force push) permissions, in
+     * fact we do not allow force push permissions at all.
+     * @param read_write A list of people or groups who can read and write to
+     * the repository. This does not need to include the owner. TODO:
+     * testing and frontend team servers
+     * @param read_only Like read_write without the write.
+     * @param parent The parent repository which at the moment does
+     * nothing. TODO
+     * @param parent_hidden The hidden parent repository which at the
+     * moment does nothing. TODO
      */
     @JsonCreator
     public Repository
