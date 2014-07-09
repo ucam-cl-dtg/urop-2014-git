@@ -17,6 +17,7 @@ import org.mongojack.JacksonDBCollection;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoException;
 
 import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
 
@@ -118,6 +119,27 @@ public class ConfigDatabase {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Updates the given repository.
+     *
+     * This selects the repository uniquely using the ID (not
+     * technically the name of the repository, but is equivalent).
+     *
+     * @param repo The updated repository (there must also be a
+     * repository by this name).
+     * @throws MongoException If the update operation fails (for some
+     * unknown reason).
+     */
+    public static void updateRepo(Repository repo) throws MongoException
+    {
+        JacksonDBCollection<Repository, String> reposCollection =
+            JacksonDBCollection.wrap
+                ( Mongo.getDB().getCollection("repos")
+                , Repository.class
+                , String.class);
+        reposCollection.updateById(repo.get_id(), repo);
     }
 
     private static void runGitoliteUpdate() throws IOException

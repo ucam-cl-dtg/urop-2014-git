@@ -7,6 +7,8 @@ import uk.ac.cam.UROP.twentyfourteen.public_interfaces.*;
 import java.io.IOException;
 import java.util.Collection;
 
+import com.mongodb.MongoException;
+
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
@@ -19,7 +21,7 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      *
      * @return List of repositories.
      */
-    public Collection<Repository> listRepositories()
+    public Collection<Repository> listRepos()
     {
         return ConfigDatabase.getRepos();
     }
@@ -53,5 +55,21 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
         Repository rtn = new Repository(name, crsid, null, null, origin, origin_hidden);
         ConfigDatabase.addRepo(rtn);
         return rtn;
+    }
+
+    /**
+     * Updates the given repository.
+     *
+     * This selects the repository uniquely using the ID (not
+     * technically the name of the repository, but is equivalent).
+     *
+     * @param repo The updated repository (there must also be a
+     * repository by this name).
+     * @throws MongoException If the update operation fails (for some
+     * unknown reason).
+     */
+    public void updateRepo(Repository repo) throws MongoException
+    {
+        ConfigDatabase.updateRepo(repo);
     }
 }
