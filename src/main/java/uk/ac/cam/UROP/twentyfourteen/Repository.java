@@ -23,7 +23,7 @@ import org.mongojack.ObjectId;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @version 0.1
  */
-public class Repository implements TesterInterface, FrontendRepositoryInterface
+public class Repository //implements TesterInterface, FrontendRepositoryInterface
 { 
     private final String parent;
     private final String parent_hidden;
@@ -49,7 +49,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      */
     @JsonCreator
     public Repository
-        ( @JsonProperty("name")                 String name
+        ( @JsonProperty("name")          String name
         , @JsonProperty("owner")         String crsid
         , @JsonProperty("rw")            List<String> read_write
         , @JsonProperty("r")             List<String> read_only
@@ -82,6 +82,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * @throws IOException Something went wrong (typically not
      * recoverable).
      */
+    @JsonIgnore
     public void cloneTo(File directory) throws EmptyDirectoryExpectedException, IOException
     {
         if (directory.listFiles() == null || directory.listFiles().length != 0)
@@ -125,6 +126,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * 
      * @param results The results to be saved
      */
+    @JsonIgnore
     public void saveTestResults(Object results) { // won't be an Object eventually
         /* TODO: implement
          *
@@ -140,6 +142,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * 
      * @return The requested test results
      */
+    @JsonIgnore
     public Object getTestResults(String request) { // these types will change
         /* TODO: implement
          *
@@ -157,6 +160,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      *
      * @return The list of source files, (TODO: as specified by the tick setter?)
      */
+    @JsonIgnore
     public Collection<String> getSources() throws IOException
     {
         List<String> rtn = new LinkedList<String>();
@@ -182,6 +186,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * @throws IOException Something went wrong (typically not
      * recoverable).
      */
+    @JsonIgnore
     public Collection<String> getSources(String filter) throws IOException
     {
         List<String> rtn = new LinkedList<String>();
@@ -221,8 +226,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      *
      * @return Name of the repository
      */
-    @ObjectId
-    @Id
+    
+    @JsonProperty("name")
     public String getName() { return this.repo; }
 
     /**
@@ -251,7 +256,11 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     @JsonProperty("parent")
     public String parent() { return this.parent; }
     
-    public String _id() { return this._id; }
+    @Id @ObjectId
+    public String get_id() { return this._id; }
+    
+    @Id @ObjectId
+    public void set_id(String id) { _id = id; }
 
     /**
      * Gets the hidden parent of this repository, or null if this
