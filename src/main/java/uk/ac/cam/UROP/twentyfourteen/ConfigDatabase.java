@@ -2,6 +2,9 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen;
 
+import java.util.List;
+import java.util.LinkedList;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +26,29 @@ import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
  * @version 0.1
  */
 public class ConfigDatabase {
+    /**
+     * Returns a list of all the repository objects in the database
+     *
+     * @return List of repository objects in the database
+     */
+    public static List<Repository> getRepositories()
+    {   /* TODO: Test ordered-ness or repositories. */
+        List<Repository> rtn = new LinkedList<Repository>();
+
+        JacksonDBCollection<Repository, String> reposCollection =
+            JacksonDBCollection.wrap
+                ( Mongo.getDB().getCollection("repos")
+                , Repository.class
+                , String.class);
+        DBCursor<Repository> allRepos = reposCollection.find();
+
+        while (allRepos.hasNext())
+            rtn.add(allRepos.next());
+
+        allRepos.close();
+
+        return rtn;
+    }
 
     /**
      * Generates config file for gitolite and writes it to ~/test.conf.
@@ -37,14 +63,11 @@ public class ConfigDatabase {
      */
     public static void generateConfigFile() throws IOException {
         StringBuilder output = new StringBuilder();
-        JacksonDBCollection<Repository, String> repoCollection =
-                JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
-        DBCursor<Repository> allRepos = repoCollection.find();
-        while (allRepos.hasNext()) {
-            Repository currentRepo = allRepos.next();
-            output.append(currentRepo.toString());
-            output.append("\n");
-        }
+
+        for (Repository r : getRepositories())
+            output.append(r.toString() + "\n");
+
+        /* Write out file */
         try {
             String home = System.getProperty("user.home");
             File configFile = new File(home + "/UROP.conf");
@@ -83,6 +106,7 @@ public class ConfigDatabase {
     public static void addSSHKey(String key, String username) {
         try {
             String home = System.getProperty("user.home");
+            /* TODO: Proper keydir */
             File keyFile = new File(home + "/.gitolite/keydir/UROP/" + username + ".pub");
             if (!keyFile.exists()) {
                 keyFile.createNewFile();
