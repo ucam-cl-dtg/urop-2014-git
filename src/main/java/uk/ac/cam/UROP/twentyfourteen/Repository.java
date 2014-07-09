@@ -272,5 +272,26 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     @Override
     public String toString()
     {
+        StringBuilder strb = new StringBuilder("repo ");
+        strb.append(repo);
+        strb.append("\n");
+
+        if (read_write.size() > 0)
+        {
+            strb.append("     RW = ");
+            /* Usernames or groups */
+            for ( String name : read_write)
+                strb.append(name);
+        }
+
+        if (read_only.size() > 0)
+        {
+            strb.append("     R  = ");
+            /* Usernames or groups */
+            for ( String name : read_only)
+                strb.append(name);
+        }
+
+        return strb.toString();
     }
 }
