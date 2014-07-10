@@ -1,6 +1,7 @@
 package uk.ac.cam.UROP.twentyfourteen;
 
 import java.util.List;
+import java.util.LinkedList;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -13,9 +14,9 @@ public class GitService {
 	@Path("/git")
 	public Response listRepositories() {
 	    List<Repository> repos = ConfigDatabase.getRepos();
-	    StringBuilder toReturn = new StringBuilder();
+	    List<String> toReturn = new LinkedList<String>();
 	    for (Repository repo : repos) {
-	        toReturn.append(repo.getName());
+	        toReturn.add(repo.getName());
 	    }
 	    return Response.status(200).entity(toReturn.toString()).build();
 	}
