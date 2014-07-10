@@ -1,4 +1,4 @@
-/* vim: set et ts=4 sts=4 sw=4 tw=72 */
+/* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.UROP.twentyfourteen;
 
@@ -66,7 +66,8 @@ public class RepositoryManager implements FrontendRepositoryManagerInterface
      * @param repo The updated repository (there must also be a
      * repository by this name).
      * @throws MongoException If the update operation fails (for some
-     * unknown reason).
+     * unknown reason). Or if you have tried to update something
+     * nonexistent.
      */
     public void updateRepo(Repository repo) throws MongoException
     {
