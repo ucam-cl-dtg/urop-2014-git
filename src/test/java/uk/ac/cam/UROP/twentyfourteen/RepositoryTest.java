@@ -25,7 +25,7 @@ public class RepositoryTest
 	{
         try
         {
-            Repository testRepo = new Repository("testing", "rmk35");
+            Repository testRepo = new Repository("testing", "rmk35", null, null, null, null);
             File tmpDir = createTempDirectory();
             assertTrue(tmpDir.exists());
 
