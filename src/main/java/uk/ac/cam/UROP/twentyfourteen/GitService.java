@@ -25,8 +25,19 @@ public class GitService {
 	}
 
     @GET
-    @Path("/git/{repoName}/{pathParam:.*}")
-    public Response getFile(@PathParam("pathParam") String filePath
+    @Path("/git/{repoName}")
+    public Response listFiles(@PathParam("repoName") String repoName)
+    {
+        /* TODO
+         * 1. Open repository and list files
+         * 2. Return files
+         */
+        return Response.status(200).entity(repoName).build();
+    }
+
+    @GET
+    @Path("/git/{repoName}/{fileName:.*}")
+    public Response getFile(@PathParam("fileName") String fileName
                           , @PathParam("repoName")  String repoName)
     {
         /* TODO
@@ -35,6 +46,6 @@ public class GitService {
          *    somehow, to prevent the need of cloning the repository.
          * 2. Give the contents of the file as the entity
          */
-        return Response.status(200).entity(filePath).build();
+        return Response.status(200).entity(fileName).build();
     }
 }
