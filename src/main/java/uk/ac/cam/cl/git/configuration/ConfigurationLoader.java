@@ -54,7 +54,7 @@ public class ConfigurationLoader
         {
             try
             {
-                mapper.readValue(file, ConfigurationFile.class);
+                loadedConfig = mapper.readValue(file, ConfigurationFile.class);
                 mTime = file.lastModified();
             }
             catch (IOException e)
