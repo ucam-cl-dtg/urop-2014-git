@@ -2,20 +2,25 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.cl.git.configuration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.File;
 import com.fasterxml.jackson.databind.*;
 
 /**
- * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
+ *  A configuration file loader class, set at compile time, loaded at
+ *  initialisation.
+ *  
+ * This just a simple class to load the file {@value fileName} in the
+ * current directory and convert it into a
+ * {@link uk.ac.cam.cl.git.configuration.ConfigurationFile}
+ * class.
  *
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  */
 public class ConfigurationLoader
 {
-    static String fileName = "configuration.json";
+    public static final String fileName = "configuration.json";
     static ConfigurationFile loadedConfig = new ConfigurationFile();
-    static String exception;
 
     static
     {
