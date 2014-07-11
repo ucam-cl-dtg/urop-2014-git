@@ -3,7 +3,7 @@
 /**
  * 
  */
-package uk.ac.cam.UROP.twentyfourteen.mongojack;
+package uk.ac.cam.cl.git.mongojack;
 
 /**
  * @author ird28

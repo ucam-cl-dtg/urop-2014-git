@@ -1,6 +1,6 @@
-/* vim: set et ts=4 sts=4 sw=4 tw=72 */
+/* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-package uk.ac.cam.UROP.twentyfourteen.database;
+package uk.ac.cam.cl.git.database;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -123,8 +123,9 @@ public class GitDb
 			SshSessionFactory factory = new JschConfigSessionFactory() {
 				@Override
 				public void configure(Host hc, com.jcraft.jsch.Session session) {
-                    // // TODO: Bad!
-                    // session.setConfig("StrictHostKeyChecking", "no");
+                    // FIXME: Possibly consider manually adding SSH key,
+                    // to avoid MITM attacks
+                    session.setConfig("StrictHostKeyChecking", "no");
 				}
 
 				@Override
@@ -434,7 +435,8 @@ public class GitDb
 			SshSessionFactory factory = new JschConfigSessionFactory() {
 				@Override
 				public void configure(Host hc, com.jcraft.jsch.Session session) {
-                    // TODO: Bad!
+                    // FIXME: Possibly consider manually adding SSH key,
+                    // to avoid MITM attacks
 					session.setConfig("StrictHostKeyChecking", "no");
 				}
 

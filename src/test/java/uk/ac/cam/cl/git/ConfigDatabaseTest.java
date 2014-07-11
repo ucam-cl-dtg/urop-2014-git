@@ -3,7 +3,7 @@
 /**
  * 
  */
-package uk.ac.cam.UROP.twentyfourteen;
+package uk.ac.cam.cl.git;
 
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
@@ -22,7 +22,7 @@ import org.mongojack.JacksonDBCollection;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 
-import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author ird28

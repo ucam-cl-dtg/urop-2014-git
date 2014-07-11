@@ -1,11 +1,12 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-package uk.ac.cam.UROP.twentyfourteen.public_interfaces;
+package uk.ac.cam.cl.git.public_interfaces;
 
 import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
-import uk.ac.cam.UROP.twentyfourteen.EmptyDirectoryExpectedException;
+
+import uk.ac.cam.cl.git.EmptyDirectoryExpectedException;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;

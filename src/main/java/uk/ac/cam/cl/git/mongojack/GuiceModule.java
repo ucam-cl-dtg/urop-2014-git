@@ -3,7 +3,7 @@
 /**
  * 
  */
-package uk.ac.cam.UROP.twentyfourteen.mongojack;
+package uk.ac.cam.cl.git.mongojack;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
-import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import uk.ac.cam.cl.git.database.Mongo;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;

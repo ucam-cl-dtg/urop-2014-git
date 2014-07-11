@@ -3,14 +3,14 @@
 /**
  * 
  */
-package uk.ac.cam.UROP.twentyfourteen.mongojack;
+package uk.ac.cam.cl.git.mongojack;
 
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
 
 import com.mongodb.DB;
 
-import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;

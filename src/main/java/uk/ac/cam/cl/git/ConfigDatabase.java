@@ -1,10 +1,9 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-package uk.ac.cam.UROP.twentyfourteen;
+package uk.ac.cam.cl.git;
 
 import java.util.List;
 import java.util.LinkedList;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +18,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
-import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
