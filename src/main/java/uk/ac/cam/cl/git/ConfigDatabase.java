@@ -66,7 +66,7 @@ public class ConfigDatabase {
     }
 
     /**
-     * Generates config file for gitolite and writes it to ~/test.conf.
+     * Generates config file for gitolite and writes it to ~/UROP.conf.
      * <p>
      * Accesses mongoDB to find repositories and assumes the
      * Repository.toString() returns the appropriate representation. The
@@ -85,7 +85,7 @@ public class ConfigDatabase {
         /* Write out file */
         try {
             String home = System.getProperty("user.home");
-            File configFile = new File(home + "/UROP.conf");
+            File configFile = new File(home + "/UROP.conf"); // hardcoded
             BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
             buffWriter.write(output.toString());
             buffWriter.close();
@@ -122,7 +122,7 @@ public class ConfigDatabase {
         try {
             String home = System.getProperty("user.home");
             /* TODO: Proper keydir */
-            File keyFile = new File(home + "/.gitolite/keydir/UROP/" + username + ".pub");
+            File keyFile = new File(home + "/.gitolite/keydir/UROP/" + username + ".pub"); // hardcoded
             if (!keyFile.exists()) {
                 keyFile.createNewFile();
             }
@@ -159,7 +159,7 @@ public class ConfigDatabase {
     private static void runGitoliteUpdate() throws IOException
     {
             String home = System.getProperty("user.home");
-            Process p = Runtime.getRuntime().exec(home+"/.gitolite/hooks/gitolite-admin/post-update",
+            Process p = Runtime.getRuntime().exec(home+"/.gitolite/hooks/gitolite-admin/post-update", // hardcoded?
                     /* TODO: Setup specific */
                     new String[] {"HOME=" + home
                                  , "PATH=" + home + "/bin/:/bin:/usr/bin"
