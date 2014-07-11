@@ -121,10 +121,10 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      */
     public void openLocal(String repoName) throws IOException
     {
+        System.out.println("Opening : " + ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + repoName + ".git");
         handle = new GitDb(ConfigurationLoader.getConfig()
                 .getGitoliteHome() + "/repositories/" + repoName + ".git");
-
-        System.out.println(handle.getGitRepository().getFullBranch());
 
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
@@ -201,7 +201,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
 
         TreeWalk tw = handle.getTreeWalk(workingCommit);
         while (tw.next())
-            rtn.add(tw.getNameString());
+            rtn.add(tw.getPathString());
         return rtn;
     }
 

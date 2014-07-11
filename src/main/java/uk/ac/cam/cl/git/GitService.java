@@ -37,14 +37,22 @@ public class GitService {
     @Produces("application/json")
     public Response listFiles(@PathParam("repoName") String repoName) throws IOException
     {
+        if (repoName == null)
+            return Response.status(/*TODO:*/400)
+                .entity("No repository given.").build();
         Repository repo = ConfigDatabase.getRepoByName(repoName);
+        if (repo == null)
+            return Response.status(/*TODO:*/500)
+                .entity("Repository not found in database!"
+                        + "It may exist on disk though.)").build();
+
         repo.openLocal(repoName);
         Collection<String> files = repo.getSources();
-        List<String> toReturn = new LinkedList<String>();
+        List<String> rtn = new LinkedList<String>();
         for (String file : files) {
-            toReturn.add(file);
+            rtn.add(file);
         }
-        return Response.status(200).entity(toReturn).build();
+        return Response.status(200).entity(rtn).build();
     }
 
     @GET
