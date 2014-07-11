@@ -2,6 +2,7 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.cl.git;
 
+import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.database.*;
 import uk.ac.cam.cl.git.public_interfaces.*;
 
@@ -29,7 +30,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     private final String parent;
     private final String parent_hidden;
     private final String repo;
-    private final String host;
+    private final String host =
+        ConfigurationLoader.getConfig().getRepoHost();
     private final String owner;
     private final List<String> read_write;
     private final List<String> read_only;
@@ -69,8 +71,6 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         this.parent = parent;
         this.parent_hidden = parent_hidden;
         this.repo = name;
-        // TODO: 
-        host = "127.0.0.1";
         this.read_write = read_write;
         this.read_only = read_only;
         owner = crsid;
