@@ -18,6 +18,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
+import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.database.Mongo;
 
 /**
@@ -84,8 +85,8 @@ public class ConfigDatabase {
 
         /* Write out file */
         try {
-            String home = System.getProperty("user.home");
-            File configFile = new File(home + "/UROP.conf"); // hardcoded
+            File configFile = new File(ConfigurationLoader.getConfig()
+                    .getGitoliteGeneratedConfigFile());
             BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
             buffWriter.write(output.toString());
             buffWriter.close();
@@ -120,9 +121,8 @@ public class ConfigDatabase {
      */
     public static void addSSHKey(String key, String username) {
         try {
-            String home = System.getProperty("user.home");
-            /* TODO: Proper keydir */
-            File keyFile = new File(home + "/.gitolite/keydir/UROP/" + username + ".pub"); // hardcoded
+            File keyFile = new File(ConfigurationLoader.getConfig()
+                    .getGitoliteSSHKeyLocation() + username + ".pub");
             if (!keyFile.exists()) {
                 keyFile.createNewFile();
             }
@@ -158,12 +158,13 @@ public class ConfigDatabase {
 
     private static void runGitoliteUpdate() throws IOException
     {
-            String home = System.getProperty("user.home");
-            Process p = Runtime.getRuntime().exec(home+"/.gitolite/hooks/gitolite-admin/post-update", // hardcoded?
-                    /* TODO: Setup specific */
-                    new String[] {"HOME=" + home
-                                 , "PATH=" + home + "/bin/:/bin:/usr/bin"
-                                 , "GL_LIBDIR=" + home + "/git/gitolite/src/lib"});
+            Process p = Runtime.getRuntime().exec(
+              ConfigurationLoader.getConfig().getGitoliteHome()
+                + "/.gitolite/hooks/gitolite-admin/post-update"
+              , new String[]
+                {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
+                , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
+                , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()});
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
