@@ -485,13 +485,12 @@ public class GitDb
 		try {
 			ObjectId fetchHead = gitHandle.getRepository().resolve(
 					Constants.FETCH_HEAD);
-			if (null != fetchHead) {
-				result = fetchHead.getName();
-			} else {
+			if (null == fetchHead) {
 				log.warn("Problem fetching head from remote. Providing local head instead.");
-				result = gitHandle.getRepository().resolve(Constants.HEAD)
-						.getName();
+				fetchHead = gitHandle.getRepository().resolve(Constants.HEAD);
 			}
+            if (null != fetchHead)
+                result = fetchHead.getName();
 
 		} catch (RevisionSyntaxException | IOException e) {
 			e.printStackTrace();

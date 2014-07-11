@@ -100,13 +100,31 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
             throw new EmptyDirectoryExpectedException();
 
         handle = new GitDb(
-                 /* src            */ getRepoPathAsUser()
+                 /* src            */ getRepoPath()
                 ,/* dest           */ directory 
                 ,/* bare           */ false
                 ,/* branch         */ "master"
                 ,/* remote         */ "origin"
                 ,/* privateKeyPath */ ConfigurationLoader.getConfig()
                                             .getSshPrivateKeyFile());
+
+        if (workingCommit == null)
+            workingCommit = handle.getHeadSha();
+    }
+
+    /**
+     * Opens a local repository
+     * 
+     * @param repoName the name of the repository to open.
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
+     */
+    public void openLocal(String repoName) throws IOException
+    {
+        handle = new GitDb(ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + repoName + ".git");
+
+        System.out.println(handle.getGitRepository().getFullBranch());
 
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
@@ -176,8 +194,10 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     {
         List<String> rtn = new LinkedList<String>();
 
-        if (handle == null || workingCommit == null)
-            throw new NullPointerException("You did not clone git repository!");
+        if (handle == null)
+            throw new NullPointerException("Repository unset. Did you clone it?");
+        if (workingCommit == null)
+            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
 
         TreeWalk tw = handle.getTreeWalk(workingCommit);
         while (tw.next())
@@ -202,8 +222,10 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     {
         List<String> rtn = new LinkedList<String>();
 
-        if (handle == null || workingCommit == null)
-            throw new NullPointerException("You did not clone git repository!");
+        if (handle == null)
+            throw new NullPointerException("Repository unset. Did you clone it?");
+        if (workingCommit == null)
+            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
 
         TreeWalk tw = handle.getTreeWalk(workingCommit, filter);
         while (tw.next())
@@ -326,7 +348,12 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         return strb.toString();
     }
 
-    private String getRepoPathAsUser()
+    /**
+     * Gets the repository path as an SSH URI.
+     *
+     * @return Repository path as an SSH URI.
+     */
+    public String getRepoPath()
     {
         return "ssh://" + user  + "@" + host + "/" + repo + ".git";
     }
