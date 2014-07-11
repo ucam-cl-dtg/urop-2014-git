@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.database.GitDb;
 
 @Path("/")
@@ -50,7 +51,9 @@ public class GitService {
     public Response getFile(@PathParam("fileName") String fileName
                           , @PathParam("repoName") String repoName) throws IOException
     {
-        GitDb gitDB = new GitDb("/var/lib/gitolite3/repositories/" + repoName); // hardcoded
+        GitDb gitDB = new GitDb(ConfigurationLoader.getConfig()
+                                    .getGitoliteHome()
+                                    + "/repositories/" + repoName);
         String output = gitDB.getFileByCommitSHA(gitDB.getHeadSha(), fileName).toString();
         /* TODO
          * 1. Open the file given by filePath in the Git repository

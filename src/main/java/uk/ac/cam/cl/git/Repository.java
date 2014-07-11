@@ -32,6 +32,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     private final String repo;
     private final String host =
         ConfigurationLoader.getConfig().getRepoHost();
+    private final String user =
+        ConfigurationLoader.getConfig().getRepoUser();
     private final String owner;
     private final List<String> read_write;
     private final List<String> read_only;
@@ -97,14 +99,14 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         if (directory.listFiles() == null || directory.listFiles().length != 0)
             throw new EmptyDirectoryExpectedException();
 
-        // TODO: Proper gitolite username
         handle = new GitDb(
-                 /* src            */ getRepoPathAsUser("gitolite")
+                 /* src            */ getRepoPathAsUser()
                 ,/* dest           */ directory 
                 ,/* bare           */ false
                 ,/* branch         */ "master"
                 ,/* remote         */ "origin"
-                ,/* privateKeyPath */ "~/.ssh/id_rsa" /* TODO: proper key path */);
+                ,/* privateKeyPath */ ConfigurationLoader.getConfig()
+                                            .getSshPrivateKeyFile());
 
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
@@ -324,7 +326,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         return strb.toString();
     }
 
-    private String getRepoPathAsUser(String user)
+    private String getRepoPathAsUser()
     {
         return "ssh://" + user  + "@" + host + "/" + repo + ".git";
     }
