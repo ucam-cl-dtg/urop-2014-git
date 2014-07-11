@@ -27,11 +27,16 @@ import uk.ac.cam.cl.git.database.Mongo;
  */
 public class ConfigDatabase {
     
-    private static JacksonDBCollection<Repository, String> reposCollection =
-            JacksonDBCollection.wrap
-            ( Mongo.getDB().getCollection("repos")
-            , Repository.class
-            , String.class);
+    private static JacksonDBCollection<Repository, String> reposCollection;
+    private static boolean refreshCollectionNeeded = true; // always true apart from for testing, when false
+    
+    private static void refreshReposCollection() {
+        reposCollection =
+                JacksonDBCollection.wrap
+                ( Mongo.getDB().getCollection("repos")
+                , Repository.class
+                , String.class);
+    }
     
     /**
      * For unit testing only, to allow a mock collection to be used.
@@ -40,6 +45,7 @@ public class ConfigDatabase {
      */
     public static void setReposCollection(JacksonDBCollection<Repository, String> rCollection) {
         reposCollection = rCollection;
+        refreshCollectionNeeded = false;
     }
     
     
@@ -51,7 +57,9 @@ public class ConfigDatabase {
     public static List<Repository> getRepos()
     {   /* TODO: Test ordered-ness or repositories. */
         List<Repository> rtn = new LinkedList<Repository>();
-
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
         DBCursor<Repository> allRepos = reposCollection.find();
 
         while (allRepos.hasNext())
@@ -70,6 +78,9 @@ public class ConfigDatabase {
      * @return The requested repository object
      */
     public static Repository getRepoByName(String name) {
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
         return reposCollection.findOne(new BasicDBObject("name", name));
     }
 
@@ -112,8 +123,10 @@ public class ConfigDatabase {
      * exists.
      */
     public static void addRepo(Repository repo) throws DuplicateKeyException {
-        BasicDBObject query = new BasicDBObject("name", 1);
-        reposCollection.ensureIndex(query, null, true);
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
+        reposCollection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
         reposCollection.insert(repo);
     }
 
@@ -154,6 +167,9 @@ public class ConfigDatabase {
      */
     public static void updateRepo(Repository repo) throws MongoException
     {
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
         reposCollection.updateById(repo.get_id(), repo);
     }
 
