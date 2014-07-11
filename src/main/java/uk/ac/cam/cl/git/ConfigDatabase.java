@@ -26,6 +26,23 @@ import uk.ac.cam.cl.git.database.Mongo;
  * @version 0.1
  */
 public class ConfigDatabase {
+    
+    private static JacksonDBCollection<Repository, String> reposCollection =
+            JacksonDBCollection.wrap
+            ( Mongo.getDB().getCollection("repos")
+            , Repository.class
+            , String.class);
+    
+    /**
+     * For unit testing only, to allow a mock collection to be used.
+     * Replaces the mongo collection with the argument.
+     * @param reposCollection The collection to be used.
+     */
+    public static void setReposCollection(JacksonDBCollection<Repository, String> rCollection) {
+        reposCollection = rCollection;
+    }
+    
+    
     /**
      * Returns a list of all the repository objects in the database
      *
@@ -35,11 +52,6 @@ public class ConfigDatabase {
     {   /* TODO: Test ordered-ness or repositories. */
         List<Repository> rtn = new LinkedList<Repository>();
 
-        JacksonDBCollection<Repository, String> reposCollection =
-            JacksonDBCollection.wrap
-                ( Mongo.getDB().getCollection("repos")
-                , Repository.class
-                , String.class);
         DBCursor<Repository> allRepos = reposCollection.find();
 
         while (allRepos.hasNext())
@@ -50,6 +62,7 @@ public class ConfigDatabase {
         return rtn;
     }
     
+    
     /**
      * Returns the repository object with the given name in the database
      * 
@@ -57,11 +70,6 @@ public class ConfigDatabase {
      * @return The requested repository object
      */
     public static Repository getRepoByName(String name) {
-        JacksonDBCollection<Repository, String> reposCollection =
-                JacksonDBCollection.wrap
-                    ( Mongo.getDB().getCollection("repos")
-                    , Repository.class
-                    , String.class);
         return reposCollection.findOne(new BasicDBObject("name", name));
     }
 
@@ -104,11 +112,9 @@ public class ConfigDatabase {
      * exists.
      */
     public static void addRepo(Repository repo) throws DuplicateKeyException {
-        JacksonDBCollection<Repository, String> repoCollection =
-                JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
         BasicDBObject query = new BasicDBObject("name", 1);
-        repoCollection.ensureIndex(query, null, true);
-        repoCollection.insert(repo);
+        reposCollection.ensureIndex(query, null, true);
+        reposCollection.insert(repo);
     }
 
     /**
@@ -148,11 +154,6 @@ public class ConfigDatabase {
      */
     public static void updateRepo(Repository repo) throws MongoException
     {
-        JacksonDBCollection<Repository, String> reposCollection =
-            JacksonDBCollection.wrap
-                ( Mongo.getDB().getCollection("repos")
-                , Repository.class
-                , String.class);
         reposCollection.updateById(repo.get_id(), repo);
     }
 
