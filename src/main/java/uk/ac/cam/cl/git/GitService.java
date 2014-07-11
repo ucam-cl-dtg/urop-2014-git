@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.LinkedList;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import uk.ac.cam.cl.git.database.GitDb;
 
 @Path("/")
 public class GitService {
@@ -45,14 +48,24 @@ public class GitService {
     @GET
     @Path("/git/{repoName}/{fileName:.*}")
     public Response getFile(@PathParam("fileName") String fileName
-                          , @PathParam("repoName")  String repoName)
+                          , @PathParam("repoName") String repoName) throws IOException
     {
+        GitDb gitDB = new GitDb("/var/lib/gitolite3/repositories/" + repoName); // hardcoded
+        String output = gitDB.getFileByCommitSHA(gitDB.getHeadSha(), fileName).toString();
         /* TODO
          * 1. Open the file given by filePath in the Git repository
          *    repoName. This can be done with GitDb and TreeWalker
          *    somehow, to prevent the need of cloning the repository.
          * 2. Give the contents of the file as the entity
          */
-        return Response.status(200).entity(fileName).build();
+        return Response.status(200).entity(output).build();
+    }
+    
+    @POST
+    @Path("/fork")
+    public Response getForkURL()
+    {
+        // TODO implement
+        return Response.status(503).build();
     }
 }
