@@ -38,6 +38,7 @@ public class GitService {
     public Response listFiles(@PathParam("repoName") String repoName) throws IOException
     {
         Repository repo = ConfigDatabase.getRepoByName(repoName);
+        repo.openLocal(repoName);
         Collection<String> files = repo.getSources();
         List<String> toReturn = new LinkedList<String>();
         for (String file : files) {
