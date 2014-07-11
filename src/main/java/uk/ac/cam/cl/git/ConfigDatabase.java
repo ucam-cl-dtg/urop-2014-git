@@ -49,6 +49,21 @@ public class ConfigDatabase {
 
         return rtn;
     }
+    
+    /**
+     * Returns the repository object with the given name in the database
+     * 
+     * @param name The name of the repository
+     * @return The requested repository object
+     */
+    public static Repository getRepoByName(String name) {
+        JacksonDBCollection<Repository, String> reposCollection =
+                JacksonDBCollection.wrap
+                    ( Mongo.getDB().getCollection("repos")
+                    , Repository.class
+                    , String.class);
+        return reposCollection.findOne(new BasicDBObject("name", name));
+    }
 
     /**
      * Generates config file for gitolite and writes it to ~/test.conf.

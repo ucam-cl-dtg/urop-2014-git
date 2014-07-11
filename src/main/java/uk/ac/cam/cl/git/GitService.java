@@ -19,7 +19,7 @@ public class GitService {
 	    List<Repository> repos = ConfigDatabase.getRepos();
 	    List<String> toReturn = new LinkedList<String>();
 	    for (Repository repo : repos) {
-	        toReturn.add(repo.getName());
+	        toReturn.add(repo.getName()+"<br>");
 	    }
 	    return Response.status(200).entity(toReturn.toString()).build();
 	}
@@ -28,6 +28,7 @@ public class GitService {
     @Path("/git/{repoName}")
     public Response listFiles(@PathParam("repoName") String repoName)
     {
+        Repository repo = ConfigDatabase.getRepoByName(repoName);
         /* TODO
          * 1. Open repository and list files
          * 2. Return files
