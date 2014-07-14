@@ -14,6 +14,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.io.File;
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+
+import javassist.bytecode.ByteArray;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -197,7 +200,11 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         if (handle == null)
             throw new NullPointerException("Repository unset. Did you clone it?");
         if (workingCommit == null)
-            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
+            /* Only way above is true if we have an empty repository, as
+             * everything that sets handle also sets workingCommit (to
+             * null, if we have an empty repository).
+             */
+            return null;
 
         TreeWalk tw = handle.getTreeWalk(workingCommit);
         while (tw.next())
@@ -225,7 +232,11 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         if (handle == null)
             throw new NullPointerException("Repository unset. Did you clone it?");
         if (workingCommit == null)
-            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
+            /* Only way above is true if we have an empty repository, as
+             * everything that sets handle also sets workingCommit (to
+             * null, if we have an empty repository).
+             */
+            return null;
 
         TreeWalk tw = handle.getTreeWalk(workingCommit, filter);
         while (tw.next())
@@ -234,11 +245,40 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     }
 
     /**
+     * Outputs the content of the file.
+     *
+     * @param filePath Full path of the file
+     * @return Contents of the file asked for or null if file is not
+     * found.
+     */
+    @JsonIgnore
+    public String getFile(String filePath) throws IOException
+    {
+        if (handle == null)
+            throw new NullPointerException("Repository unset. Did you clone it?");
+
+        if (workingCommit == null)
+            /* Only way above is true if we have an empty repository, as
+             * everything that sets handle also sets workingCommit (to
+             * null, if we have an empty repository).
+             */
+            return null;
+
+        ByteArrayOutputStream rtn = handle.getFileByCommitSHA(workingCommit, filePath);
+
+        if (rtn == null)
+            return null;
+
+        return rtn.toString();
+    }
+
+    /**
      * Returns a map of test files and a list of required files for
      * those tests to run
      *
      * @return Map of test files and a list of the test's dependencies
      */
+    @JsonIgnore
     public Map<String, Collection<String>> getTests()
     {
         /* TODO: implement
