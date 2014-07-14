@@ -14,9 +14,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.git.database.GitDb;
-
 @Path("/")
 public class GitService {
    
