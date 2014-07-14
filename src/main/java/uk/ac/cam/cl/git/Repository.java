@@ -332,18 +332,18 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
             strb.append("     RW = ");
             /* Usernames or groups */
             for ( String name : read_write)
-                strb.append(name);
+                strb.append(name + " ");
+            strb.append("\n");
         }
-        strb.append("\n");
 
         if (read_only.size() > 0)
         {
             strb.append("     R  = ");
             /* Usernames or groups */
             for ( String name : read_only)
-                strb.append(name);
+                strb.append(name + " ");
+            strb.append("\n");
         }
-        strb.append("\n");
 
         return strb.toString();
     }
