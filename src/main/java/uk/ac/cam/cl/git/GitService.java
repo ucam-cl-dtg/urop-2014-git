@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 import javax.ws.rs.core.Response;
 
+import uk.ac.cam.cl.git.public_interfaces.ForkRequestInterface;
 import uk.ac.cam.cl.git.public_interfaces.WebInterface;
 
 public class GitService implements WebInterface {
@@ -92,9 +93,15 @@ public class GitService implements WebInterface {
     }
     
     @Override
-    public Response getForkURL()
+    public Response getForkURL(ForkRequestInterface details)
     {
-        // TODO implement
-        return Response.status(503).build();
+        Repository rtn = new Repository(details.getRepoName()
+                                      , details.getRepoOwner()
+                                      , null /* RW */
+                                      , null /* RO */
+                                      , details.getUpstream()
+                                      , details.getOverlay());
+        ConfigDatabase.addRepo(rtn);
+        return Response.status(200).entity(rtn.getRepoPath()).build();
     }
 }
