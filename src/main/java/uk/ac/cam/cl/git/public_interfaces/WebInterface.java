@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/")
 public interface WebInterface {
-   
+    /* TODO: JavaDoc */
     @GET
     @Path("/git")
     @Produces("application/json")
@@ -32,5 +32,5 @@ public interface WebInterface {
     
     @POST
     @Path("/fork")
-    public Response getForkURL();
+    public Response getForkURL(ForkRequestInterface details);
 }
