@@ -1,10 +1,9 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-package uk.ac.cam.UROP.twentyfourteen;
+package uk.ac.cam.cl.git;
 
 import java.util.List;
 import java.util.LinkedList;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +18,8 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
-import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
+import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -27,6 +27,29 @@ import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
  * @version 0.1
  */
 public class ConfigDatabase {
+    
+    private static JacksonDBCollection<Repository, String> reposCollection;
+    private static boolean refreshCollectionNeeded = true; // always true apart from for testing, when false
+    
+    private static void refreshReposCollection() {
+        reposCollection =
+                JacksonDBCollection.wrap
+                ( Mongo.getDB().getCollection("repos")
+                , Repository.class
+                , String.class);
+    }
+    
+    /**
+     * For unit testing only, to allow a mock collection to be used.
+     * Replaces the mongo collection with the argument.
+     * @param reposCollection The collection to be used.
+     */
+    public static void setReposCollection(JacksonDBCollection<Repository, String> rCollection) {
+        reposCollection = rCollection;
+        refreshCollectionNeeded = false;
+    }
+    
+    
     /**
      * Returns a list of all the repository objects in the database
      *
@@ -35,12 +58,9 @@ public class ConfigDatabase {
     public static List<Repository> getRepos()
     {   /* TODO: Test ordered-ness or repositories. */
         List<Repository> rtn = new LinkedList<Repository>();
-
-        JacksonDBCollection<Repository, String> reposCollection =
-            JacksonDBCollection.wrap
-                ( Mongo.getDB().getCollection("repos")
-                , Repository.class
-                , String.class);
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
         DBCursor<Repository> allRepos = reposCollection.find();
 
         while (allRepos.hasNext())
@@ -50,9 +70,23 @@ public class ConfigDatabase {
 
         return rtn;
     }
+    
+    
+    /**
+     * Returns the repository object with the given name in the database
+     * 
+     * @param name The name of the repository
+     * @return The requested repository object
+     */
+    public static Repository getRepoByName(String name) {
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
+        return reposCollection.findOne(new BasicDBObject("name", name));
+    }
 
     /**
-     * Generates config file for gitolite and writes it to ~/test.conf.
+     * Generates config file for gitolite and writes it to ~/UROP.conf.
      * <p>
      * Accesses mongoDB to find repositories and assumes the
      * Repository.toString() returns the appropriate representation. The
@@ -70,8 +104,8 @@ public class ConfigDatabase {
 
         /* Write out file */
         try {
-            String home = System.getProperty("user.home");
-            File configFile = new File(home + "/UROP.conf");
+            File configFile = new File(ConfigurationLoader.getConfig()
+                    .getGitoliteGeneratedConfigFile());
             BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
             buffWriter.write(output.toString());
             buffWriter.close();
@@ -90,11 +124,11 @@ public class ConfigDatabase {
      * exists.
      */
     public static void addRepo(Repository repo) throws DuplicateKeyException {
-        JacksonDBCollection<Repository, String> repoCollection =
-                JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
-        BasicDBObject query = new BasicDBObject("name", 1);
-        repoCollection.ensureIndex(query, null, true);
-        repoCollection.insert(repo);
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
+        reposCollection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
+        reposCollection.insert(repo);
     }
 
     /**
@@ -106,9 +140,8 @@ public class ConfigDatabase {
      */
     public static void addSSHKey(String key, String username) {
         try {
-            String home = System.getProperty("user.home");
-            /* TODO: Proper keydir */
-            File keyFile = new File(home + "/.gitolite/keydir/UROP/" + username + ".pub");
+            File keyFile = new File(ConfigurationLoader.getConfig()
+                    .getGitoliteSSHKeyLocation() + username + ".pub");
             if (!keyFile.exists()) {
                 keyFile.createNewFile();
             }
@@ -134,22 +167,21 @@ public class ConfigDatabase {
      */
     public static void updateRepo(Repository repo) throws MongoException
     {
-        JacksonDBCollection<Repository, String> reposCollection =
-            JacksonDBCollection.wrap
-                ( Mongo.getDB().getCollection("repos")
-                , Repository.class
-                , String.class);
+        if (refreshCollectionNeeded) {
+            refreshReposCollection();
+        }
         reposCollection.updateById(repo.get_id(), repo);
     }
 
     private static void runGitoliteUpdate() throws IOException
     {
-            String home = System.getProperty("user.home");
-            Process p = Runtime.getRuntime().exec(home+"/.gitolite/hooks/gitolite-admin/post-update",
-                    /* TODO: Setup specific */
-                    new String[] {"HOME=" + home
-                                 , "PATH=" + home + "/bin/:/bin:/usr/bin"
-                                 , "GL_LIBDIR=" + home + "/git/gitolite/src/lib"});
+            Process p = Runtime.getRuntime().exec(
+              ConfigurationLoader.getConfig().getGitoliteHome()
+                + "/.gitolite/hooks/gitolite-admin/post-update"
+              , new String[]
+                {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
+                , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
+                , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()});
             BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
             BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;

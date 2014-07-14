@@ -3,7 +3,7 @@
 /**
  * 
  */
-package uk.ac.cam.UROP.twentyfourteen;
+package uk.ac.cam.cl.git;
 
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
@@ -22,7 +22,7 @@ import org.mongojack.JacksonDBCollection;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 
-import uk.ac.cam.UROP.twentyfourteen.database.Mongo;
+import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author ird28
@@ -33,6 +33,11 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 	private List<String> readOnlys;
 	private List<String> readAndWrites;
 	private List<String> emptyList;
+	private Repository testRepo1;
+	private Repository testRepo2;
+	
+	@Mock
+	private JacksonDBCollection<Repository, String> mockCollection;
 	
 	@Before
 	public void setUp() {
@@ -42,38 +47,39 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 		readOnlys.add("readonlyUser1");
 		readOnlys.add("readonlyUser2");
 		readAndWrites.add("adminUser");
+		testRepo1 = new Repository("test-repo-name1",
+                "repository-owner", readAndWrites, readOnlys, 
+                "test-parent1", "hidden-eg-parent");
+		testRepo2 = new Repository("test-repo-name2",
+                "repository-owner", readAndWrites, emptyList, 
+                "test-parent2", "hidden-eg-parent");
+		mockCollection = createMock(JacksonDBCollection.class);
+		ConfigDatabase.setReposCollection(mockCollection);
+		System.out.println(mockCollection == null);
 	}
-	
+
 	/**
-	 * Adds a new repository to the mongoDB, checks that the number of repos
-	 * stored in the database increases by one, and checks that the repository
-	 * is the same when retrieved as when inserted.
+	 * 
 	 */
 	@Test
-	public void testMongoRepoStorage() {
-		JacksonDBCollection<Repository, String> repoCollection = 
-				JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
-		repoCollection.remove(new BasicDBObject("name", "example-repo-name"));
-		DBCursor<Repository> allRepos = repoCollection.find();
-		int originalSize = allRepos.size();
-		Repository testRepo = new Repository("example-repo-name",
-		         "repository-owner", readAndWrites, readOnlys, 
-		         "example-parent-repo", "hidden-eg-parent");
-		ConfigDatabase.addRepo(testRepo);
-		assertTrue(repoCollection.find(new BasicDBObject("name", "example-repo-name")).size() == 1);
-		allRepos = repoCollection.find();
-		assertTrue(allRepos.size() == originalSize+1); // should have added one repo to the database
-		Repository hopefullyOurRepo = repoCollection.findOne(new BasicDBObject("name", "example-repo-name"));
-		assertEquals(testRepo.getCRSID(), hopefullyOurRepo.getCRSID());
-		assertEquals(testRepo.toString(), hopefullyOurRepo.toString());
-		assertEquals(testRepo.parent_hidden(), hopefullyOurRepo.parent_hidden());
+	public void testAddThenGetRepos() {
+	    /*mockCollection.ensureIndex(new BasicDBObject("name", 1), null, true);
+	    mockCollection.insert(testRepo1);
+	    mockCollection.ensureIndex(new BasicDBObject("name", 1), null, true);
+	    mockCollection.insert(testRepo2); */
+	    mockCollection.find();
+	    replayAll();
+	    //ConfigDatabase.addRepo(testRepo1);
+	    //ConfigDatabase.addRepo(testRepo2);
+		List<Repository> allRepos = ConfigDatabase.getRepos();
+		verifyAll();
 	}
 	
 	/**
 	 * Checks that when two repositories of the same name are inserted,
 	 * the second is not added and an exception is raised.
 	 */
-	@Test
+	//@Test
 	public void testOnlyOneRepoPerName() {
 	    JacksonDBCollection<Repository, String> repoCollection = 
                 JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);

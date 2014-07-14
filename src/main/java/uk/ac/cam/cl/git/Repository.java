@@ -1,9 +1,10 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-package uk.ac.cam.UROP.twentyfourteen;
+package uk.ac.cam.cl.git;
 
-import uk.ac.cam.UROP.twentyfourteen.database.*;
-import uk.ac.cam.UROP.twentyfourteen.public_interfaces.*;
+import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
+import uk.ac.cam.cl.git.database.*;
+import uk.ac.cam.cl.git.public_interfaces.*;
 
 import org.eclipse.jgit.treewalk.*;
 
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.*;
+
 import org.mongojack.Id;
 import org.mongojack.ObjectId;
 
@@ -28,7 +30,10 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     private final String parent;
     private final String parent_hidden;
     private final String repo;
-    private final String host;
+    private final String host =
+        ConfigurationLoader.getConfig().getRepoHost();
+    private final String user =
+        ConfigurationLoader.getConfig().getRepoUser();
     private final String owner;
     private final List<String> read_write;
     private final List<String> read_only;
@@ -68,8 +73,6 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         this.parent = parent;
         this.parent_hidden = parent_hidden;
         this.repo = name;
-        // TODO: 
-        host = "127.0.0.1";
         this.read_write = read_write;
         this.read_only = read_only;
         owner = crsid;
@@ -96,14 +99,32 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         if (directory.listFiles() == null || directory.listFiles().length != 0)
             throw new EmptyDirectoryExpectedException();
 
-        // TODO: Proper gitolite username
         handle = new GitDb(
-                 /* src            */ getRepoPathAsUser("gitolite")
+                 /* src            */ getRepoPath()
                 ,/* dest           */ directory 
                 ,/* bare           */ false
                 ,/* branch         */ "master"
                 ,/* remote         */ "origin"
-                ,/* privateKeyPath */ "~/.ssh/id_rsa" /* TODO: proper key path */);
+                ,/* privateKeyPath */ ConfigurationLoader.getConfig()
+                                            .getSshPrivateKeyFile());
+
+        if (workingCommit == null)
+            workingCommit = handle.getHeadSha();
+    }
+
+    /**
+     * Opens a local repository
+     * 
+     * @param repoName the name of the repository to open.
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
+     */
+    public void openLocal(String repoName) throws IOException
+    {
+        System.out.println("Opening : " + ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + repoName + ".git");
+        handle = new GitDb(ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + repoName + ".git");
 
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
@@ -173,12 +194,14 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     {
         List<String> rtn = new LinkedList<String>();
 
-        if (handle == null || workingCommit == null)
-            throw new NullPointerException("You did not clone git repository!");
+        if (handle == null)
+            throw new NullPointerException("Repository unset. Did you clone it?");
+        if (workingCommit == null)
+            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
 
         TreeWalk tw = handle.getTreeWalk(workingCommit);
         while (tw.next())
-            rtn.add(tw.getNameString());
+            rtn.add(tw.getPathString());
         return rtn;
     }
 
@@ -199,8 +222,10 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     {
         List<String> rtn = new LinkedList<String>();
 
-        if (handle == null || workingCommit == null)
-            throw new NullPointerException("You did not clone git repository!");
+        if (handle == null)
+            throw new NullPointerException("Repository unset. Did you clone it?");
+        if (workingCommit == null)
+            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
 
         TreeWalk tw = handle.getTreeWalk(workingCommit, filter);
         while (tw.next())
@@ -323,7 +348,12 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         return strb.toString();
     }
 
-    private String getRepoPathAsUser(String user)
+    /**
+     * Gets the repository path as an SSH URI.
+     *
+     * @return Repository path as an SSH URI.
+     */
+    public String getRepoPath()
     {
         return "ssh://" + user  + "@" + host + "/" + repo + ".git";
     }
