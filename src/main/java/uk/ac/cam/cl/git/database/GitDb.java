@@ -46,65 +46,65 @@ import com.jcraft.jsch.JSchException;
  */
 public class GitDb
 {
-	private static final Logger log = LoggerFactory.getLogger(GitDb.class);
+    private static final Logger log = LoggerFactory.getLogger(GitDb.class);
 
-	private final String privateKey;
-	private final String sshFetchUrl;
+    private final String privateKey;
+    private final String sshFetchUrl;
 
-	private Git gitHandle;
-
-	/**
-	 * Create a new instance of a GitDb object
-	 *
-	 * This will immediately try and connect to the Git folder specified to
-	 * check its validity.
-	 *
-	 * @param repoLocation
-	 *            - location of the local git repository
-	 * @throws IOException
-	 */
-	public GitDb(String repoLocation) throws IOException {
-		Validate.notBlank(repoLocation);
-
-		// unused for this constructor
-		this.privateKey = null;
-		this.sshFetchUrl = null;
-
-		gitHandle = Git.open(new File(repoLocation));
-	}
-
-	/**
-	 * Create a new instance of a GitDb object
-	 *
-	 * This will immediately try and connect to the Git folder specified to
-	 * check its validity.
-	 *
-	 * This constructor is only necessary if we want to access a private
-	 * repository.
-	 *
-	 * @param repoLocation
-	 *            - location of the local git repository
-	 * @param sshFetchUrl
-	 *            - location of the remote git repository (ssh url used for
-	 *            fetching only)
-	 * @param privateKeyFileLocation
-	 *            - location of the local private key file used to access the
-	 *            ssh FetchUrl
-	 * @throws IOException
-	 */
-	@Inject
-	public GitDb(String repoLocation, String sshFetchUrl,
-			String privateKeyFileLocation) throws IOException {
-		Validate.notBlank(repoLocation);
-
-		this.sshFetchUrl = sshFetchUrl;
-		this.privateKey = privateKeyFileLocation;
-
-		gitHandle = Git.open(new File(repoLocation));
-	}
+    private Git gitHandle;
 
     /**
-     * Clone a repository and return a GitDb object.
+     * Create a new instance of a GitDb object
+     *
+     * This will immediately try and connect to the Git folder specified to
+     * check its validity.
+     *
+     * @param repoLocation
+     *            - location of the local git repository
+     * @throws IOException
+     */
+    public GitDb(String repoLocation) throws IOException {
+        Validate.notBlank(repoLocation);
+
+        // unused for this constructor
+        this.privateKey = null;
+        this.sshFetchUrl = null;
+
+        gitHandle = Git.open(new File(repoLocation));
+    }
+
+    /**
+     * Create a new instance of a GitDb object
+     *
+     * This will immediately try and connect to the Git folder specified to
+     * check its validity.
+     *
+     * This constructor is only necessary if we want to access a private
+     * repository.
+     *
+     * @param repoLocation
+     *            - location of the local git repository
+     * @param sshFetchUrl
+     *            - location of the remote git repository (ssh url used for
+     *            fetching only)
+     * @param privateKeyFileLocation
+     *            - location of the local private key file used to access the
+     *            ssh FetchUrl
+     * @throws IOException
+     */
+    @Inject
+    public GitDb(String repoLocation, String sshFetchUrl,
+            String privateKeyFileLocation) throws IOException {
+        Validate.notBlank(repoLocation);
+
+        this.sshFetchUrl = sshFetchUrl;
+        this.privateKey = privateKeyFileLocation;
+
+        gitHandle = Git.open(new File(repoLocation));
+    }
+
+    /**
+     * Clone a repository and create a GitDb object.
      * <p>
      * Note, you may wish to delete the directory after you have finished with it.
      * This is entirely your responsibility!
@@ -128,22 +128,22 @@ public class GitDb
                     session.setConfig("StrictHostKeyChecking", "no");
 				}
 
-				@Override
-				protected JSch getJSch(final OpenSshConfig.Host hc,
-						org.eclipse.jgit.util.FS fs) throws JSchException {
-					JSch jsch = super.getJSch(hc, fs);
-					jsch.removeAllIdentity();
+                @Override
+                protected JSch getJSch(final OpenSshConfig.Host hc,
+                        org.eclipse.jgit.util.FS fs) throws JSchException {
+                    JSch jsch = super.getJSch(hc, fs);
+                    jsch.removeAllIdentity();
 
-					if (null != privateKey) {
-						jsch.addIdentity(privateKey);
-					}
+                    if (null != privateKey) {
+                        jsch.addIdentity(privateKey);
+                    }
 
-					return jsch;
-				}
-			};
+                    return jsch;
+                }
+            };
 
-			if (src != null)
-				SshSessionFactory.setInstance(factory);
+            if (src != null)
+                SshSessionFactory.setInstance(factory);
 
             this.gitHandle =  Git.cloneRepository()
                 .setURI(src)
@@ -154,33 +154,33 @@ public class GitDb
                 .call();
             this.gitHandle = Git.open(dest);
 
-		} catch (GitAPIException e) {
-			log.error(
-					"Error while trying to clone the repository.",
-					e);
+        } catch (GitAPIException e) {
+            log.error(
+                    "Error while trying to clone the repository.",
+                    e);
             throw new RuntimeException(
-					"Error while trying to clone the repository."+
-					e);
-		}
+                    "Error while trying to clone the repository."+
+                    e);
+        }
     }
 
-	/**
-	 * Create a new instance of a GitDb object.
-	 *
-	 * This is meant to be used for unit testing, allowing injection of a mocked
-	 * Git object.
-	 *
-	 * @param gitHandle
-	 *            - The (probably mocked) Git object to use.
-	 */
-	public GitDb(Git gitHandle) {
-		Validate.notNull(gitHandle);
+    /**
+     * Create a new instance of a GitDb object.
+     *
+     * This is meant to be used for unit testing, allowing injection of a mocked
+     * Git object.
+     *
+     * @param gitHandle
+     *            - The (probably mocked) Git object to use.
+     */
+    public GitDb(Git gitHandle) {
+        Validate.notNull(gitHandle);
 
-		this.privateKey = null;
-		this.sshFetchUrl = null;
+        this.privateKey = null;
+        this.sshFetchUrl = null;
 
-		this.gitHandle = gitHandle;
-	}
+        this.gitHandle = gitHandle;
+    }
 
 	/**
 	 * getFileByCommitSHA
@@ -334,7 +334,7 @@ public class GitDb
 	public boolean verifyCommitExists(String sha) {
 		if (null == sha) {
 			log.warn("Null version provided. Unable to verify commit exists.");
-			return false;
+            throw new NullPointerException();
 		}
 
 		try {
@@ -561,5 +561,4 @@ public class GitDb
 				+ " Searching for: " + filename + " found: " + path);
 		return objectId;
 	}
-
 }
