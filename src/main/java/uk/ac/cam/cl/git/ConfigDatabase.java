@@ -86,11 +86,11 @@ public class ConfigDatabase {
     }
 
     /**
-     * Generates config file for gitolite and writes it to ~/UROP.conf.
+     * Generates config file for gitolite and writes it to gitoliteGeneratedConfigFile (see ConfigurationLoader).
      * <p>
-     * Accesses mongoDB to find repositories and assumes the
-     * Repository.toString() returns the appropriate representation. The
-     * main conf file should have an include test.conf statement so that
+     * Accesses the database to find repositories and assumes the
+     * Repository.toString() method returns the appropriate representation. The
+     * main conf file should have an include statement so that
      * when the hook is called, the updates are made. The hook is
      * called at the end of this method.
      *
@@ -103,16 +103,12 @@ public class ConfigDatabase {
             output.append(r.toString() + "\n");
 
         /* Write out file */
-        try {
-            File configFile = new File(ConfigurationLoader.getConfig()
-                    .getGitoliteGeneratedConfigFile());
-            BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
-            buffWriter.write(output.toString());
-            buffWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        File configFile = new File(ConfigurationLoader.getConfig()
+                .getGitoliteGeneratedConfigFile());
+        BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
+        buffWriter.write(output.toString());
+        buffWriter.close();
+        runGitoliteUpdate();
     }
 
     /**
@@ -133,25 +129,22 @@ public class ConfigDatabase {
 
     /**
      * Takes public key and username as strings, writes the key to
-     * keydir/UROP/username.pub, and calls the hook.
+     * getGitoliteSSHKeyLocation (see ConfigurationLoader), and calls the hook.
      *
      * @param key The SSH key to be added
      * @param username The name of the user to be added
+     * @throws IOException 
      */
-    public static void addSSHKey(String key, String username) {
-        try {
-            File keyFile = new File(ConfigurationLoader.getConfig()
-                    .getGitoliteSSHKeyLocation() + username + ".pub");
-            if (!keyFile.exists()) {
-                keyFile.createNewFile();
-            }
-            BufferedWriter buffWriter = new BufferedWriter(new FileWriter(keyFile));
-            buffWriter.write(key);
-            buffWriter.close();
-            runGitoliteUpdate();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void addSSHKey(String key, String username) throws IOException {
+        File keyFile = new File(ConfigurationLoader.getConfig()
+                .getGitoliteSSHKeyLocation() + username + ".pub");
+        if (!keyFile.exists()) {
+            keyFile.createNewFile();
         }
+        BufferedWriter buffWriter = new BufferedWriter(new FileWriter(keyFile));
+        buffWriter.write(key);
+        buffWriter.close();
+        runGitoliteUpdate();
     }
 
     /**
