@@ -27,12 +27,12 @@ public class GitService implements WebInterface {
     public Response listFiles(String repoName) throws IOException
     {
         if (repoName == null)
-            return Response.status(/*TODO:*/400)
+            return Response.status(400)
                 .entity("No repository given.").build();
 
         Repository repo = ConfigDatabase.getRepoByName(repoName);
         if (repo == null)
-            return Response.status(/*TODO:*/500)
+            return Response.status(404)
                 .entity("Repository not found in database! "
                         + "It may exist on disk though.").build();
 
@@ -44,7 +44,7 @@ public class GitService implements WebInterface {
         {
             /* Stale repository entry, remove from database */
             ConfigDatabase.delRepoByName(repoName);
-            return Response.status(/*TODO:*/500)
+            return Response.status(500)
                 .entity("Repository not found on disk! "
                         + "Removed from database.").build();
         }
@@ -63,12 +63,12 @@ public class GitService implements WebInterface {
                           , String repoName) throws IOException
     {
         if (repoName == null)
-            return Response.status(/*TODO:*/400)
+            return Response.status(400)
                 .entity("No repository given.").build();
 
         Repository repo = ConfigDatabase.getRepoByName(repoName);
         if (repo == null)
-            return Response.status(/*TODO:*/500)
+            return Response.status(404)
                 .entity("Repository not found in database! "
                         + "It may exist on disk though.").build();
 
@@ -80,7 +80,7 @@ public class GitService implements WebInterface {
         {
             /* Stale repository entry, remove from database */
             ConfigDatabase.delRepoByName(repoName);
-            return Response.status(/*TODO:*/500)
+            return Response.status(500)
                 .entity("Repository not found on disk! "
                         + "Removed from database.").build();
         }
