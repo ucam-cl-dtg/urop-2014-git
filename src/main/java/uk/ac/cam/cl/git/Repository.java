@@ -393,6 +393,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      *
      * @return Repository path as an SSH URI.
      */
+    @JsonIgnore
     public String getRepoPath()
     {
         return "ssh://" + user  + "@" + host + "/" + repo + ".git";
