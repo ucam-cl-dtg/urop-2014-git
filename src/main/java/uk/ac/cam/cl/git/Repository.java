@@ -14,6 +14,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.io.File;
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+
+import javassist.bytecode.ByteArray;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -261,7 +264,12 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
              */
             return null;
 
-        return handle.getFileByCommitSHA(workingCommit, filePath).toString();
+        ByteArrayOutputStream rtn = handle.getFileByCommitSHA(workingCommit, filePath);
+
+        if (rtn == null)
+            return null;
+
+        return rtn.toString();
     }
 
     /**
@@ -270,6 +278,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      *
      * @return Map of test files and a list of the test's dependencies
      */
+    @JsonIgnore
     public Map<String, Collection<String>> getTests()
     {
         /* TODO: implement

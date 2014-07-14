@@ -7,19 +7,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-@Path("/")
-public class GitService {
+import uk.ac.cam.cl.git.public_interfaces.WebInterface;
+
+public class GitService implements WebInterface {
    
-    @GET
-    @Path("/git")
-    @Produces("application/json")
+    @Override
     public Response listRepositories() {
         List<Repository> repos = ConfigDatabase.getRepos();
         List<String> toReturn = new LinkedList<String>();
@@ -29,10 +23,8 @@ public class GitService {
         return Response.status(200).entity(toReturn).build();
     }
 
-    @GET
-    @Path("/git/{repoName}")
-    @Produces("application/json")
-    public Response listFiles(@PathParam("repoName") String repoName) throws IOException
+    @Override
+    public Response listFiles(String repoName) throws IOException
     {
         if (repoName == null)
             return Response.status(/*TODO:*/400)
@@ -66,10 +58,9 @@ public class GitService {
         return Response.status(200).entity(rtn).build();
     }
 
-    @GET
-    @Path("/git/{repoName}/{fileName:.*}")
-    public Response getFile(@PathParam("fileName") String fileName
-                          , @PathParam("repoName") String repoName) throws IOException
+    @Override
+    public Response getFile(String fileName
+                          , String repoName) throws IOException
     {
         if (repoName == null)
             return Response.status(/*TODO:*/400)
@@ -95,11 +86,12 @@ public class GitService {
         }
 
         String output = repo.getFile(fileName);
+        if (output == null)
+            return Response.status(404).build();
         return Response.status(200).entity(output).build();
     }
     
-    @POST
-    @Path("/fork")
+    @Override
     public Response getForkURL()
     {
         // TODO implement
