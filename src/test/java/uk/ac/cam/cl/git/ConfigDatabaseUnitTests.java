@@ -30,7 +30,7 @@ import uk.ac.cam.cl.git.database.Mongo;
  * @author ird28
  *
  */
-public class ConfigDatabaseTest extends EasyMockSupport {
+public class ConfigDatabaseUnitTests extends EasyMockSupport {
 	
 	private List<String> readOnlys;
 	private List<String> readAndWrites;
@@ -140,32 +140,6 @@ public class ConfigDatabaseTest extends EasyMockSupport {
         EasyMock.verify(mockCollection);
     }
 	
-	/**
-	 * Checks that when two repositories of the same name are inserted,
-	 * the second is not added and an exception is raised.
-	 */
-	//@Test
-	public void testOnlyOneRepoPerName() {
-	    JacksonDBCollection<Repository, String> repoCollection = 
-                JacksonDBCollection.wrap(Mongo.getDB().getCollection("repos"), Repository.class, String.class);
-        repoCollection.remove(new BasicDBObject("name", "test-name"));
-        Repository testRepo = new Repository("test-name",
-                "repository-owner", readAndWrites, readOnlys, 
-                "example-parent-repo", "hidden-eg-parent");
-        ConfigDatabase.addRepo(testRepo);
-        DBCursor<Repository> allRepos = repoCollection.find();
-        int repoNumber = allRepos.size();
-        Repository testRepo2 = new Repository("test-name",
-                "other-owner", readAndWrites, readAndWrites, 
-                "other-parent-repo", "other-hidden-parent");
-        try {
-            ConfigDatabase.addRepo(testRepo2);
-            fail("An exception should have been raised because a repo with this name already exists");
-        } catch (DuplicateKeyException dke) {
-            // This should happen - fail otherwise
-        }
-        allRepos = repoCollection.find();
-        assertTrue(allRepos.size() == repoNumber); // The number of repositories should not have changed        
-	}
+	
 
 }
