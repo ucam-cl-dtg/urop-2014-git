@@ -197,7 +197,11 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         if (handle == null)
             throw new NullPointerException("Repository unset. Did you clone it?");
         if (workingCommit == null)
-            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
+            /* Only way above is true if we have an empty repository, as
+             * everything that sets handle also sets workingCommit (to
+             * null, if we have an empty repository).
+             */
+            return null;
 
         TreeWalk tw = handle.getTreeWalk(workingCommit);
         while (tw.next())
@@ -225,12 +229,39 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         if (handle == null)
             throw new NullPointerException("Repository unset. Did you clone it?");
         if (workingCommit == null)
-            throw new NullPointerException("Commit unset. Perhaps an empty repository?");
+            /* Only way above is true if we have an empty repository, as
+             * everything that sets handle also sets workingCommit (to
+             * null, if we have an empty repository).
+             */
+            return null;
 
         TreeWalk tw = handle.getTreeWalk(workingCommit, filter);
         while (tw.next())
             rtn.add(tw.getPathString());
         return rtn;
+    }
+
+    /**
+     * Outputs the content of the file.
+     *
+     * @param filePath Full path of the file
+     * @return Contents of the file asked for or null if file is not
+     * found.
+     */
+    @JsonIgnore
+    public String getFile(String filePath) throws IOException
+    {
+        if (handle == null)
+            throw new NullPointerException("Repository unset. Did you clone it?");
+
+        if (workingCommit == null)
+            /* Only way above is true if we have an empty repository, as
+             * everything that sets handle also sets workingCommit (to
+             * null, if we have an empty repository).
+             */
+            return null;
+
+        return handle.getFileByCommitSHA(workingCommit, filePath).toString();
     }
 
     /**
