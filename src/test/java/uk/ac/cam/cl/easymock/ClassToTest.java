@@ -17,8 +17,8 @@ public class ClassToTest {
         this.m = m;
     }
     
-    public void exampleMethod() {
-        m.inc();
+    public int exampleMethod() {
+        return m.inc();
     }
 
 }

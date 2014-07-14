@@ -18,7 +18,12 @@ public class ToMock {
     }
     
     public int inc() {
+        assert false;
         return someState++;
+    }
+    
+    public String getString() {
+        return "This is the string that should be returned";
     }
 
 }

@@ -32,9 +32,10 @@ public class EasyMockTest extends EasyMockSupport {
 
     @Test
     public void test() {
-        EasyMock.expect(mocked.inc()).andReturn(4);
+        EasyMock.expect(mocked.inc()).andReturn(7);
         EasyMock.replay(mocked);
-        testSubj.exampleMethod();
+        assertEquals(7, testSubj.exampleMethod());
+        EasyMock.verify(mocked);
     }
 
 }
