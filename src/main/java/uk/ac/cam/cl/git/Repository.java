@@ -58,8 +58,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * the repository. This does not need to include the owner. TODO:
      * testing and frontend team servers
      * @param read_only Like read_write without the write.
-     * @param parent The parent repository which at the moment does
-     * nothing. TODO
+     * @param parent The parent repository, which is the one this was
+     * forked off.
      * @param parent_hidden The hidden parent repository which at the
      * moment does nothing. TODO
      */
@@ -94,8 +94,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * the repository. This does not need to include the owner. TODO:
      * testing and frontend team servers
      * @param read_only Like read_write without the write.
-     * @param parent The parent repository which at the moment does
-     * nothing. TODO
+     * @param parent The parent repository, which is the one this was
+     * forked off
      * @param parent_hidden The hidden parent repository which at the
      * moment does nothing. TODO
      *
