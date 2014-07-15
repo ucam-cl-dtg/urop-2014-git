@@ -42,14 +42,14 @@ public class ConfigurationLoader
         {
             /* Exception thrown in getter */
             /* TODO: log */
-            e.printStackTrace();
-            System.err.println("Error in loading configuration file, using defaults.\n"
+            System.out.println("Error in loading configuration file, using defaults.\n"
                     + e.getMessage());
         }
     }
 
     public static ConfigurationFile getConfig()
     {
+        /* lastModified returns 0 if file not found */
         if (file.lastModified() > mTime)
         {
             try

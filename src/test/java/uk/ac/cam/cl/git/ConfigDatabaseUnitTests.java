@@ -6,25 +6,16 @@
 package uk.ac.cam.cl.git;
 
 import static org.junit.Assert.*;
-import static org.easymock.EasyMock.*;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.easymock.*;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DuplicateKeyException;
-
-import uk.ac.cam.cl.easymock.ToMock;
-import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author ird28

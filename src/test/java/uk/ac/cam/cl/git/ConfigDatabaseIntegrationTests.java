@@ -23,7 +23,6 @@ import uk.ac.cam.cl.git.database.Mongo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
-import com.mongodb.MongoException;
 
 /**
  * @author ird28
