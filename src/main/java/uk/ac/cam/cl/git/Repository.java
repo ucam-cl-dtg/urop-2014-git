@@ -370,6 +370,7 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         if (read_write.size() > 0)
         {
             strb.append("     RW = ");
+            strb.append(owner);
             /* Usernames or groups */
             for ( String name : read_write)
                 strb.append(name + " ");
