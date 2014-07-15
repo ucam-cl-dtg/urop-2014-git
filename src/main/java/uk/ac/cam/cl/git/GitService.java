@@ -9,8 +9,7 @@ import java.util.LinkedList;
 
 import javax.ws.rs.core.Response;
 
-import uk.ac.cam.cl.git.public_interfaces.ForkRequestInterface;
-import uk.ac.cam.cl.git.public_interfaces.WebInterface;
+import uk.ac.cam.cl.git.public_interfaces.*;
 
 public class GitService implements WebInterface {
    
@@ -102,6 +101,18 @@ public class GitService implements WebInterface {
                                       , null /* RO */
                                       , details.getUpstream()
                                       , details.getOverlay());
+        ConfigDatabase.addRepo(rtn);
+        return Response.status(200).entity(rtn.getRepoPath()).build();
+    }
+
+    /* TODO: Remote exception */
+    @Override
+    public Response addRepository(AddRequestInterface details) throws IOException
+    {
+        Repository rtn = new Repository(details.getRepoName()
+                                      , details.getRepoOwner()
+                                      , null
+                                      , null);
         ConfigDatabase.addRepo(rtn);
         return Response.status(200).entity(rtn.getRepoPath()).build();
     }

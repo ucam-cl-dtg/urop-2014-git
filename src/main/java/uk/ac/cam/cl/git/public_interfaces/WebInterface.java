@@ -80,5 +80,5 @@ public interface WebInterface {
      */
     @POST
     @Path("/add")
-    public Response addRepository(AddRequestInterface details);
+    public Response addRepository(AddRequestInterface details) throws IOException;
 }
