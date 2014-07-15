@@ -93,11 +93,9 @@ public class GitService implements WebInterface {
     }
     
     @Override
-    public Response getForkURL(ForkRequestInterface details)
-    {   /* TODO: Fork
-         *       - clone upstream
-         *       - regenerate gitolite config
-         */
+    public Response getForkURL(ForkRequestInterface details) throws IOException
+    {   /* TODO: Test */
+        /* This forks the upstream repository */
         Repository rtn = new Repository(details.getRepoName()
                                       , details.getRepoOwner()
                                       , null /* RW */
