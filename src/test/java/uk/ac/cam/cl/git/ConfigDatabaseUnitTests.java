@@ -10,6 +10,8 @@ import static org.junit.Assert.*;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.io.IOException;
+
 import org.easymock.*;
 import org.junit.Test;
 import org.mongojack.JacksonDBCollection;
@@ -48,7 +50,7 @@ public class ConfigDatabaseUnitTests extends EasyMockSupport {
 	 * Checks that repositories can be added to the database.
 	 */
 	@Test
-	public void testAddRepo() {
+	public void testAddRepo() throws IOException {
 	    
 	    /* The below method calls to the database are expected */
 	    
@@ -100,7 +102,7 @@ public class ConfigDatabaseUnitTests extends EasyMockSupport {
 	 * Checks that the correct method is called when updating a repository
 	 */
 	@Test
-    public void testUpdateRepo() {
+    public void testUpdateRepo() throws IOException {
         
         /* The below method calls to the database are expected */
         

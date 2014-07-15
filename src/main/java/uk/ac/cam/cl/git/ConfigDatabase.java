@@ -40,6 +40,7 @@ public class ConfigDatabase {
      * Replaces the mongo collection with the argument.
      * @param reposCollection The collection to be used.
      */
+    /* TODO: If it is for unit testing, do we want it to be public? */
     public static void setReposCollection(JacksonDBCollection<Repository, String> rCollection) {
         reposCollection = rCollection;
     }
@@ -119,9 +120,10 @@ public class ConfigDatabase {
      * @throws DuplicateKeyException A repository with this name already
      * exists.
      */
-    public static void addRepo(Repository repo) throws DuplicateKeyException {
+    public static void addRepo(Repository repo) throws DuplicateKeyException, IOException {
         reposCollection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
         reposCollection.insert(repo);
+        runGitoliteUpdate();
     }
 
     /**
@@ -155,9 +157,10 @@ public class ConfigDatabase {
      * @throws MongoException If the update operation fails (for some
      * unknown reason).
      */
-    public static void updateRepo(Repository repo) throws MongoException
+    public static void updateRepo(Repository repo) throws MongoException, IOException
     {
         reposCollection.updateById(repo.get_id(), repo);
+        runGitoliteUpdate();
     }
 
     private static void runGitoliteUpdate() throws IOException
