@@ -54,14 +54,15 @@ public class RepositoryTest
     public void checkStringRepresentation() {
         String shouldBeTestRepo1 = 
                 "repo test-repo-name1" + "\n" +
-                "     RW = adminUser1 adminUser2 " + "\n" +
-                "     R  = readonlyUser1 readonlyUser2 readonlyUser3 " + "\n";
+                "     RW = repository-owner adminUser1 adminUser2" + "\n" +
+                "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n";
         String shouldBeTestRepo2 =
                 "repo test-repo-name2" + "\n" +
-                "     RW = adminUser1 adminUser2 " + "\n";
+                "     RW = repository-owner adminUser1 adminUser2" + "\n";
         String shouldBeTestRepo3 = 
                 "repo test-repo-name3" + "\n" +
-                "     R  = readonlyUser1 readonlyUser2 readonlyUser3 " + "\n";
+                "     RW = other-repository-owner" + "\n" +
+                "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n";
         assertEquals(shouldBeTestRepo1, testRepo1.toString());
         assertEquals(shouldBeTestRepo2, testRepo2.toString());
         assertEquals(shouldBeTestRepo3, testRepo3.toString());
@@ -72,6 +73,8 @@ public class RepositoryTest
      * Clones the testing repository and checks the README.md and
      * Test.java file, then deletes the repository.
      */
+    /* TODO: Make unit test (use mocking instead of actually creating
+     * directories
 	@Test
 	public void testing_repository()
 	{
@@ -143,4 +146,5 @@ public class RepositoryTest
         }
         
     }
+    */
 }

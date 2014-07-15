@@ -5,6 +5,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>UROP_GIT</name>
     <description>Git integration for UROP 2014 at Cambridge CL, DTG.</description>
+    <packaging>war</packaging>
 
     <repositories>
         <repository>
@@ -74,6 +75,12 @@
             <artifactId>resteasy-jaxrs</artifactId>
             <version>3.0.4.Final</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <!-- Make SSH wagon available.-->
@@ -84,5 +91,21 @@
                 <version>2.6</version>
             </extension>
         </extensions>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+            </plugin>
+        </plugins>
     </build>
 </project>

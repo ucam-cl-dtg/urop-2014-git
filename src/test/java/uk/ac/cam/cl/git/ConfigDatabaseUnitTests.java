@@ -18,8 +18,8 @@ import org.mongojack.WriteResult;
 import com.mongodb.BasicDBObject;
 
 /**
- * @author ird28
- *
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ * @version 0.1
  */
 public class ConfigDatabaseUnitTests extends EasyMockSupport {
 	
