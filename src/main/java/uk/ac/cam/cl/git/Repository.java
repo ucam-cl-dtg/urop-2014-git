@@ -63,12 +63,12 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * @param parent_hidden The hidden parent repository which at the
      * moment does nothing. TODO
      */
-    @JsonCreator
+    @JsonIgnore
     public Repository
-        ( @JsonProperty("name")          String name
-        , @JsonProperty("owner")         String crsid
-        , @JsonProperty("rw")            List<String> read_write
-        , @JsonProperty("r")             List<String> read_only
+        ( String name
+        , String crsid
+        , List<String> read_write
+        , List<String> read_only
         )
     {
         this.parent = null;
@@ -102,14 +102,14 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * @throws IOException Unrecoverable error in cloning the parent
      * repository.
      */
-    @JsonCreator
+    @JsonIgnore
     public Repository
-        ( @JsonProperty("name")          String name
-        , @JsonProperty("owner")         String crsid
-        , @JsonProperty("rw")            List<String> read_write
-        , @JsonProperty("r")             List<String> read_only
-        , @JsonProperty("parent")        String parent
-        , @JsonProperty("parent_hidden") String parent_hidden
+        ( String name
+        , String crsid
+        , List<String> read_write
+        , List<String> read_only
+        , String parent
+        , String parent_hidden
         ) throws IOException
     {
         this.parent = parent;
@@ -136,6 +136,42 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
                     ,/* remote         */ "origin"
                     ,/* privateKeyPath */ null);
         }
+    }
+
+    /**
+     * Creates a Repository object, for use with MongoJack.
+     *
+     * @param name The name of the repository. This must identify it
+     * uniquely.
+     * @param crsid The CRSID of the repository owner. The owner
+     * automatically has read/write (but not force push) permissions, in
+     * fact we do not allow force push permissions at all.
+     * @param read_write A list of people or groups who can read and write to
+     * the repository. This does not need to include the owner. TODO:
+     * testing and frontend team servers
+     * @param read_only Like read_write without the write.
+     * @param parent The parent repository, which is the one this was
+     * forked off
+     * @param parent_hidden The hidden parent repository which at the
+     * moment does nothing. TODO
+     */
+    @JsonCreator
+    Repository
+        ( @JsonProperty("name")          String name
+        , @JsonProperty("owner")         String crsid
+        , @JsonProperty("rw")            List<String> read_write
+        , @JsonProperty("r")             List<String> read_only
+        , @JsonProperty("parent")        String parent
+        , @JsonProperty("parent_hidden") String parent_hidden
+        , @JsonProperty("_id")           String id
+        )
+    {
+        this.parent = parent;
+        this.parent_hidden = parent_hidden;
+        this.repo = name;
+        this.read_write = read_write;
+        this.read_only = read_only;
+        owner = crsid;
     }
 
     /**
