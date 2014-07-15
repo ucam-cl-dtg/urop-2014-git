@@ -27,7 +27,8 @@ public class GuiceModule extends AbstractModule {
     
     @Override
     protected void configure() {
-        //bind(DB.class).to(DB.class);
+        requestStaticInjection(GuiceExperiment.class);
+        //bind(DB.class).toInstance(Mongo.getDB());
         bind(Writer.class).to(BufferedWriter.class);
     }
     
@@ -36,6 +37,7 @@ public class GuiceModule extends AbstractModule {
     DB provideDB() {
         return Mongo.getDB();
     }
+    
     
     @Provides
     BufferedWriter provideWriter() throws IOException {

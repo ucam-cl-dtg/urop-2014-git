@@ -55,8 +55,9 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * automatically has read/write (but not force push) permissions, in
      * fact we do not allow force push permissions at all.
      * @param read_write A list of people or groups who can read and write to
-     * the repository. This does not need to include the owner. TODO:
-     * testing and frontend team servers
+     * the repository. This does not need to include the owner (toString method
+     * automatically includes owner as RW).
+     * TODO: testing and frontend team servers
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off.
@@ -91,8 +92,9 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * automatically has read/write (but not force push) permissions, in
      * fact we do not allow force push permissions at all.
      * @param read_write A list of people or groups who can read and write to
-     * the repository. This does not need to include the owner. TODO:
-     * testing and frontend team servers
+     * the repository. This does not need to include the owner (toString method
+     * automatically includes owner as RW).
+     * TODO: testing and frontend team servers
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off
@@ -147,8 +149,9 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
      * automatically has read/write (but not force push) permissions, in
      * fact we do not allow force push permissions at all.
      * @param read_write A list of people or groups who can read and write to
-     * the repository. This does not need to include the owner. TODO:
-     * testing and frontend team servers
+     * the repository. This does not need to include the owner (toString method
+     * automatically includes owner as RW).
+     * TODO: testing and frontend team servers
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off

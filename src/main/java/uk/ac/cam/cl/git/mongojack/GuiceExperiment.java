@@ -22,16 +22,22 @@ import com.mongodb.DBObject;
  */
 public class GuiceExperiment {
     
-    private final DB db;
-    private final Writer writer;
+    @Inject private static DB db;
+    @Inject private static Writer writer;
     
+    /*
     @Inject
-    public GuiceExperiment(DB db, Writer writer) {
-        this.db = db;
-        this.writer = writer;
+    public static void setDB(DB sdb) {
+        db = sdb;
     }
     
-    public void readThenProcessThenWrite() throws IOException {
+    @Inject
+    public static void setWriter(Writer swriter) {
+        writer = swriter;
+    }
+    */
+    
+    public static void readThenProcessThenWrite() throws IOException {
         DBCollection collection = db.getCollection("guicetest");
         DBCursor results = collection.find();
         while (results.hasNext()) {
@@ -45,9 +51,9 @@ public class GuiceExperiment {
     }
     
     public static void main(String[] args) throws IOException {
-        Injector injector = Guice.createInjector(new GuiceModule());
-        GuiceExperiment gex = injector.getInstance(GuiceExperiment.class);
-        gex.readThenProcessThenWrite();
+        Guice.createInjector(new GuiceModule());
+        //GuiceExperiment gex = injector.getInstance(GuiceExperiment.class);
+        readThenProcessThenWrite();
     }
     
 

@@ -20,19 +20,25 @@ import org.junit.Test;
 
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.database.Mongo;
+import uk.ac.cam.cl.git.mongojack.GuiceModule;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 
 /**
- * @author ird28
- *
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
 public class ConfigDatabaseIntegrationTests {
 
     private static List<String> readOnlys = new LinkedList<String>();
     private static List<String> readAndWrites = new LinkedList<String>();
     private static List<String> emptyList = new LinkedList<String>();
+    
+    {
+        Guice.createInjector(new DatabaseModule());
+    }
     
     static {
         readOnlys.add("readonlyUser1");
@@ -41,6 +47,7 @@ public class ConfigDatabaseIntegrationTests {
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
     }
+   
     
     private static Repository testRepo1 = new Repository("test-repo-name1",
             "repository-owner", readAndWrites, readOnlys);
@@ -61,7 +68,7 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that the gitolite config file is written as expected and the
      * repositories are found in the expected place.
      */
-    //@Test
+    @Test
     public void testGenerateConfigFile() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
@@ -78,14 +85,14 @@ public class ConfigDatabaseIntegrationTests {
             assertEquals(br.readLine(),
                     "repo test-repo-name1");
             assertEquals(br.readLine(),
-                    "     RW = adminUser1 adminUser2 ");
+                    "     RW = repository-owner adminUser1 adminUser2");
             assertEquals(br.readLine(),
-                    "     R  = readonlyUser1 readonlyUser2 readonlyUser3 ");
+                    "     R  = readonlyUser1 readonlyUser2 readonlyUser3");
             assertEquals(br.readLine(), "");
             assertEquals(br.readLine(),
                     "repo test-repo-name2");
             assertEquals(br.readLine(),
-                    "     RW = adminUser1 adminUser2 ");
+                    "     RW = other-owner adminUser1 adminUser2");
             assertEquals(br.readLine(), "");
             assertNull(br.readLine()); // end of file reached
             br.close();
@@ -120,7 +127,7 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that adding repos and getting them by name works.
      * Assumes that deleting repos works, and deleting a non-existent repo is fine.
      */
-    //@Test
+    @Test
     public void testStoringRepos() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
@@ -137,7 +144,7 @@ public class ConfigDatabaseIntegrationTests {
      * However, is does NOT check that the repo has actually been updated. (TODO?)
      * Assumes adding a repo is fine.
      */
-    //@Test
+    @Test
     public void testUpdateRepo() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.updateRepo(testRepo1);
@@ -148,7 +155,7 @@ public class ConfigDatabaseIntegrationTests {
      * from the list of repositories.
      * Assumes adding and deleting repos works.
      */
-    //@Test
+    @Test
     public void testGetAndDeleteRepos() throws IOException {
         assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
         
@@ -159,7 +166,7 @@ public class ConfigDatabaseIntegrationTests {
         assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
     }
     
-    //@Test
+    @Test
     public void testListRepos() throws IOException {
         assertEquals(0, ConfigDatabase.getRepos().size());
         ConfigDatabase.addRepo(testRepo1);
