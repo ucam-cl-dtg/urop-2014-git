@@ -13,15 +13,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public interface ForkRequestInterface
 {
+    /**
+     * @return The name the owner would like to call the forked repository.
+     */
     @JsonProperty("repoName")
     public String getRepoName();
 
+    /**
+     * @return The CRSID of the user making the fork request.
+     */
     @JsonProperty("repoOwner")
     public String getRepoOwner();
 
+    /**
+     * @return The name of the repository to be forked.
+     */
     @JsonProperty("upstream")
     public String getUpstream();
 
+    /**
+     * @return The name of the repository to be overlaid on submission.
+     */
     @JsonProperty("overlay")
     public String getOverlay();
 }
