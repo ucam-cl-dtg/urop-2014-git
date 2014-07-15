@@ -65,7 +65,7 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that the gitolite config file is written as expected and the
      * repositories are found in the expected place.
      */
-    @Test
+    //@Test
     public void testGenerateConfigFile() {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
@@ -124,7 +124,7 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that adding repos and getting them by name works.
      * Assumes that deleting repos works, and deleting a non-existent repo is fine.
      */
-    @Test
+    //@Test
     public void testStoringRepos() {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
@@ -141,7 +141,7 @@ public class ConfigDatabaseIntegrationTests {
      * However, is does NOT check that the repo has actually been updated. (TODO?)
      * Assumes adding a repo is fine.
      */
-    @Test
+    //@Test
     public void testUpdateRepo() {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.updateRepo(testRepo1);
@@ -152,7 +152,7 @@ public class ConfigDatabaseIntegrationTests {
      * from the list of repositories.
      * Assumes adding and deleting repos works.
      */
-    @Test
+    //@Test
     public void testGetAndDeleteRepos() {
         assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
         
@@ -163,7 +163,7 @@ public class ConfigDatabaseIntegrationTests {
         assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
     }
     
-    @Test
+    //@Test
     public void testListRepos() {
         assertEquals(0, ConfigDatabase.getRepos().size());
         ConfigDatabase.addRepo(testRepo1);
