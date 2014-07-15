@@ -43,14 +43,11 @@ public class ConfigDatabaseIntegrationTests {
     }
     
     private static Repository testRepo1 = new Repository("test-repo-name1",
-            "repository-owner", readAndWrites, readOnlys, 
-            "test-parent1", "hidden-eg-parent");
+            "repository-owner", readAndWrites, readOnlys);
     private static Repository testRepo1a = new Repository("test-repo-name1",
-            "other-owner", emptyList, readOnlys, 
-            "test-parent2", "other-hidden");
+            "other-owner", emptyList, readOnlys);
     private static Repository testRepo2 = new Repository("test-repo-name2",
-            "other-owner", readAndWrites, emptyList, 
-            "test-parent2", "hidden-eg-parent");
+            "other-owner", readAndWrites, emptyList);
 
     /**
      * Before each test, empty the database.
@@ -65,7 +62,7 @@ public class ConfigDatabaseIntegrationTests {
      * repositories are found in the expected place.
      */
     //@Test
-    public void testGenerateConfigFile() {
+    public void testGenerateConfigFile() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
         try {
@@ -107,7 +104,7 @@ public class ConfigDatabaseIntegrationTests {
      * Assumes adding and getting repositories works as intended.
      */
     @Test
-    public void testOnlyOneRepoPerName() {
+    public void testOnlyOneRepoPerName() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         assert testRepo1.getName().equals(testRepo1a.getName()); // conflicting names
         try {
@@ -124,7 +121,7 @@ public class ConfigDatabaseIntegrationTests {
      * Assumes that deleting repos works, and deleting a non-existent repo is fine.
      */
     //@Test
-    public void testStoringRepos() {
+    public void testStoringRepos() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
         assertEquals(testRepo1.getCRSID(),
@@ -141,7 +138,7 @@ public class ConfigDatabaseIntegrationTests {
      * Assumes adding a repo is fine.
      */
     //@Test
-    public void testUpdateRepo() {
+    public void testUpdateRepo() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.updateRepo(testRepo1);
     }
@@ -152,7 +149,7 @@ public class ConfigDatabaseIntegrationTests {
      * Assumes adding and deleting repos works.
      */
     //@Test
-    public void testGetAndDeleteRepos() {
+    public void testGetAndDeleteRepos() throws IOException {
         assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
         
         ConfigDatabase.addRepo(testRepo1);
@@ -163,7 +160,7 @@ public class ConfigDatabaseIntegrationTests {
     }
     
     //@Test
-    public void testListRepos() {
+    public void testListRepos() throws IOException {
         assertEquals(0, ConfigDatabase.getRepos().size());
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);

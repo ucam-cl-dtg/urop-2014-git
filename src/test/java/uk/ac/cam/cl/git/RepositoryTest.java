@@ -37,14 +37,11 @@ public class RepositoryTest
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
         testRepo1 = new Repository("test-repo-name1",
-                "repository-owner", readAndWrites, readOnlys, 
-                "test-parent1", "hidden-eg-parent");
+                "repository-owner", readAndWrites, readOnlys);
         testRepo2 = new Repository("test-repo-name2",
-                "repository-owner", readAndWrites, emptyList, 
-                "test-parent2", "hidden-eg-parent");
+                "repository-owner", readAndWrites, emptyList);
         testRepo3 = new Repository("test-repo-name3",
-                "other-repository-owner", emptyList, readOnlys, 
-                "test-parent2", "hidden-eg-parent-3");
+                "other-repository-owner", emptyList, readOnlys);
     }
     
     /**
