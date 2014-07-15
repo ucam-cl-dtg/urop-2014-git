@@ -27,11 +27,9 @@ public class ConfigDatabaseUnitTests extends EasyMockSupport {
 	private static List<String> readAndWrites = new LinkedList<String>();
 	private static List<String> emptyList = new LinkedList<String>();
 	private static Repository testRepo1 = new Repository("test-repo-name1",
-            "repository-owner", readAndWrites, readOnlys, 
-            "test-parent1", "hidden-eg-parent");
+            "repository-owner", readAndWrites, readOnlys);
 	private static Repository testRepo2 = new Repository("test-repo-name2",
-            "repository-owner", readAndWrites, emptyList, 
-            "test-parent2", "hidden-eg-parent");
+            "repository-owner", readAndWrites, emptyList);
 	@Mock
     private  JacksonDBCollection<Repository, String> mockCollection =
         createMock(JacksonDBCollection.class);

@@ -43,14 +43,11 @@ public class ConfigDatabaseIntegrationTests {
     }
     
     private static Repository testRepo1 = new Repository("test-repo-name1",
-            "repository-owner", readAndWrites, readOnlys, 
-            "test-parent1", "hidden-eg-parent");
+            "repository-owner", readAndWrites, readOnlys);
     private static Repository testRepo1a = new Repository("test-repo-name1",
-            "other-owner", emptyList, readOnlys, 
-            "test-parent2", "other-hidden");
+            "other-owner", emptyList, readOnlys);
     private static Repository testRepo2 = new Repository("test-repo-name2",
-            "other-owner", readAndWrites, emptyList, 
-            "test-parent2", "hidden-eg-parent");
+            "other-owner", readAndWrites, emptyList);
 
     /**
      * Before each test, empty the database.

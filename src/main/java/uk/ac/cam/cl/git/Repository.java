@@ -46,6 +46,8 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     /**
      * Creates a repository object, to be added to the repository
      * database with ConfigDatabase.addRepo(Repository r).
+     * <p>
+     * If parent is not null, it tries to clone it.
      *
      * @param name The name of the repository. This must identify it
      * uniquely.
@@ -67,9 +69,48 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         , @JsonProperty("owner")         String crsid
         , @JsonProperty("rw")            List<String> read_write
         , @JsonProperty("r")             List<String> read_only
+        )
+    {
+        this.parent = null;
+        this.parent_hidden = null;
+        this.repo = name;
+        this.read_write = read_write;
+        this.read_only = read_only;
+        owner = crsid;
+    }
+
+    /**
+     * Creates a repository object, to be added to the repository
+     * database with ConfigDatabase.addRepo(Repository r).
+     * <p>
+     * If parent is not null, it tries to clone it.
+     *
+     * @param name The name of the repository. This must identify it
+     * uniquely.
+     * @param crsid The CRSID of the repository owner. The owner
+     * automatically has read/write (but not force push) permissions, in
+     * fact we do not allow force push permissions at all.
+     * @param read_write A list of people or groups who can read and write to
+     * the repository. This does not need to include the owner. TODO:
+     * testing and frontend team servers
+     * @param read_only Like read_write without the write.
+     * @param parent The parent repository which at the moment does
+     * nothing. TODO
+     * @param parent_hidden The hidden parent repository which at the
+     * moment does nothing. TODO
+     *
+     * @throws IOException Unrecoverable error in cloning the parent
+     * repository.
+     */
+    @JsonCreator
+    public Repository
+        ( @JsonProperty("name")          String name
+        , @JsonProperty("owner")         String crsid
+        , @JsonProperty("rw")            List<String> read_write
+        , @JsonProperty("r")             List<String> read_only
         , @JsonProperty("parent")        String parent
         , @JsonProperty("parent_hidden") String parent_hidden
-        )
+        ) throws IOException
     {
         this.parent = parent;
         this.parent_hidden = parent_hidden;
@@ -77,7 +118,24 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         this.read_write = read_write;
         this.read_only = read_only;
         owner = crsid;
-    
+
+        /* Clone parent, if it is not null */
+        if (parent != null)
+        {
+            handle = new GitDb(
+                     /* src            */
+                        ConfigurationLoader.getConfig()
+                            .getGitoliteHome()
+                                + "/repositories/" + parent + ".git"
+                    ,/* dest           */ new File(
+                        ConfigurationLoader.getConfig()
+                            .getGitoliteHome()
+                                + "/repositories/" + repo + ".git")
+                    ,/* bare           */ true
+                    ,/* branch         */ "master"
+                    ,/* remote         */ "origin"
+                    ,/* privateKeyPath */ null);
+        }
     }
 
     /**
