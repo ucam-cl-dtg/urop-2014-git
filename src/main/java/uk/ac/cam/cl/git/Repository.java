@@ -16,8 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 
-import javassist.bytecode.ByteArray;
-
 import com.fasterxml.jackson.annotation.*;
 
 import org.mongojack.Id;
@@ -369,20 +367,20 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
 
         if (read_write.size() > 0)
         {
-            strb.append("     RW = ");
-            strb.append(owner);
+            strb.append("     RW =");
+            strb.append(" " + owner);
             /* Usernames or groups */
             for ( String name : read_write)
-                strb.append(name + " ");
+                strb.append(" " + name);
             strb.append("\n");
         }
 
         if (read_only.size() > 0)
         {
-            strb.append("     R  = ");
+            strb.append("     R  =");
             /* Usernames or groups */
             for ( String name : read_only)
-                strb.append(name + " ");
+                strb.append(" " + name);
             strb.append("\n");
         }
 
