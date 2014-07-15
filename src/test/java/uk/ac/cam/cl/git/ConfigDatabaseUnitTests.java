@@ -32,35 +32,28 @@ import uk.ac.cam.cl.git.database.Mongo;
  */
 public class ConfigDatabaseUnitTests extends EasyMockSupport {
 	
-	private List<String> readOnlys;
-	private List<String> readAndWrites;
-	private List<String> emptyList;
-	private Repository testRepo1;
-	private Repository testRepo2;
-	
+	private static List<String> readOnlys = new LinkedList<String>();
+	private static List<String> readAndWrites = new LinkedList<String>();
+	private static List<String> emptyList = new LinkedList<String>();
+	private static Repository testRepo1 = new Repository("test-repo-name1",
+            "repository-owner", readAndWrites, readOnlys, 
+            "test-parent1", "hidden-eg-parent");
+	private static Repository testRepo2 = new Repository("test-repo-name2",
+            "repository-owner", readAndWrites, emptyList, 
+            "test-parent2", "hidden-eg-parent");
 	@Mock
-	private JacksonDBCollection<Repository, String> mockCollection;
+    private  JacksonDBCollection<Repository, String> mockCollection =
+        createMock(JacksonDBCollection.class);
 	
-	@Before
-	public void setUp() {
-		readOnlys = new LinkedList<String>();
-		readAndWrites = new LinkedList<String>();
-		emptyList = new LinkedList<String>();
-		readOnlys.add("readonlyUser1");
-		readOnlys.add("readonlyUser2");
-		readAndWrites.add("adminUser");
-		testRepo1 = new Repository("test-repo-name1",
-                "repository-owner", readAndWrites, readOnlys, 
-                "test-parent1", "hidden-eg-parent");
-		testRepo2 = new Repository("test-repo-name2",
-                "repository-owner", readAndWrites, emptyList, 
-                "test-parent2", "hidden-eg-parent");
-		
-		mockCollection = createMock(JacksonDBCollection.class);
-		ConfigDatabase.setReposCollection(mockCollection);
-		
+	{
+	ConfigDatabase.setReposCollection(mockCollection);
 	}
 	
+	static {
+	    readOnlys.add("readonlyUser1");
+        readOnlys.add("readonlyUser2");
+        readAndWrites.add("adminUser");
+	}
 
 	/**
 	 * Checks that repositories can be added to the database.
