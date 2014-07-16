@@ -33,8 +33,8 @@ public class ConfigDatabaseUnitTests extends EasyMockSupport {
 	private static Repository testRepo2 = new Repository("test-repo-name2",
             "repository-owner", readAndWrites, emptyList);
 	@Mock
-    private  JacksonDBCollection<Repository, String> mockCollection =
-        createMock(JacksonDBCollection.class);
+    private  RepositoryCollection mockCollection =
+        createMock(RepositoryCollection.class);
 	
 	{
 	ConfigDatabase.setReposCollection(mockCollection);
@@ -46,6 +46,9 @@ public class ConfigDatabaseUnitTests extends EasyMockSupport {
         readAndWrites.add("adminUser");
 	}
 
+	/*
+	 * FIXME: all tests need updating to allow for change to interface
+	 */
 	/**
 	 * Checks that repositories can be added to the database.
 	 */
