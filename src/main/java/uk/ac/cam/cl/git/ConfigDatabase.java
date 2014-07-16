@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
@@ -191,7 +192,7 @@ public class ConfigDatabase {
         while ((firstLine = reader.readLine()) != null) { // While not end of file
             String repoName = firstLine.split(" ")[1]; // Repo name is second word of first line
             
-            String[] readWriteLine = reader.readLine().split("=")[1].split(" ");
+            String[] readWriteLine = reader.readLine().split("=")[1].trim().split(" ");
             // We want the words to the right of the "RW ="
             
             String nextLine = reader.readLine();
@@ -202,20 +203,22 @@ public class ConfigDatabase {
                 auxiliaryLine = nextLine.split(" ");
             }
             else { // At least one user with read only access
-                readOnlyLine = nextLine.split("=")[1].split(" ");
+                readOnlyLine = nextLine.split("=")[1].trim().split(" ");
                 auxiliaryLine = reader.readLine().split(" ");
             }
             
             String owner = readWriteLine[0]; // Owner is always first RW entry - see Repository.toString()
-            List<String> readWrites = Arrays.asList(readWriteLine);
+            List<String> readWrites = new LinkedList<String>(Arrays.asList(readWriteLine));
+            readWrites.remove(0); // remove owner from RW list as owner is automatically added
             List<String> readOnlys = Arrays.asList(readOnlyLine);
             String parent = auxiliaryLine[1]; // see Repository.toString()
             String parent_hidden = auxiliaryLine[2];
-            reposCollection.insert(
-                    new Repository(repoName, owner, readWrites,
-                            readOnlys, parent, parent_hidden));
+            Repository toInsert = new Repository(repoName, owner, readWrites,
+                            readOnlys, parent, parent_hidden, null);
+            reposCollection.insert(toInsert);
+            reader.readLine(); // extra line between repos
         }
         reader.close();
     }
-    
+
 }
