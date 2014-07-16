@@ -451,6 +451,9 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
     /**
      * Gives the string representation of the repository, to be used in
      * conjuction with Gitolite.
+     * 
+     * Please do not change this method without appropriately updating
+     * rebuildDatabaseFromGitolite in ConfigDatabase!
      *
      * @return Gitolite config compatible string representation of the
      * repository
@@ -477,6 +480,10 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
                 strb.append(" " + name);
             strb.append("\n");
         }
+        
+        strb.append("# "); // To allow the rebuilding of the database 
+        strb.append(parent + " "); // from the gitolite config file
+        strb.append(parent_hidden + "\n");
 
         return strb.toString();
     }
