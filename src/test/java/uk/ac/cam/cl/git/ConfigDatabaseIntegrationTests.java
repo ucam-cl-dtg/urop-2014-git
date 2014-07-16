@@ -48,11 +48,11 @@ public class ConfigDatabaseIntegrationTests {
    
     
     private static Repository testRepo1 = new Repository("test-repo-name1",
-            "repository-owner", readAndWrites, readOnlys);
+            "repository-owner", readAndWrites, readOnlys, "p1", "h1", null);
     private static Repository testRepo1a = new Repository("test-repo-name1",
-            "other-owner", emptyList, readOnlys);
+            "other-owner", emptyList, readOnlys, "p1", "h1", null);
     private static Repository testRepo2 = new Repository("test-repo-name2",
-            "other-owner", readAndWrites, emptyList);
+            "other-owner", readAndWrites, emptyList, "p2", "h2", null);
 
     /**
      * Before each test, empty the database.
@@ -86,11 +86,13 @@ public class ConfigDatabaseIntegrationTests {
                     "     RW = repository-owner adminUser1 adminUser2");
             assertEquals(br.readLine(),
                     "     R  = readonlyUser1 readonlyUser2 readonlyUser3");
+            assertEquals("# p1 h1", br.readLine());
             assertEquals(br.readLine(), "");
             assertEquals(br.readLine(),
                     "repo test-repo-name2");
             assertEquals(br.readLine(),
                     "     RW = other-owner adminUser1 adminUser2");
+            assertEquals("# p2 h2", br.readLine());
             assertEquals(br.readLine(), "");
             assertNull(br.readLine()); // end of file reached
             br.close();
