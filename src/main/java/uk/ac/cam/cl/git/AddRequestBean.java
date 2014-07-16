@@ -19,7 +19,7 @@ public class AddRequestBean implements AddRequestInterface
 
     @JsonCreator
     public AddRequestBean(@JsonProperty("repoName")  String repoName
-                         , @JsonProperty("repoOwner") String repoOwner)
+                        , @JsonProperty("repoOwner") String repoOwner)
     {
         this.repoName  = repoName;
         this.repoOwner = repoOwner;
