@@ -14,34 +14,37 @@ import uk.ac.cam.cl.git.public_interfaces.ForkRequestInterface;
  */
 public class ForkRequestBean implements ForkRequestInterface
 {
-    private final String repoName;
+    private final String newRepoName;
     private final String repoOwner;
-    private final String upstream;
+    private final String repoName;
     private final String overlay;
 
     @JsonCreator
-    public ForkRequestBean(@JsonProperty("repoName")  String repoName
-                         , @JsonProperty("repoOwner") String repoOwner
-                         , @JsonProperty("upstream")  String upstream
-                         , @JsonProperty("overlay")   String overlay)
+    public ForkRequestBean(@JsonProperty("newRepoName") String newRepoName
+                         , @JsonProperty("repoOwner")   String repoOwner
+                         , @JsonProperty("repoName")    String repoName
+                         , @JsonProperty("overlay")     String overlay)
     {
-        this.repoName  = repoName;
+        if (newRepoName == null)
+            this.newRepoName = repoOwner + "/" + repoName;
+        else
+            this.newRepoName  = newRepoName;
         this.repoOwner = repoOwner;
-        this.upstream  = upstream;
+        this.repoName  = repoName;
         this.overlay   = overlay;
     }
 
     @Override
-    @JsonProperty("repoName")
-    public String getRepoName() { return repoName; }
+    @JsonProperty("newRepoName")
+    public String getNewRepoName() { return newRepoName; }
 
     @Override
     @JsonProperty("repoOwner")
     public String getRepoOwner() { return repoOwner; }
     
     @Override
-    @JsonProperty("upstream")
-    public String getUpstream() { return upstream; }
+    @JsonProperty("repoName")
+    public String getRepoName() { return repoName; }
 
     @Override
     @JsonProperty("overlay")

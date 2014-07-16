@@ -103,5 +103,5 @@ public interface WebInterface {
      */
     @DELETE
     @Path("/del/{repoName:.*}.git")
-    public Response delRepository(@PathParam("repoName") String repoName);
+    public Response delRepository(@PathParam("repoName") String repoName) throws IOException;
 }

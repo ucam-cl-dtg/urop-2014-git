@@ -17,7 +17,7 @@ public interface ForkRequestInterface
      * @return The name the owner would like to call the forked repository.
      */
     @JsonProperty("repoName")
-    public String getRepoName();
+    public String getNewRepoName();
 
     /**
      * @return The CRSID of the user making the fork request.
@@ -29,7 +29,7 @@ public interface ForkRequestInterface
      * @return The name of the repository to be forked.
      */
     @JsonProperty("upstream")
-    public String getUpstream();
+    public String getRepoName();
 
     /**
      * @return The name of the repository to be overlaid on submission.
