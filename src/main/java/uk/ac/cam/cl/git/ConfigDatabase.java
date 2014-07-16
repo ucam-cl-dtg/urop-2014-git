@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
+import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
@@ -27,25 +29,23 @@ import uk.ac.cam.cl.git.database.Mongo;
  * @version 0.1
  */
 public class ConfigDatabase {
-    
-    private static JacksonDBCollection<Repository, String>
-        reposCollection =
-                JacksonDBCollection.wrap
-                ( Mongo.getDB().getCollection("repos")
-                , Repository.class
-                , String.class);
+
+    /* 
+     * For Guice to inject dependencies, the following line must be run:
+     * Guice.createInjector(new DatabaseModule());
+     */
+    private static JacksonDBCollection<Repository, String> reposCollection;
     
     /**
      * For unit testing only, to allow a mock collection to be used.
      * Replaces the mongo collection with the argument.
      * @param reposCollection The collection to be used.
      */
-    /* TODO: If it is for unit testing, do we want it to be public? */
-    public static void setReposCollection(JacksonDBCollection<Repository, String> rCollection) {
+    @Inject
+    static void setReposCollection(JacksonDBCollection<Repository, String> rCollection) {
         reposCollection = rCollection;
     }
-    
-    
+
     /**
      * Returns a list of all the repository objects in the database
      *
@@ -182,4 +182,5 @@ public class ConfigDatabase {
                 System.err.println(line);
             }
     }
+    
 }

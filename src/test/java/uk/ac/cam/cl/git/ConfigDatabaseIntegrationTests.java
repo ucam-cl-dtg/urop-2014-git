@@ -21,18 +21,22 @@ import org.junit.Test;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.database.Mongo;
 
+import com.google.inject.Guice;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 
 /**
- * @author ird28
- *
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
 public class ConfigDatabaseIntegrationTests {
 
     private static List<String> readOnlys = new LinkedList<String>();
     private static List<String> readAndWrites = new LinkedList<String>();
     private static List<String> emptyList = new LinkedList<String>();
+    
+    {
+        Guice.createInjector(new DatabaseModule());
+    }
     
     static {
         readOnlys.add("readonlyUser1");
@@ -41,6 +45,7 @@ public class ConfigDatabaseIntegrationTests {
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
     }
+   
     
     private static Repository testRepo1 = new Repository("test-repo-name1",
             "repository-owner", readAndWrites, readOnlys);
@@ -78,14 +83,14 @@ public class ConfigDatabaseIntegrationTests {
             assertEquals(br.readLine(),
                     "repo test-repo-name1");
             assertEquals(br.readLine(),
-                    "     RW = adminUser1 adminUser2 ");
+                    "     RW = repository-owner adminUser1 adminUser2");
             assertEquals(br.readLine(),
-                    "     R  = readonlyUser1 readonlyUser2 readonlyUser3 ");
+                    "     R  = readonlyUser1 readonlyUser2 readonlyUser3");
             assertEquals(br.readLine(), "");
             assertEquals(br.readLine(),
                     "repo test-repo-name2");
             assertEquals(br.readLine(),
-                    "     RW = adminUser1 adminUser2 ");
+                    "     RW = other-owner adminUser1 adminUser2");
             assertEquals(br.readLine(), "");
             assertNull(br.readLine()); // end of file reached
             br.close();
@@ -103,7 +108,7 @@ public class ConfigDatabaseIntegrationTests {
      * the second is not added and an exception is raised.
      * Assumes adding and getting repositories works as intended.
      */
-    @Test
+    //@Test
     public void testOnlyOneRepoPerName() throws IOException {
         ConfigDatabase.addRepo(testRepo1);
         assert testRepo1.getName().equals(testRepo1a.getName()); // conflicting names
