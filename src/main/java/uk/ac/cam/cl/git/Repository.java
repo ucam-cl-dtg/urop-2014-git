@@ -468,11 +468,12 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         strb.append("     RW =");
         strb.append(" " + owner);
         /* Usernames or groups */
-        for ( String name : read_write)
-            strb.append(" " + name);
+        if (read_write != null)
+            for ( String name : read_write)
+                strb.append(" " + name);
         strb.append("\n");
 
-        if (read_only.size() > 0)
+        if (read_only != null && read_only.size() > 0)
         {
             strb.append("     R  =");
             /* Usernames or groups */
