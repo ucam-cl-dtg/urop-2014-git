@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -31,6 +33,8 @@ import uk.ac.cam.cl.git.database.Mongo;
  * @version 0.1
  */
 public class ConfigDatabase {
+    /* For logging */
+    private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
 
     /* 
      * For Guice to inject dependencies, the following line must be run:
@@ -89,8 +93,10 @@ public class ConfigDatabase {
      * 
      * @param name The name of the repository to remove
      */
-    public static void delRepoByName(String name) {
+    public static void delRepoByName(String name) throws IOException {
         reposCollection.remove(new BasicDBObject("name", name));
+        generateConfigFile();
+        runGitoliteUpdate();
     }
 
     /**
@@ -105,6 +111,10 @@ public class ConfigDatabase {
      * @throws IOException Typically an unrecoverable problem.
      */
     public static void generateConfigFile() throws IOException {
+        log.info("Generating config file \"" +
+                ConfigurationLoader.getConfig()
+                    .getGitoliteGeneratedConfigFile()
+                + "\"");
         StringBuilder output = new StringBuilder();
 
         for (Repository r : getRepos())
@@ -117,6 +127,10 @@ public class ConfigDatabase {
         buffWriter.write(output.toString());
         buffWriter.close();
         runGitoliteUpdate();
+        log.info("Generated config file \"" +
+                ConfigurationLoader.getConfig()
+                    .getGitoliteGeneratedConfigFile()
+                + "\"");
     }
 
     /**
@@ -130,6 +144,7 @@ public class ConfigDatabase {
     public static void addRepo(Repository repo) throws DuplicateKeyException, IOException {
         reposCollection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
         reposCollection.insert(repo);
+        generateConfigFile();
         runGitoliteUpdate();
     }
 
@@ -167,27 +182,33 @@ public class ConfigDatabase {
     public static void updateRepo(Repository repo) throws MongoException, IOException
     {
         reposCollection.updateById(repo.get_id(), repo);
+        generateConfigFile();
         runGitoliteUpdate();
     }
 
     private static void runGitoliteUpdate() throws IOException
     {
-            Process p = Runtime.getRuntime().exec(
-              ConfigurationLoader.getConfig().getGitoliteHome()
-                + "/.gitolite/hooks/gitolite-admin/post-update"
-              , new String[]
-                {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
-                , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
-                , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()});
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while ((line = outputReader.readLine()) != null) {
-                System.out.println(line);
-            }
-            while ((line = errorReader.readLine()) != null) {
-                System.err.println(line);
-            }
+        log.info("Starting gitolite recompilation");
+        Process p = Runtime.getRuntime().exec(
+          /*
+          ConfigurationLoader.getConfig().getGitoliteHome()
+            + "/.gitolite/hooks/gitolite-admin/post-update"
+            */
+          "gitolite compile"
+          , new String[]
+            {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
+            , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
+            , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()});
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+        BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String line;
+        while ((line = outputReader.readLine()) != null) {
+            System.out.println(line);
+        }
+        while ((line = errorReader.readLine()) != null) {
+            System.err.println(line);
+        }
+        log.info("Finished gitolite recompilation");
     }
     
     private static void rebuildDatabaseFromGitolite() throws MongoException, IOException {
@@ -196,9 +217,9 @@ public class ConfigDatabase {
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
         String firstLine;
         while ((firstLine = reader.readLine()) != null) { // While not end of file
-            String repoName = firstLine.split(" ")[1]; // Repo name is second word of first line
+            String repoName = firstLine.split("\\s\\+")[1]; // Repo name is second word of first line
             
-            String[] readWriteLine = reader.readLine().split("=")[1].trim().split(" ");
+            String[] readWriteLine = reader.readLine().split("=")[1].trim().split("\\s\\+");
             // We want the words to the right of the "RW ="
             
             String nextLine = reader.readLine();
@@ -209,8 +230,8 @@ public class ConfigDatabase {
                 auxiliaryLine = nextLine.split(" ");
             }
             else { // At least one user with read only access
-                readOnlyLine = nextLine.split("=")[1].trim().split(" ");
-                auxiliaryLine = reader.readLine().split(" ");
+                readOnlyLine = nextLine.split("=")[1].trim().split("\\s\\+");
+                auxiliaryLine = reader.readLine().split("\\s\\+");
             }
             
             String owner = readWriteLine[0]; // Owner is always first RW entry - see Repository.toString()
