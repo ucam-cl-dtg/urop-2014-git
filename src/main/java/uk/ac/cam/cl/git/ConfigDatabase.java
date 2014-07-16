@@ -22,6 +22,7 @@ import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
+import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
