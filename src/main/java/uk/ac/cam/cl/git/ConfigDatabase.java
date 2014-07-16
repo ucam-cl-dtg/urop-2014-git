@@ -23,6 +23,7 @@ import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
+import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -35,7 +36,12 @@ public class ConfigDatabase {
      * For Guice to inject dependencies, the following line must be run:
      * Guice.createInjector(new DatabaseModule());
      */
-    private static JacksonDBCollection<Repository, String> reposCollection;
+    private static JacksonDBCollection<Repository, String>
+        reposCollection =
+                JacksonDBCollection.wrap
+                ( Mongo.getDB().getCollection("repos")
+                , Repository.class
+                , String.class);
     
     /**
      * For unit testing only, to allow a mock collection to be used.
