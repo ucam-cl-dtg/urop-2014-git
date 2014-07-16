@@ -2,11 +2,13 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.cl.git;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,14 +16,12 @@ import java.io.InputStreamReader;
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -181,6 +181,41 @@ public class ConfigDatabase {
             while ((line = errorReader.readLine()) != null) {
                 System.err.println(line);
             }
+    }
+    
+    private static void rebuildDatabaseFromGitolite() throws MongoException, IOException {
+        reposCollection.remove(new BasicDBObject()); // Empty database collection
+        BufferedReader reader = new BufferedReader(new FileReader(new File(
+                ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
+        String firstLine;
+        while ((firstLine = reader.readLine()) != null) { // While not end of file
+            String repoName = firstLine.split(" ")[1]; // Repo name is second word of first line
+            
+            String[] readWriteLine = reader.readLine().split("=")[1].split(" ");
+            // We want the words to the right of the "RW ="
+            
+            String nextLine = reader.readLine();
+            String[] readOnlyLine;
+            String[] auxiliaryLine;
+            if (nextLine.startsWith("#")) { // No users with read only access
+                readOnlyLine = new String[0];
+                auxiliaryLine = nextLine.split(" ");
+            }
+            else { // At least one user with read only access
+                readOnlyLine = nextLine.split("=")[1].split(" ");
+                auxiliaryLine = reader.readLine().split(" ");
+            }
+            
+            String owner = readWriteLine[0]; // Owner is always first RW entry - see Repository.toString()
+            List<String> readWrites = Arrays.asList(readWriteLine);
+            List<String> readOnlys = Arrays.asList(readOnlyLine);
+            String parent = auxiliaryLine[1]; // see Repository.toString()
+            String parent_hidden = auxiliaryLine[2];
+            reposCollection.insert(
+                    new Repository(repoName, owner, readWrites,
+                            readOnlys, parent, parent_hidden));
+        }
+        reader.close();
     }
     
 }
