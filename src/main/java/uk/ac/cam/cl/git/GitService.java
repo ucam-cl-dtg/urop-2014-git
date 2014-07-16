@@ -92,7 +92,7 @@ public class GitService implements WebInterface {
     }
     
     @Override
-    public Response getForkURL(ForkRequestInterface details) throws IOException
+    public Response getForkURL(ForkRequestBean details) throws IOException
     {   /* TODO: Test */
         /* This forks the upstream repository */
         Repository rtn = new Repository(details.getRepoName()
@@ -107,7 +107,7 @@ public class GitService implements WebInterface {
 
     /* TODO: Remote exception */
     @Override
-    public Response addRepository(AddRequestInterface details) throws IOException
+    public Response addRepository(AddRequestBean details) throws IOException
     {
         Repository rtn = new Repository(details.getRepoName()
                                       , details.getRepoOwner()
