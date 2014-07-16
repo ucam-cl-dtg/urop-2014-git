@@ -17,36 +17,28 @@ import java.util.List;
  */
 public class RepositoryTest
 {
-    private List<String> readOnlys;
-    private List<String> readAndWrites;
-    private List<String> emptyList;
-    private Repository testRepo1;
-    private Repository testRepo2;
-    private Repository testRepo3;
-    private Repository testRepo4;
+    private List<String> readOnlys = new LinkedList<String>();
+    private List<String> readAndWrites = new LinkedList<String>();
+    private List<String> emptyList = new LinkedList<String>();
+    private Repository testRepo1 = new Repository("test-repo-name1",
+            "repository-owner", readAndWrites, readOnlys,
+            "parent1", "hidden1", null);
+    private Repository testRepo2 = new Repository("test-repo-name2",
+            "repository-owner", readAndWrites, emptyList,
+            "parent2", "hidden2", null);
+    private Repository testRepo3 = new Repository("test-repo-name3",
+            "other-repository-owner", emptyList, readOnlys,
+            "parent3", "hidden3", null);
+    private Repository testRepo4 = new Repository("test-repo-name4",
+            "yet-another-repository-owner", emptyList, emptyList,
+            "parent4", "hidden4", null);
     
-    @Before
-    public void setUp() {
-        readOnlys = new LinkedList<String>();
-        readAndWrites = new LinkedList<String>();
-        emptyList = new LinkedList<String>();
+    {
         readOnlys.add("readonlyUser1");
         readOnlys.add("readonlyUser2");
         readOnlys.add("readonlyUser3");
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
-        testRepo1 = new Repository("test-repo-name1",
-                "repository-owner", readAndWrites, readOnlys,
-                "parent1", "hidden1", null);
-        testRepo2 = new Repository("test-repo-name2",
-                "repository-owner", readAndWrites, emptyList,
-                "parent2", "hidden2", null);
-        testRepo3 = new Repository("test-repo-name3",
-                "other-repository-owner", emptyList, readOnlys,
-                "parent3", "hidden3", null);
-        testRepo4 = new Repository("test-repo-name4",
-                "yet-another-repository-owner", emptyList, emptyList,
-                "parent4", "hidden4", null);
     }
     
     /**
@@ -76,7 +68,6 @@ public class RepositoryTest
         assertEquals(shouldBeTestRepo2, testRepo2.toString());
         assertEquals(shouldBeTestRepo3, testRepo3.toString());
         assertEquals(shouldBeTestRepo4, testRepo4.toString());
-                        
     }
 
     /**
