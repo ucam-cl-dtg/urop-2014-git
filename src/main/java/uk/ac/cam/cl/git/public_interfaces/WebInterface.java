@@ -9,9 +9,12 @@ import uk.ac.cam.cl.git.AddRequestBean;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Response;
 
 /**
@@ -75,6 +78,8 @@ public interface WebInterface {
      */
     @POST
     @Path("/fork")
+    @Consumes("application/json")
+    @Produces("application/json")
     public Response getForkURL(ForkRequestBean details) throws IOException;
     
     /**
@@ -84,7 +89,19 @@ public interface WebInterface {
      * @param details Object giving the relevant information (see AddRequestInterface)
      * @return The URL of the new repository
      */
-    @POST
+    @PUT
     @Path("/add")
+    @Consumes("application/json")
+    @Produces("application/json")
     public Response addRepository(AddRequestBean details) throws IOException;
+
+    /**
+     * Removes the repository from the configuration and the database.
+     * <p>
+     * Does not remove repository from file system, to remove stale
+     * repositories, run TODO: stale repository detector.
+     */
+    @DELETE
+    @Path("/del/{repoName:.*}.git")
+    public Response delRepository(@PathParam("repoName") String repoName);
 }

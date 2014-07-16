@@ -105,7 +105,6 @@ public class GitService implements WebInterface {
         return Response.status(200).entity(rtn.getRepoPath()).build();
     }
 
-    /* TODO: Remote exception */
     @Override
     public Response addRepository(AddRequestBean details) throws IOException
     {
@@ -115,5 +114,12 @@ public class GitService implements WebInterface {
                                       , null);
         ConfigDatabase.addRepo(rtn);
         return Response.status(200).entity(rtn.getRepoPath()).build();
+    }
+
+    @Override
+    public Response delRepository(String repoName)
+    {
+        ConfigDatabase.delRepoByName(repoName);
+        return Response.status(200).build();
     }
 }
