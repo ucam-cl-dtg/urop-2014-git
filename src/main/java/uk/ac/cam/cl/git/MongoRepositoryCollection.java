@@ -8,22 +8,21 @@ package uk.ac.cam.cl.git;
 import java.util.Iterator;
 
 import org.mongojack.JacksonDBCollection;
-
+import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
-
-import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  *
  */
 public class MongoRepositoryCollection implements RepositoryCollection {
+
+    private static JacksonDBCollection<Repository, String> collection;
     
-    private static final JacksonDBCollection<Repository, String> collection =
-            JacksonDBCollection.wrap
-            ( Mongo.getDB().getCollection("repos")
-            , Repository.class
-            , String.class);
+    @Inject
+    public void setCollection(JacksonDBCollection<Repository, String> newCollection) {
+        collection = newCollection;
+    }
 
     @Override
     public void insertRepo(Repository repo) {
