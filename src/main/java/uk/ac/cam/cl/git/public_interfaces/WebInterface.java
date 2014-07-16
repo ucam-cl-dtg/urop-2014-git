@@ -4,6 +4,9 @@ package uk.ac.cam.cl.git.public_interfaces;
 
 import java.io.IOException;
 
+import uk.ac.cam.cl.git.ForkRequestBean;
+import uk.ac.cam.cl.git.AddRequestBean;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
@@ -19,6 +22,9 @@ import javax.ws.rs.core.Response;
  * 
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ */
+/* TODO: Change from Response to whatever we are returning and for
+ * errors, use exceptions, as they are sent across the wire.
  */
 @Path("/")
 public interface WebInterface {
@@ -55,7 +61,7 @@ public interface WebInterface {
      */
     @GET
     @Path("/git/{repoName:.*}.git/{fileName:.*}")
-    @Produces("text/plain")
+    @Produces("application/octet-stream")
     public Response getFile(@PathParam("fileName") String fileName
                           , @PathParam("repoName") String repoName) throws IOException;
     
@@ -69,7 +75,7 @@ public interface WebInterface {
      */
     @POST
     @Path("/fork")
-    public Response getForkURL(ForkRequestInterface details) throws IOException;
+    public Response getForkURL(ForkRequestBean details) throws IOException;
     
     /**
      * Creates a new blank repository and returns the URL than can be used
@@ -80,5 +86,5 @@ public interface WebInterface {
      */
     @POST
     @Path("/add")
-    public Response addRepository(AddRequestInterface details) throws IOException;
+    public Response addRepository(AddRequestBean details) throws IOException;
 }
