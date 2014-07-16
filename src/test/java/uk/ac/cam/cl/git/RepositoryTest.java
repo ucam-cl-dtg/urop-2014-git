@@ -23,6 +23,7 @@ public class RepositoryTest
     private Repository testRepo1;
     private Repository testRepo2;
     private Repository testRepo3;
+    private Repository testRepo4;
     
     @Before
     public void setUp() {
@@ -35,11 +36,17 @@ public class RepositoryTest
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
         testRepo1 = new Repository("test-repo-name1",
-                "repository-owner", readAndWrites, readOnlys);
+                "repository-owner", readAndWrites, readOnlys,
+                "parent1", "hidden1", null);
         testRepo2 = new Repository("test-repo-name2",
-                "repository-owner", readAndWrites, emptyList);
+                "repository-owner", readAndWrites, emptyList,
+                "parent2", "hidden2", null);
         testRepo3 = new Repository("test-repo-name3",
-                "other-repository-owner", emptyList, readOnlys);
+                "other-repository-owner", emptyList, readOnlys,
+                "parent3", "hidden3", null);
+        testRepo4 = new Repository("test-repo-name4",
+                "yet-another-repository-owner", emptyList, emptyList,
+                "parent4", "hidden4", null);
     }
     
     /**
@@ -50,17 +57,25 @@ public class RepositoryTest
         String shouldBeTestRepo1 = 
                 "repo test-repo-name1" + "\n" +
                 "     RW = repository-owner adminUser1 adminUser2" + "\n" +
-                "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n";
+                "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
+                "# parent1 hidden1" + "\n";
         String shouldBeTestRepo2 =
                 "repo test-repo-name2" + "\n" +
-                "     RW = repository-owner adminUser1 adminUser2" + "\n";
+                "     RW = repository-owner adminUser1 adminUser2" + "\n" +
+                "# parent2 hidden2" + "\n";
         String shouldBeTestRepo3 = 
                 "repo test-repo-name3" + "\n" +
                 "     RW = other-repository-owner" + "\n" +
-                "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n";
+                "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
+                "# parent3 hidden3" + "\n";
+        String shouldBeTestRepo4 =
+                "repo test-repo-name4" + "\n" +
+                "     RW = yet-another-repository-owner" + "\n" +
+                "# parent4 hidden4" + "\n";
         assertEquals(shouldBeTestRepo1, testRepo1.toString());
         assertEquals(shouldBeTestRepo2, testRepo2.toString());
         assertEquals(shouldBeTestRepo3, testRepo3.toString());
+        assertEquals(shouldBeTestRepo4, testRepo4.toString());
                         
     }
 
