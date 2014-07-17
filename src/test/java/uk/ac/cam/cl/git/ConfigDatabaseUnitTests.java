@@ -24,109 +24,105 @@ import com.mongodb.BasicDBObject;
  * @version 0.1
  */
 public class ConfigDatabaseUnitTests extends EasyMockSupport {
-	
-	private static List<String> readOnlys = new LinkedList<String>();
-	private static List<String> readAndWrites = new LinkedList<String>();
-	private static List<String> emptyList = new LinkedList<String>();
-	private static Repository testRepo1 = new Repository("test-repo-name1",
+
+    private static List<String> readOnlys = new LinkedList<String>();
+    private static List<String> readAndWrites = new LinkedList<String>();
+    private static List<String> emptyList = new LinkedList<String>();
+    private static Repository testRepo1 = new Repository("test-repo-name1",
             "repository-owner", readAndWrites, readOnlys);
-	private static Repository testRepo2 = new Repository("test-repo-name2",
+    private static Repository testRepo2 = new Repository("test-repo-name2",
             "repository-owner", readAndWrites, emptyList);
-	@Mock
+    @Mock
     private  RepositoryCollection mockCollection =
-        createMock(RepositoryCollection.class);
-	
-	{
-	ConfigDatabase.setReposCollection(mockCollection);
-	}
-	
-	static {
-	    readOnlys.add("readonlyUser1");
+    createMock(RepositoryCollection.class);
+
+    {
+        ConfigDatabase.setReposCollection(mockCollection);
+    }
+
+    static {
+        readOnlys.add("readonlyUser1");
         readOnlys.add("readonlyUser2");
         readAndWrites.add("adminUser");
-	}
+    }
 
-	/*
-	 * FIXME: all tests need updating to allow for change to interface
-	 */
-	/**
-	 * Checks that repositories can be added to the database.
-	 */
-	@Test
-	public void testAddRepo() throws IOException {
-	    
-	    /* The below method calls to the database are expected */
-	    
-	    mockCollection.ensureIndex(new BasicDBObject("name", 1), null, true);
-        EasyMock.expectLastCall().once();
-	    EasyMock.expect(mockCollection.insert(testRepo1)).andReturn(createMock(WriteResult.class));
-	    
-	    mockCollection.ensureIndex(new BasicDBObject("name", 1), null, true);
-        EasyMock.expectLastCall().once();
-        EasyMock.expect(mockCollection.insert(testRepo2)).andReturn(createMock(WriteResult.class));
-                
-	    EasyMock.replay(mockCollection);
-	    
-	    /* The actual test begins here */
-	    
-	    ConfigDatabase.addRepo(testRepo1);
-	    ConfigDatabase.addRepo(testRepo2);
-	    
-	    EasyMock.verify(mockCollection);
-	}
-	
-	/**
-	 * Checks that finding repositories by name calls the correct methods
-	 */
-	@Test
-	public void testGetRepoByName() {
-	    
-	    /* The below method calls to the database are expected */
-        
-        EasyMock.expect(mockCollection
-                .findOne(new BasicDBObject("name", "test-repo-name1")))
-                .andReturn(testRepo1);
-        
-        EasyMock.expect(mockCollection
-                .findOne(new BasicDBObject("name", "test-repo-name2")))
-                .andReturn(testRepo2);
-        
-        EasyMock.replay(mockCollection);
-        
-        /* The actual test begins here */
-        
-        assertEquals(testRepo1, ConfigDatabase.getRepoByName("test-repo-name1"));
-        assertEquals(testRepo2, ConfigDatabase.getRepoByName("test-repo-name2"));
-        
-        EasyMock.verify(mockCollection);
-	}
-	
-	/**
-	 * Checks that the correct method is called when updating a repository
-	 */
-	@Test
-    public void testUpdateRepo() throws IOException {
-        
+    /*
+     * FIXME: all tests need updating to allow for change to interface
+     */
+    /**
+     * Checks that repositories can be added to the database.
+     */
+    @Test
+    public void testAddRepo() throws IOException {
+
         /* The below method calls to the database are expected */
-        
-        EasyMock.expect(mockCollection
-                .updateById(testRepo1.get_id(), testRepo1))
-                .andReturn(createMock(WriteResult.class));
-        
-        EasyMock.expect(mockCollection
-                .updateById(testRepo2.get_id(), testRepo2))
-                .andReturn(createMock(WriteResult.class));
-        
+
+        mockCollection.insertRepo(testRepo1);
+        EasyMock.expectLastCall().once();
+
+        mockCollection.insertRepo(testRepo2);
+        EasyMock.expectLastCall().once();
+
         EasyMock.replay(mockCollection);
-        
+
         /* The actual test begins here */
-        
-        ConfigDatabase.updateRepo(testRepo1);
-        ConfigDatabase.updateRepo(testRepo2);
-        
+
+        ConfigDatabase.addRepo(testRepo1);
+        ConfigDatabase.addRepo(testRepo2);
+
         EasyMock.verify(mockCollection);
     }
-	
-	
+
+    /**
+     * Checks that finding repositories by name calls the correct methods
+     */
+    @Test
+    public void testGetRepoByName() {
+
+        /* The below method calls to the database are expected */
+
+        EasyMock.expect(mockCollection
+                .findByName("test-repo-name1"))
+                .andReturn(testRepo1);
+
+        EasyMock.expect(mockCollection
+                .findByName("test-repo-name2"))
+                .andReturn(testRepo2);
+
+        EasyMock.replay(mockCollection);
+
+        /* The actual test begins here */
+
+        assertEquals(testRepo1, ConfigDatabase.getRepoByName("test-repo-name1"));
+        assertEquals(testRepo2, ConfigDatabase.getRepoByName("test-repo-name2"));
+
+        EasyMock.verify(mockCollection);
+    }
+
+    /**
+     * Checks that the correct method is called when updating a repository
+     */
+    @Test
+    public void testUpdateRepo() throws IOException {
+
+        /* The below method calls to the database are expected */
+
+        mockCollection.updateRepo(testRepo1);
+        EasyMock.expectLastCall().once();
+
+        mockCollection.updateRepo(testRepo2);
+        EasyMock.expectLastCall().once();
+
+        EasyMock.replay(mockCollection);
+
+        /* The actual test begins here */
+
+        ConfigDatabase.updateRepo(testRepo1);
+        ConfigDatabase.updateRepo(testRepo2);
+
+        EasyMock.verify(mockCollection);
+    }
+
+
 
 }
