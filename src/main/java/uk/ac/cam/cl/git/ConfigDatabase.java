@@ -189,24 +189,24 @@ public class ConfigDatabase {
     private static void runGitoliteUpdate() throws IOException
     {
         log.info("Starting gitolite recompilation");
-        Process p = Runtime.getRuntime().exec(
-          /*
-          ConfigurationLoader.getConfig().getGitoliteHome()
-            + "/.gitolite/hooks/gitolite-admin/post-update"
-            */
-          "gitolite compile"
-          , new String[]
-            {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
-            , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
-            , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()});
-        BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-        BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        String line;
-        while ((line = outputReader.readLine()) != null) {
-            System.out.println(line);
-        }
-        while ((line = errorReader.readLine()) != null) {
-            System.err.println(line);
+        for (String command : new String[] {"compile",
+                                            "trigger POST_COMPILE"})
+        {
+            Process p = Runtime.getRuntime().exec(
+              "env gitolite " + command
+              , new String[]
+                {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
+                , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
+                , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()});
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = outputReader.readLine()) != null) {
+                System.out.println(line);
+            }
+            while ((line = errorReader.readLine()) != null) {
+                System.err.println(line);
+            }
         }
         log.info("Finished gitolite recompilation");
     }
