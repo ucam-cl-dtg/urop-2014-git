@@ -13,25 +13,23 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
 /**
- * @author ird28
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  *
  */
 public class DatabaseModule extends AbstractModule {
-    
-    private static final JacksonDBCollection<Repository, String> toReturn = JacksonDBCollection.wrap
-            ( Mongo.getDB().getCollection("repos")
-            , Repository.class
-            , String.class);
-    
 
     @Override
     protected void configure() {
-        requestStaticInjection(ConfigDatabase.class);        
+        requestStaticInjection(ConfigDatabase.class);
+        bind(RepositoryCollection.class).to(MongoRepositoryCollection.class);
     }
     
     @Provides
-    JacksonDBCollection<Repository, String> provideCollection() {
-        return toReturn;
+    public JacksonDBCollection<Repository, String> provideMongoColection() {
+        return JacksonDBCollection.wrap
+                ( Mongo.getDB().getCollection("repos")
+                        , Repository.class
+                        , String.class);
     }
 
 }

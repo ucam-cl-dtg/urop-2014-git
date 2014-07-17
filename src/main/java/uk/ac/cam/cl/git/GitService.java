@@ -92,7 +92,7 @@ public class GitService implements WebInterface {
     }
     
     @Override
-    public Response getForkURL(ForkRequestBean details) throws IOException
+    public Response getForkURL(ForkRequestBean details) throws IOException, DuplicateKeyException
     {   /* TODO: Test */
         /* This forks the upstream repository */
         Repository rtn = new Repository(details.getRepoName()
@@ -106,7 +106,7 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public Response addRepository(AddRequestBean details) throws IOException
+    public Response addRepository(AddRequestBean details) throws IOException, DuplicateKeyException
     {
         Repository rtn = new Repository(details.getRepoName()
                                       , details.getRepoOwner()

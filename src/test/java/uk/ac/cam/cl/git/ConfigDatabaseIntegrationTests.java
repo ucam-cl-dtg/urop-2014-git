@@ -19,11 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.git.database.Mongo;
 
 import com.google.inject.Guice;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DuplicateKeyException;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -34,10 +31,6 @@ public class ConfigDatabaseIntegrationTests {
     private static List<String> readAndWrites = new LinkedList<String>();
     private static List<String> emptyList = new LinkedList<String>();
     
-    {
-        Guice.createInjector(new DatabaseModule());
-    }
-    
     static {
         readOnlys.add("readonlyUser1");
         readOnlys.add("readonlyUser2");
@@ -45,7 +38,6 @@ public class ConfigDatabaseIntegrationTests {
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
     }
-   
     
     private static Repository testRepo1 = new Repository("test-repo-name1",
             "repository-owner", readAndWrites, readOnlys, "p1", "h1", null);
@@ -59,15 +51,17 @@ public class ConfigDatabaseIntegrationTests {
      */
     @Before
     public void setUp() {        
-        Mongo.getDB().getCollection("repos").remove(new BasicDBObject());
+        ConfigDatabase.deleteAll();
     }
     
     /**
+     * @throws DuplicateKeyException 
      * Checks that the gitolite config file is written as expected and the
      * repositories are found in the expected place.
+     * @throws  
      */
-    //@Test
-    public void testGenerateConfigFile() throws IOException {
+    @Test
+    public void testGenerateConfigFile() throws IOException, DuplicateKeyException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
         try {
@@ -109,9 +103,10 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that when two repositories of the same name are inserted,
      * the second is not added and an exception is raised.
      * Assumes adding and getting repositories works as intended.
+     * @throws DuplicateKeyException 
      */
-    //@Test
-    public void testOnlyOneRepoPerName() throws IOException {
+    @Test
+    public void testOnlyOneRepoPerName() throws IOException, DuplicateKeyException {
         ConfigDatabase.addRepo(testRepo1);
         assert testRepo1.getName().equals(testRepo1a.getName()); // conflicting names
         try {
@@ -126,9 +121,10 @@ public class ConfigDatabaseIntegrationTests {
     /**
      * Checks that adding repos and getting them by name works.
      * Assumes that deleting repos works, and deleting a non-existent repo is fine.
+     * @throws DuplicateKeyException 
      */
-    //@Test
-    public void testStoringRepos() throws IOException {
+    @Test
+    public void testStoringRepos() throws IOException, DuplicateKeyException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
         assertEquals(testRepo1.getCRSID(),
@@ -143,9 +139,10 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that calling update repo on an existing repo is fine.
      * However, is does NOT check that the repo has actually been updated. (TODO?)
      * Assumes adding a repo is fine.
+     * @throws DuplicateKeyException 
      */
-    //@Test
-    public void testUpdateRepo() throws IOException {
+    @Test
+    public void testUpdateRepo() throws IOException, DuplicateKeyException {
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.updateRepo(testRepo1);
     }
@@ -154,9 +151,10 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that when a repo is added and deleted, it appears and disappears 
      * from the list of repositories.
      * Assumes adding and deleting repos works.
+     * @throws DuplicateKeyException 
      */
-    //@Test
-    public void testGetAndDeleteRepos() throws IOException {
+    @Test
+    public void testGetAndDeleteRepos() throws IOException, DuplicateKeyException {
         assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
         
         ConfigDatabase.addRepo(testRepo1);
@@ -166,8 +164,8 @@ public class ConfigDatabaseIntegrationTests {
         assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
     }
     
-    //@Test
-    public void testListRepos() throws IOException {
+    @Test
+    public void testListRepos() throws IOException, DuplicateKeyException {
         assertEquals(0, ConfigDatabase.getRepos().size());
         ConfigDatabase.addRepo(testRepo1);
         ConfigDatabase.addRepo(testRepo2);
