@@ -139,4 +139,11 @@ public class GitService implements WebInterface {
         ConfigDatabase.delRepoByName(repoName);
         return Response.status(200).build();
     }
+
+    @Override
+    public Response addSSHKey(String key, String userName) throws IOException
+    {
+        ConfigDatabase.addSSHKey(key, userName);
+        return Response.status(200).build();
+    }
 }

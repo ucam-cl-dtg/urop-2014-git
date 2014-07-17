@@ -26,8 +26,8 @@ import javax.ws.rs.core.Response;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
-/* TODO: Change from Response to whatever we are returning and for
- * errors, use exceptions, as they are sent across the wire.
+/* TODO: Use @return javadoc to comment return types
+ * TODO: Document parameters
  */
 @Path("/")
 public interface WebInterface {
@@ -104,4 +104,18 @@ public interface WebInterface {
     @DELETE
     @Path("/del/{repoName:.*}.git")
     public Response delRepository(@PathParam("repoName") String repoName) throws IOException;
+
+    /**
+     * Adds an SSH key to the collection of SSH keys. If the key already
+     * exists, it just overwrites it.
+     *
+     * @param key The body of the PUT request, given as plain text.
+     * @param userName The name (CRSID) of the owner of the key.
+     * @return Important part of the return is the HTTP status (success
+     * or failure?)
+     */
+    @PUT
+    @Path("/ssh/add/{userName}")
+    @Consumes("text/plain")
+    public Response addSSHKey(String key, @PathParam("userName") String userName) throws IOException;
 }
