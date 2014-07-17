@@ -28,9 +28,13 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public void insertRepo(Repository repo) {
-        collection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
-        collection.insert(repo);
+    public void insertRepo(Repository repo) throws DuplicateKeyException {
+        try {
+            collection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
+            collection.insert(repo);
+        } catch(com.mongodb.MongoException dupKey) {
+            throw new DuplicateKeyException();
+        }
     }
 
     @Override

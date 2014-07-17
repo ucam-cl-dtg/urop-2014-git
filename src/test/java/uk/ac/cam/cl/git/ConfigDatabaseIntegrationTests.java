@@ -31,10 +31,6 @@ public class ConfigDatabaseIntegrationTests {
     private static List<String> readAndWrites = new LinkedList<String>();
     private static List<String> emptyList = new LinkedList<String>();
     
-    {
-        Guice.createInjector(new DatabaseModule());
-    }
-    
     static {
         readOnlys.add("readonlyUser1");
         readOnlys.add("readonlyUser2");
@@ -42,7 +38,6 @@ public class ConfigDatabaseIntegrationTests {
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
     }
-   
     
     private static Repository testRepo1 = new Repository("test-repo-name1",
             "repository-owner", readAndWrites, readOnlys, "p1", "h1", null);

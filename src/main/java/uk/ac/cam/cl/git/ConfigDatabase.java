@@ -27,12 +27,12 @@ import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
  */
 public class ConfigDatabase {
 
-    /* 
-     * For Guice to inject dependencies, the following line must be run:
-     * Guice.createInjector(new DatabaseModule());
-     */
     private static RepositoryCollection reposCollection;
-    
+
+    static {
+        Guice.createInjector(new DatabaseModule());
+    }
+
     /**
      * For unit testing only, to allow a mock collection to be used.
      * Replaces the repository collection with the argument.

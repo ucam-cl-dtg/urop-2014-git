@@ -11,10 +11,13 @@ import java.util.List;
 
 
 /**
+ * An alternative implementation of RepositoryCollection to ensure that the
+ * Guice dependency injection actually does work (it does, I think).
+ * 
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  *
  */
-public class LocalRepositoryCollection implements RepositoryCollection {
+public class HashMapRepositoryCollection implements RepositoryCollection {
     
 
     private static HashMap<String, Repository> collection = new HashMap<String, Repository>();

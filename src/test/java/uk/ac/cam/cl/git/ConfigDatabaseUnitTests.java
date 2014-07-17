@@ -42,9 +42,6 @@ public class ConfigDatabaseUnitTests extends EasyMockSupport {
         readAndWrites.add("adminUser");
     }
 
-    /*
-     * FIXME: all tests need updating to allow for change to interface
-     */
     /**
      * Checks that repositories can be added to the database.
      * @throws DuplicateKeyException 

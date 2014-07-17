@@ -13,7 +13,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
 /**
- * @author ird28
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  *
  */
 public class DatabaseModule extends AbstractModule {
@@ -21,7 +21,7 @@ public class DatabaseModule extends AbstractModule {
     @Override
     protected void configure() {
         requestStaticInjection(ConfigDatabase.class);
-        bind(RepositoryCollection.class).to(LocalRepositoryCollection.class);
+        bind(RepositoryCollection.class).to(MongoRepositoryCollection.class);
     }
     
     @Provides
