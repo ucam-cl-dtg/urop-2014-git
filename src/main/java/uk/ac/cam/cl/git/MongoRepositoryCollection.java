@@ -6,8 +6,11 @@
 package uk.ac.cam.cl.git;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.mongojack.JacksonDBCollection;
+
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
 
@@ -36,8 +39,14 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public Iterator<Repository> findAll() {
-        return collection.find();
+    public List<Repository> findAll() {
+        List<Repository> rtn = new LinkedList<Repository>();
+        Iterator<Repository> allRepos = collection.find();
+
+        while (allRepos.hasNext())
+            rtn.add(allRepos.next());
+
+        return rtn;
     }
 
     @Override

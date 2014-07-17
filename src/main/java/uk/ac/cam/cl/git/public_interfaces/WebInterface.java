@@ -4,6 +4,7 @@ package uk.ac.cam.cl.git.public_interfaces;
 
 import java.io.IOException;
 
+import uk.ac.cam.cl.git.DuplicateKeyException;
 import uk.ac.cam.cl.git.ForkRequestBean;
 import uk.ac.cam.cl.git.AddRequestBean;
 
@@ -75,12 +76,13 @@ public interface WebInterface {
      * @param details Object giving the relevant information (see ForkRequestInterface)
      * @return The URL of the forked repository
      * @throws IOException
+     * @throws DuplicateKeyException 
      */
     @POST
     @Path("/fork")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response getForkURL(ForkRequestBean details) throws IOException;
+    public Response getForkURL(ForkRequestBean details) throws IOException, DuplicateKeyException;
     
     /**
      * Creates a new blank repository and returns the URL than can be used
@@ -88,12 +90,13 @@ public interface WebInterface {
      *  
      * @param details Object giving the relevant information (see AddRequestInterface)
      * @return The URL of the new repository
+     * @throws DuplicateKeyException 
      */
     @PUT
     @Path("/add")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response addRepository(AddRequestBean details) throws IOException;
+    public Response addRepository(AddRequestBean details) throws IOException, DuplicateKeyException;
 
     /**
      * Removes the repository from the configuration and the database.

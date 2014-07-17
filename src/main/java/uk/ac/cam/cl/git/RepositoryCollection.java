@@ -5,9 +5,8 @@
  */
 package uk.ac.cam.cl.git;
 
-import java.util.Iterator;
+import java.util.List;
 
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -23,7 +22,7 @@ public interface RepositoryCollection {
      * @throws DuplicateKeyException A repository with this name already
      * exists.
      */
-    public void insertRepo(Repository repo);
+    public void insertRepo(Repository repo) throws DuplicateKeyException;
 
     /**
      * Updates the given repository.
@@ -36,11 +35,11 @@ public interface RepositoryCollection {
     public void updateRepo(Repository repo);
 
     /**
-     * Returns an iterator containing all the repository objects in the collection
+     * Returns an list containing all the repository objects in the collection
      *
-     * @return Iterator of repository objects in the collection
+     * @return List of repository objects in the collection
      */
-    public Iterator<Repository> findAll();
+    public List<Repository> findAll();
 
     /**
      * Returns the repository object with the given name in the

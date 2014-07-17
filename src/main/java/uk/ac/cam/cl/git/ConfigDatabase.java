@@ -3,7 +3,6 @@
 package uk.ac.cam.cl.git;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.BufferedReader;
@@ -14,17 +13,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.mongojack.DBCursor;
-import org.mongojack.JacksonDBCollection;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -56,13 +50,8 @@ public class ConfigDatabase {
      */
     public static List<Repository> getRepos()
     {   /* TODO: Test ordered-ness or repositories. */
-        List<Repository> rtn = new LinkedList<Repository>();
-        Iterator<Repository> allRepos = reposCollection.findAll();
-
-        while (allRepos.hasNext())
-            rtn.add(allRepos.next());
-
-        return rtn;
+        return reposCollection.findAll();
+        
     }
     
     
@@ -183,7 +172,7 @@ public class ConfigDatabase {
             }
     }
     
-    private static void rebuildDatabaseFromGitolite() throws MongoException, IOException {
+    private static void rebuildDatabaseFromGitolite() throws MongoException, IOException, DuplicateKeyException {
         reposCollection.removeAll(); // Empty database collection
         BufferedReader reader = new BufferedReader(new FileReader(new File(
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
