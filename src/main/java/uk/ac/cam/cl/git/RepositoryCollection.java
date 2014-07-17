@@ -40,6 +40,11 @@ public interface RepositoryCollection {
      * @return List of repository objects in the collection
      */
     public List<Repository> findAll();
+    
+    /**
+     * Returns true iff there is a repository with the given name in the collection
+     */
+    public boolean contains(String name);
 
     /**
      * Returns the repository object with the given name in the

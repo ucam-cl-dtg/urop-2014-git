@@ -34,6 +34,11 @@ public class HashMapRepositoryCollection implements RepositoryCollection {
         collection.remove(repo.getName());
         collection.put(repo.getName(), repo);
     }
+    
+    @Override
+    public boolean contains(String name) {
+        return collection.containsKey(name);
+    }
 
     @Override
     public List<Repository> findAll() {

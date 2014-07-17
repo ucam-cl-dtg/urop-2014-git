@@ -119,8 +119,11 @@ public class GitService implements WebInterface {
     @Override
     public Response delRepository(String repoName)
     {
-        ConfigDatabase.delRepoByName(repoName);
-        return Response.status(200).build();
+        boolean successful = ConfigDatabase.delRepoByName(repoName);
+        if (successful)
+            return Response.status(200).build();
+        else
+            return Response.status(500).entity("The repository specified was not found").build();
     }
     
     @Override

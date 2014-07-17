@@ -68,12 +68,16 @@ public class ConfigDatabase {
 
     /**
      * Removes the repository object with the given name from the
-     * database.
+     * database if present in the database.
      * 
      * @param name The name of the repository to remove
+     * @return True if and only if a repository with name repoName existed in the database
      */
-    public static void delRepoByName(String name) {
-        reposCollection.removeByName(name);
+    public static boolean delRepoByName(String repoName) {
+        if (!reposCollection.contains(repoName))
+            return false;
+        reposCollection.removeByName(repoName);
+        return true;
     }
     
     /**

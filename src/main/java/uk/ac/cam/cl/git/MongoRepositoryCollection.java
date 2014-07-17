@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
 import com.google.inject.Inject;
@@ -40,6 +41,13 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     @Override
     public void updateRepo(Repository repo) {
         collection.updateById(repo.get_id(), repo);
+    }
+    
+    @Override
+    public boolean contains(String name) {
+        int matchingRepos = collection.find(new BasicDBObject("name", name)).count();
+        assert (matchingRepos == 0 || matchingRepos == 1);
+        return (matchingRepos == 1);
     }
 
     @Override
