@@ -96,7 +96,6 @@ public class ConfigDatabase {
     public static void delRepoByName(String name) throws IOException {
         reposCollection.remove(new BasicDBObject("name", name));
         generateConfigFile();
-        runGitoliteUpdate();
     }
 
     /**
@@ -126,7 +125,8 @@ public class ConfigDatabase {
         BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
         buffWriter.write(output.toString());
         buffWriter.close();
-        runGitoliteUpdate();
+        runGitoliteUpdate(new String[] {"compile",
+                                        "trigger POST_COMPILE"});
         log.info("Generated config file \"" +
                 ConfigurationLoader.getConfig()
                     .getGitoliteGeneratedConfigFile()
@@ -145,7 +145,6 @@ public class ConfigDatabase {
         reposCollection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
         reposCollection.insert(repo);
         generateConfigFile();
-        runGitoliteUpdate();
     }
 
     /**
@@ -156,16 +155,22 @@ public class ConfigDatabase {
      * @param username The name of the user to be added
      * @throws IOException 
      */
-    public static void addSSHKey(String key, String username) throws IOException {
+    public static void addSSHKey(String key, String userName) throws IOException {
+        log.info("Adding key for \"" + userName + "\" to \""
+                + ConfigurationLoader.getConfig()
+                    .getGitoliteSSHKeyLocation() + "\"");
         File keyFile = new File(ConfigurationLoader.getConfig()
-                .getGitoliteSSHKeyLocation() + username + ".pub");
+                .getGitoliteSSHKeyLocation() + userName + ".pub");
         if (!keyFile.exists()) {
+            if (keyFile.getParentFile() != null)
+                keyFile.getParentFile().mkdirs(); /* Make parent directories if necessary */
             keyFile.createNewFile();
         }
         BufferedWriter buffWriter = new BufferedWriter(new FileWriter(keyFile));
         buffWriter.write(key);
         buffWriter.close();
-        runGitoliteUpdate();
+        runGitoliteUpdate(new String[] {"trigger SSH_AUTHKEYS"});
+        log.info("Finished adding key for \"" + userName + "\"");
     }
 
     /**
@@ -183,14 +188,12 @@ public class ConfigDatabase {
     {
         reposCollection.updateById(repo.get_id(), repo);
         generateConfigFile();
-        runGitoliteUpdate();
     }
 
-    private static void runGitoliteUpdate() throws IOException
+    private static void runGitoliteUpdate(String[] updates) throws IOException
     {
         log.info("Starting gitolite recompilation");
-        for (String command : new String[] {"compile",
-                                            "trigger POST_COMPILE"})
+        for (String command : updates)
         {
             Process p = Runtime.getRuntime().exec(
               "env gitolite " + command
