@@ -21,7 +21,7 @@ public class DatabaseModule extends AbstractModule {
     @Override
     protected void configure() {
         requestStaticInjection(ConfigDatabase.class);
-        bind(RepositoryCollection.class).to(MongoRepositoryCollection.class);
+        bind(RepositoryCollection.class).to(LocalRepositoryCollection.class);
     }
     
     @Provides

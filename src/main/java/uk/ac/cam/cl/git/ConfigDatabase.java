@@ -75,6 +75,14 @@ public class ConfigDatabase {
     public static void delRepoByName(String name) {
         reposCollection.removeByName(name);
     }
+    
+    /**
+     * Removes all repositories from the collection.
+     * For unit testing only.
+     */
+    static void deleteAll() {
+        reposCollection.removeAll();
+    }
 
     /**
      * Generates config file for gitolite and writes it to gitoliteGeneratedConfigFile (see ConfigurationLoader).

@@ -14,10 +14,6 @@ import java.io.IOException;
 
 import org.easymock.*;
 import org.junit.Test;
-import org.mongojack.JacksonDBCollection;
-import org.mongojack.WriteResult;
-
-import com.mongodb.BasicDBObject;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -51,9 +47,10 @@ public class ConfigDatabaseUnitTests extends EasyMockSupport {
      */
     /**
      * Checks that repositories can be added to the database.
+     * @throws DuplicateKeyException 
      */
     @Test
-    public void testAddRepo() throws IOException {
+    public void testAddRepo() throws IOException, DuplicateKeyException {
 
         /* The below method calls to the database are expected */
 

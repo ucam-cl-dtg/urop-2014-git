@@ -16,7 +16,8 @@ import java.util.List;
  */
 public class LocalRepositoryCollection implements RepositoryCollection {
     
-    private static HashMap<String, Repository> collection;
+
+    private static HashMap<String, Repository> collection = new HashMap<String, Repository>();
 
     @Override
     public void insertRepo(Repository repo) throws DuplicateKeyException {
