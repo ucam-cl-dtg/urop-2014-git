@@ -13,17 +13,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.mongojack.DBCursor;
-import org.mongojack.JacksonDBCollection;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoException;
 
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.git.database.Mongo;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -36,39 +31,27 @@ public class ConfigDatabase {
      * For Guice to inject dependencies, the following line must be run:
      * Guice.createInjector(new DatabaseModule());
      */
-    private static JacksonDBCollection<Repository, String>
-        reposCollection =
-                JacksonDBCollection.wrap
-                ( Mongo.getDB().getCollection("repos")
-                , Repository.class
-                , String.class);
+    private static RepositoryCollection reposCollection;
     
     /**
      * For unit testing only, to allow a mock collection to be used.
-     * Replaces the mongo collection with the argument.
+     * Replaces the repository collection with the argument.
      * @param reposCollection The collection to be used.
      */
     @Inject
-    static void setReposCollection(JacksonDBCollection<Repository, String> rCollection) {
+    static void setReposCollection(RepositoryCollection rCollection) {
         reposCollection = rCollection;
     }
 
     /**
-     * Returns a list of all the repository objects in the database
+     * Returns a list of all the repository objects in the collection
      *
-     * @return List of repository objects in the database
+     * @return List of repository objects in the collection
      */
     public static List<Repository> getRepos()
     {   /* TODO: Test ordered-ness or repositories. */
-        List<Repository> rtn = new LinkedList<Repository>();
-        DBCursor<Repository> allRepos = reposCollection.find();
-
-        while (allRepos.hasNext())
-            rtn.add(allRepos.next());
-
-        allRepos.close();
-
-        return rtn;
+        return reposCollection.findAll();
+        
     }
     
     
@@ -80,7 +63,7 @@ public class ConfigDatabase {
      * @return The requested repository object
      */
     public static Repository getRepoByName(String name) {
-        return reposCollection.findOne(new BasicDBObject("name", name));
+        return reposCollection.findByName(name);
     }
 
     /**
@@ -90,7 +73,15 @@ public class ConfigDatabase {
      * @param name The name of the repository to remove
      */
     public static void delRepoByName(String name) {
-        reposCollection.remove(new BasicDBObject("name", name));
+        reposCollection.removeByName(name);
+    }
+    
+    /**
+     * Removes all repositories from the collection.
+     * For unit testing only.
+     */
+    static void deleteAll() {
+        reposCollection.removeAll();
     }
 
     /**
@@ -128,8 +119,7 @@ public class ConfigDatabase {
      * exists.
      */
     public static void addRepo(Repository repo) throws DuplicateKeyException, IOException {
-        reposCollection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
-        reposCollection.insert(repo);
+        reposCollection.insertRepo(repo);
         runGitoliteUpdate();
     }
 
@@ -166,7 +156,7 @@ public class ConfigDatabase {
      */
     public static void updateRepo(Repository repo) throws MongoException, IOException
     {
-        reposCollection.updateById(repo.get_id(), repo);
+        reposCollection.updateRepo(repo);
         runGitoliteUpdate();
     }
 
@@ -190,8 +180,8 @@ public class ConfigDatabase {
             }
     }
     
-    private static void rebuildDatabaseFromGitolite() throws MongoException, IOException {
-        reposCollection.remove(new BasicDBObject()); // Empty database collection
+    private static void rebuildDatabaseFromGitolite() throws MongoException, IOException, DuplicateKeyException {
+        reposCollection.removeAll(); // Empty database collection
         BufferedReader reader = new BufferedReader(new FileReader(new File(
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
         String firstLine;
@@ -221,7 +211,7 @@ public class ConfigDatabase {
             String parent_hidden = auxiliaryLine[2];
             Repository toInsert = new Repository(repoName, owner, readWrites,
                             readOnlys, parent, parent_hidden, null);
-            reposCollection.insert(toInsert);
+            reposCollection.insertRepo(toInsert);
             reader.readLine(); // extra line between repos
         }
         reader.close();
