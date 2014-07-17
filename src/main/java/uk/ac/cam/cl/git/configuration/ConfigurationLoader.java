@@ -31,6 +31,7 @@ public class ConfigurationLoader
     {
         /* ObjectMapper (JSON syntax) configuration */
         mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         try
         {
