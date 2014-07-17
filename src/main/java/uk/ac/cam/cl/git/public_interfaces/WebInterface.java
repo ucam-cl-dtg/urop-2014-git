@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
  */
 /* TODO: Use @return javadoc to comment return types
  * TODO: Document parameters
+ * TODO: Have this in a different project, to upload to maven server
  */
 @Path("/")
 public interface WebInterface {

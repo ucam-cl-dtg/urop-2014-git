@@ -23,8 +23,9 @@ public class ApplicationRegister extends Application {
 	public Set<Class<?>> getClasses() {
 		Set<Class<?>> result = new HashSet<Class<?>>();
 		result.add(GitService.class);
-		result.add(RemoteFailureHandler.class);
-		result.add(ExceptionHandler.class);
+		// TODO: Uncomment for production
+		// result.add(RemoteFailureHandler.class);
+		// result.add(ExceptionHandler.class);
 		return result;
 	}
 

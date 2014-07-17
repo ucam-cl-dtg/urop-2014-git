@@ -160,7 +160,7 @@ public class ConfigDatabase {
                 + ConfigurationLoader.getConfig()
                     .getGitoliteSSHKeyLocation() + "\"");
         File keyFile = new File(ConfigurationLoader.getConfig()
-                .getGitoliteSSHKeyLocation() + userName + ".pub");
+                .getGitoliteSSHKeyLocation() + "/" + userName + ".pub");
         if (!keyFile.exists()) {
             if (keyFile.getParentFile() != null)
                 keyFile.getParentFile().mkdirs(); /* Make parent directories if necessary */

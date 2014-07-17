@@ -25,6 +25,14 @@ public class AddRequestBean implements AddRequestInterface
         this.repoOwner = repoOwner;
     }
 
+    @JsonIgnore /* This is used by Jackon */
+    public AddRequestBean()
+    {
+        /* Jackson will replace null */
+        repoName = null;
+        repoOwner = null;
+    }
+
     @Override
     @JsonProperty("repoName")
     public String getRepoName() { return repoName; }
