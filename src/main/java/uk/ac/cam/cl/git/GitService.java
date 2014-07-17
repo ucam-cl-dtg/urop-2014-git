@@ -122,4 +122,12 @@ public class GitService implements WebInterface {
         ConfigDatabase.delRepoByName(repoName);
         return Response.status(200).build();
     }
+    
+    @Override
+    public Response getMeAnException() throws HereIsYourException {
+        int x = 42;
+        if (x == 42)
+            throw new HereIsYourException();
+        return Response.status(500).entity("This should never be reached").build();
+    }
 }

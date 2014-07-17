@@ -7,6 +7,7 @@ import java.io.IOException;
 import uk.ac.cam.cl.git.DuplicateKeyException;
 import uk.ac.cam.cl.git.ForkRequestBean;
 import uk.ac.cam.cl.git.AddRequestBean;
+import uk.ac.cam.cl.git.HereIsYourException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -107,4 +108,8 @@ public interface WebInterface {
     @DELETE
     @Path("/del/{repoName:.*}.git")
     public Response delRepository(@PathParam("repoName") String repoName);
+    
+    @GET
+    @Path("/exception-please")
+    public Response getMeAnException() throws HereIsYourException;
 }
