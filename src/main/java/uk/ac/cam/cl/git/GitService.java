@@ -99,7 +99,11 @@ public class GitService implements WebInterface {
     @Override
     public Response getForkURL(ForkRequestBean details) throws IOException
     {   /* TODO: Test */
-        /* This forks the upstream repository */
+        /* This forks the upstream repository
+         * This may fail due to permissions, or the shell of tomcat7
+         * Currently works with the shell `rssh' which is meant to be
+         * restricted.
+         */
         log.info("Forking repository \"" + details.getRepoName() + ".git\""
                 + " to \"" + details.getNewRepoName() + ".git\""
                 + " for user \"" + details.getRepoOwner() + "\"");
