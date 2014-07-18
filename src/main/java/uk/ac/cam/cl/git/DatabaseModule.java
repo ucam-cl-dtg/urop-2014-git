@@ -31,5 +31,10 @@ public class DatabaseModule extends AbstractModule {
                         , Repository.class
                         , String.class);
     }
+    
+    @Provides
+    public Runtime provideRuntime() {
+        return Runtime.getRuntime();
+    }
 
 }

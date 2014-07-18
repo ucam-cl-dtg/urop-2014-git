@@ -32,8 +32,13 @@ import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 public class ConfigDatabase {
     /* For logging */
     private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
+    private static final String[] environmentVariables = new String[]
+            {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
+            , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
+            , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()};
 
     private static RepositoryCollection reposCollection;
+    private static Runtime runtime;
 
     static {
         Guice.createInjector(new DatabaseModule());
@@ -47,6 +52,17 @@ public class ConfigDatabase {
     @Inject
     static void setReposCollection(RepositoryCollection rCollection) {
         reposCollection = rCollection;
+    }
+    
+    /**
+     * For unit testing only, to allow a mock runtime to be used so that
+     * the gitolite update calls are not actually executed.
+     * Replaces the runtime field with the argument.
+     * @param r The runtime to be used for the gitolite calls.
+     */
+    @Inject
+    static void setRuntime(Runtime r) {
+        runtime = r;
     }
 
     /**
@@ -194,20 +210,19 @@ public class ConfigDatabase {
         log.info("Starting gitolite recompilation");
         for (String command : updates)
         {
-            Process p = Runtime.getRuntime().exec(
-              "env gitolite " + command
-              , new String[]
-                {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
-                , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
-                , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()});
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            Process p = runtime.exec("env gitolite " + command, environmentVariables);
             String line;
-            while ((line = outputReader.readLine()) != null) {
-                System.out.println(line);
+            if (p.getErrorStream() != null) {
+                BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                while ((line = errorReader.readLine()) != null) {
+                    log.warn(line);
+                }
             }
-            while ((line = errorReader.readLine()) != null) {
-                System.err.println(line);
+            if (p.getInputStream() != null) {
+                BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                while ((line = outputReader.readLine()) != null) {
+                    log.info(line);
+                }
             }
         }
         log.info("Finished gitolite recompilation");
@@ -249,5 +264,11 @@ public class ConfigDatabase {
         }
         reader.close();
     }
+    
+    static Process testRuntime() throws IOException {
+        return runtime.exec("bananas in pyjamas", environmentVariables);
+    }
+    
+    static String[] getEnvVar() { return environmentVariables; }
 
 }
