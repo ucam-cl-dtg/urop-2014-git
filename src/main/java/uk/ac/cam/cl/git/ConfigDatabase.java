@@ -205,6 +205,11 @@ public class ConfigDatabase {
         generateConfigFile();
     }
 
+    /**
+     * Runs the specified gitolite updates in a new process.
+     * @param updates The gitolite commands to be run
+     * @throws IOException
+     */
     private static void runGitoliteUpdate(String[] updates) throws IOException
     {
         log.info("Starting gitolite recompilation");
