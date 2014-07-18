@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class Repository implements TesterInterface, FrontendRepositoryInterface
 { 
     /* For logging */
-    private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
+    private static final Logger log = LoggerFactory.getLogger(Repository.class);
 
     private final String parent;
     private final String parent_hidden;
