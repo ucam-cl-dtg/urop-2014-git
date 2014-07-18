@@ -19,7 +19,7 @@ import org.junit.Test;
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  * @version 0.1
  */
-public class ConfigDatabaseUnitTests extends EasyMockSupport {
+public class ConfigDatabaseTest extends EasyMockSupport {
 
     private static List<String> readOnlys = new LinkedList<String>();
     private static List<String> readAndWrites = new LinkedList<String>();

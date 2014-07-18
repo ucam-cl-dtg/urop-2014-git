@@ -50,7 +50,7 @@ public class ConfigDatabaseIntegrationTests {
      * Before each test, empty the database.
      */
     @Before
-    public void setUp() {        
+    public void setUp() throws IOException {        
         ConfigDatabase.deleteAll();
     }
     

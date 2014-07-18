@@ -79,13 +79,13 @@ public class ConfigDatabase {
      * @param name The name of the repository to remove
      * @return True if and only if a repository with name repoName existed in the database
      */
-    public static boolean delRepoByName(String repoName) {
-        log.info("Deleting repository \"" + name + "\"");
+    public static boolean delRepoByName(String repoName) throws IOException {
+        log.info("Deleting repository \"" + repoName + "\"");
         if (!reposCollection.contains(repoName))
             return false;
         reposCollection.removeByName(repoName);
         generateConfigFile();
-        log.info("Deleted repository \"" + name + "\"");
+        log.info("Deleted repository \"" + repoName + "\"");
         return true;
     }
     
@@ -93,7 +93,7 @@ public class ConfigDatabase {
      * Removes all repositories from the collection.
      * For unit testing only.
      */
-    static void deleteAll() {
+    static void deleteAll() throws IOException {
         reposCollection.removeAll();
         generateConfigFile();
     }
