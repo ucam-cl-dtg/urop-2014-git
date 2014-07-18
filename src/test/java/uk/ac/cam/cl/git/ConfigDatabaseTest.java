@@ -53,9 +53,11 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
         mockCollection.insertRepo(testRepo1);
         EasyMock.expectLastCall().once();
+        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
 
         mockCollection.insertRepo(testRepo2);
         EasyMock.expectLastCall().once();
+        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
 
         EasyMock.replay(mockCollection);
 
@@ -103,9 +105,11 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
         mockCollection.updateRepo(testRepo1);
         EasyMock.expectLastCall().once();
+        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
 
         mockCollection.updateRepo(testRepo2);
         EasyMock.expectLastCall().once();
+        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
 
         EasyMock.replay(mockCollection);
 
