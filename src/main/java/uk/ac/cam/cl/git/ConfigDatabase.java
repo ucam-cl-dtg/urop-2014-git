@@ -205,6 +205,15 @@ public class ConfigDatabase {
         generateConfigFile();
     }
 
+    /**
+     * Runs the gitolite update programs.
+     * <p>
+     * This is because gitolite is a perl program and compiles the
+     * configuration file into a perl module, which it uses.
+     * This just forces recompilation.
+     *
+     * @param updates List of things to recompile/reconfigure.
+     */
     private static void runGitoliteUpdate(String[] updates) throws IOException
     {
         log.info("Starting gitolite recompilation");
@@ -228,6 +237,10 @@ public class ConfigDatabase {
         log.info("Finished gitolite recompilation");
     }
     
+    /**
+     * This rebuilds the MongoDB database using the gitolite
+     * configuration file, in case the two become out of sync.
+     */
     private static void rebuildDatabaseFromGitolite() throws MongoException, IOException, DuplicateKeyException {
         reposCollection.removeAll(); // Empty database collection
         BufferedReader reader = new BufferedReader(new FileReader(new File(
