@@ -94,8 +94,10 @@ public class ConfigDatabase {
      * @param name The name of the repository to remove
      */
     public static void delRepoByName(String name) throws IOException {
+        log.info("Deleting repository \"" + name + "\"");
         reposCollection.remove(new BasicDBObject("name", name));
         generateConfigFile();
+        log.info("Deleted repository \"" + name + "\"");
     }
 
     /**
