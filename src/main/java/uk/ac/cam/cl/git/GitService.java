@@ -11,7 +11,12 @@ import javax.ws.rs.core.Response;
 
 import uk.ac.cam.cl.git.public_interfaces.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GitService implements WebInterface {
+    /* For logging */
+    private static final Logger log = LoggerFactory.getLogger(GitService.class);
    
     @Override
     public Response listRepositories() {
@@ -94,30 +99,42 @@ public class GitService implements WebInterface {
     @Override
     public Response getForkURL(ForkRequestBean details) throws IOException, DuplicateKeyException
     {   /* TODO: Test */
-        /* This forks the upstream repository */
-        Repository rtn = new Repository(details.getRepoName()
+        /* This forks the upstream repository
+         * This may fail due to permissions, or the shell of tomcat7
+         * Currently works with the shell `rssh' which is meant to be
+         * restricted.
+         */
+        log.info("Forking repository \"" + details.getRepoName() + ".git\""
+                + " to \"" + details.getNewRepoName() + ".git\""
+                + " for user \"" + details.getRepoOwner() + "\"");
+        Repository rtn = new Repository(details.getNewRepoName()
                                       , details.getRepoOwner()
                                       , null /* RW */
                                       , null /* RO */
-                                      , details.getUpstream()
+                                      , details.getRepoName()
                                       , details.getOverlay());
         ConfigDatabase.addRepo(rtn);
+        // TODO: better return, e.g. NewRepoName (as repoName perhaps)
         return Response.status(200).entity(rtn.getRepoPath()).build();
     }
 
     @Override
     public Response addRepository(AddRequestBean details) throws IOException, DuplicateKeyException
     {
+        log.info("Creating new repository \"" + details.getRepoName()
+                + ".git\"" + " for user \"" + details.getRepoOwner()
+                + "\"");
         Repository rtn = new Repository(details.getRepoName()
                                       , details.getRepoOwner()
                                       , null
                                       , null);
         ConfigDatabase.addRepo(rtn);
+        // TODO: better return
         return Response.status(200).entity(rtn.getRepoPath()).build();
     }
 
     @Override
-    public Response delRepository(String repoName)
+    public Response delRepository(String repoName) throws IOException
     {
         boolean successful = ConfigDatabase.delRepoByName(repoName);
         if (successful)
@@ -132,5 +149,12 @@ public class GitService implements WebInterface {
         if (x == 42)
             throw new HereIsYourException();
         return Response.status(500).entity("This should never be reached").build();
+    }
+
+    @Override
+    public Response addSSHKey(String key, String userName) throws IOException
+    {
+        ConfigDatabase.addSSHKey(key, userName);
+        return Response.status(200).build();
     }
 }

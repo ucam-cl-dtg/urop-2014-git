@@ -13,37 +13,47 @@ import uk.ac.cam.cl.git.public_interfaces.ForkRequestInterface;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  */
 public class ForkRequestBean implements ForkRequestInterface
-{
-    private final String repoName;
+{ /* TODO: Figure out what is causing import of Jackson 1, only use
+   * Jackson 1 or Jackson 2 but not both!
+   */
+    private final String newRepoName;
     private final String repoOwner;
-    private final String upstream;
+    private final String repoName;
     private final String overlay;
 
+    @org.codehaus.jackson.annotate.JsonCreator
     @JsonCreator
-    public ForkRequestBean(@JsonProperty("repoName")  String repoName
-                         , @JsonProperty("repoOwner") String repoOwner
-                         , @JsonProperty("upstream")  String upstream
-                         , @JsonProperty("overlay")   String overlay)
+    public ForkRequestBean(@org.codehaus.jackson.annotate.JsonProperty("newRepoName") @JsonProperty("newRepoName") String newRepoName
+                         , @org.codehaus.jackson.annotate.JsonProperty("repoOwner")   @JsonProperty("repoOwner")   String repoOwner
+                         , @org.codehaus.jackson.annotate.JsonProperty("repoName")    @JsonProperty("repoName")    String repoName
+                         , @org.codehaus.jackson.annotate.JsonProperty("overlay")     @JsonProperty("overlay")     String overlay)
     {
-        this.repoName  = repoName;
+        if (newRepoName == null)
+            this.newRepoName = repoOwner + "/" + repoName;
+        else
+            this.newRepoName  = newRepoName;
         this.repoOwner = repoOwner;
-        this.upstream  = upstream;
+        this.repoName  = repoName;
         this.overlay   = overlay;
     }
 
     @Override
-    @JsonProperty("repoName")
-    public String getRepoName() { return repoName; }
+    @org.codehaus.jackson.annotate.JsonProperty("newRepoName")
+    @JsonProperty("newRepoName")
+    public String getNewRepoName() { return newRepoName; }
 
     @Override
+    @org.codehaus.jackson.annotate.JsonProperty("repoOwner")
     @JsonProperty("repoOwner")
     public String getRepoOwner() { return repoOwner; }
     
     @Override
-    @JsonProperty("upstream")
-    public String getUpstream() { return upstream; }
+    @org.codehaus.jackson.annotate.JsonProperty("repoName")
+    @JsonProperty("repoName")
+    public String getRepoName() { return repoName; }
 
     @Override
+    @org.codehaus.jackson.annotate.JsonProperty("overlay")
     @JsonProperty("overlay")
     public String getOverlay() { return overlay; }
 }

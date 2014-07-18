@@ -17,19 +17,22 @@ public class AddRequestBean implements AddRequestInterface
     private final String repoName;
     private final String repoOwner;
 
+    @org.codehaus.jackson.annotate.JsonCreator
     @JsonCreator
-    public AddRequestBean(@JsonProperty("repoName")  String repoName
-                         , @JsonProperty("repoOwner") String repoOwner)
+    public AddRequestBean(@org.codehaus.jackson.annotate.JsonProperty("repoName")  @JsonProperty("repoName")  String repoName
+                        , @org.codehaus.jackson.annotate.JsonProperty("repoOwner") @JsonProperty("repoOwner") String repoOwner)
     {
         this.repoName  = repoName;
         this.repoOwner = repoOwner;
     }
 
     @Override
+    @org.codehaus.jackson.annotate.JsonProperty("repoName")
     @JsonProperty("repoName")
     public String getRepoName() { return repoName; }
 
     @Override
+    @org.codehaus.jackson.annotate.JsonProperty("repoOwner")
     @JsonProperty("repoOwner")
     public String getRepoOwner() { return repoOwner; }
 }

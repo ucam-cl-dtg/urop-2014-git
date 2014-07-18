@@ -13,6 +13,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.mongojack.DBCursor;
+import org.mongojack.JacksonDBCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -26,6 +30,8 @@ import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
  * @version 0.1
  */
 public class ConfigDatabase {
+    /* For logging */
+    private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
 
     private static RepositoryCollection reposCollection;
 
@@ -74,9 +80,12 @@ public class ConfigDatabase {
      * @return True if and only if a repository with name repoName existed in the database
      */
     public static boolean delRepoByName(String repoName) {
+        log.info("Deleting repository \"" + name + "\"");
         if (!reposCollection.contains(repoName))
             return false;
         reposCollection.removeByName(repoName);
+        generateConfigFile();
+        log.info("Deleted repository \"" + name + "\"");
         return true;
     }
     
@@ -86,6 +95,7 @@ public class ConfigDatabase {
      */
     static void deleteAll() {
         reposCollection.removeAll();
+        generateConfigFile();
     }
 
     /**
@@ -100,6 +110,10 @@ public class ConfigDatabase {
      * @throws IOException Typically an unrecoverable problem.
      */
     public static void generateConfigFile() throws IOException {
+        log.info("Generating config file \"" +
+                ConfigurationLoader.getConfig()
+                    .getGitoliteGeneratedConfigFile()
+                + "\"");
         StringBuilder output = new StringBuilder();
 
         for (Repository r : getRepos())
@@ -111,7 +125,12 @@ public class ConfigDatabase {
         BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
         buffWriter.write(output.toString());
         buffWriter.close();
-        runGitoliteUpdate();
+        runGitoliteUpdate(new String[] {"compile",
+                                        "trigger POST_COMPILE"});
+        log.info("Generated config file \"" +
+                ConfigurationLoader.getConfig()
+                    .getGitoliteGeneratedConfigFile()
+                + "\"");
     }
 
     /**
@@ -124,7 +143,7 @@ public class ConfigDatabase {
      */
     public static void addRepo(Repository repo) throws DuplicateKeyException, IOException {
         reposCollection.insertRepo(repo);
-        runGitoliteUpdate();
+        generateConfigFile();
     }
 
     /**
@@ -135,16 +154,22 @@ public class ConfigDatabase {
      * @param username The name of the user to be added
      * @throws IOException 
      */
-    public static void addSSHKey(String key, String username) throws IOException {
+    public static void addSSHKey(String key, String userName) throws IOException {
+        log.info("Adding key for \"" + userName + "\" to \""
+                + ConfigurationLoader.getConfig()
+                    .getGitoliteSSHKeyLocation() + "\"");
         File keyFile = new File(ConfigurationLoader.getConfig()
-                .getGitoliteSSHKeyLocation() + username + ".pub");
+                .getGitoliteSSHKeyLocation() + "/" + userName + ".pub");
         if (!keyFile.exists()) {
+            if (keyFile.getParentFile() != null)
+                keyFile.getParentFile().mkdirs(); /* Make parent directories if necessary */
             keyFile.createNewFile();
         }
         BufferedWriter buffWriter = new BufferedWriter(new FileWriter(keyFile));
         buffWriter.write(key);
         buffWriter.close();
-        runGitoliteUpdate();
+        runGitoliteUpdate(new String[] {"trigger SSH_AUTHKEYS"});
+        log.info("Finished adding key for \"" + userName + "\"");
     }
 
     /**
@@ -161,14 +186,16 @@ public class ConfigDatabase {
     public static void updateRepo(Repository repo) throws MongoException, IOException
     {
         reposCollection.updateRepo(repo);
-        runGitoliteUpdate();
+        generateConfigFile();
     }
 
-    private static void runGitoliteUpdate() throws IOException
+    private static void runGitoliteUpdate(String[] updates) throws IOException
     {
+        log.info("Starting gitolite recompilation");
+        for (String command : updates)
+        {
             Process p = Runtime.getRuntime().exec(
-              ConfigurationLoader.getConfig().getGitoliteHome()
-                + "/.gitolite/hooks/gitolite-admin/post-update"
+              "env gitolite " + command
               , new String[]
                 {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
                 , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
@@ -182,6 +209,8 @@ public class ConfigDatabase {
             while ((line = errorReader.readLine()) != null) {
                 System.err.println(line);
             }
+        }
+        log.info("Finished gitolite recompilation");
     }
     
     private static void rebuildDatabaseFromGitolite() throws MongoException, IOException, DuplicateKeyException {
@@ -190,9 +219,9 @@ public class ConfigDatabase {
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
         String firstLine;
         while ((firstLine = reader.readLine()) != null) { // While not end of file
-            String repoName = firstLine.split(" ")[1]; // Repo name is second word of first line
+            String repoName = firstLine.split("\\s\\+")[1]; // Repo name is second word of first line
             
-            String[] readWriteLine = reader.readLine().split("=")[1].trim().split(" ");
+            String[] readWriteLine = reader.readLine().split("=")[1].trim().split("\\s\\+");
             // We want the words to the right of the "RW ="
             
             String nextLine = reader.readLine();
@@ -203,8 +232,8 @@ public class ConfigDatabase {
                 auxiliaryLine = nextLine.split(" ");
             }
             else { // At least one user with read only access
-                readOnlyLine = nextLine.split("=")[1].trim().split(" ");
-                auxiliaryLine = reader.readLine().split(" ");
+                readOnlyLine = nextLine.split("=")[1].trim().split("\\s\\+");
+                auxiliaryLine = reader.readLine().split("\\s\\+");
             }
             
             String owner = readWriteLine[0]; // Owner is always first RW entry - see Repository.toString()

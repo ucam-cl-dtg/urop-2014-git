@@ -7,6 +7,10 @@
     <description>Git integration for UROP 2014 at Cambridge CL, DTG.</description>
     <packaging>war</packaging>
 
+    <properties>
+        <my.resteasy.version>3.0.8.Final</my.resteasy.version>
+    </properties>
+
     <repositories>
         <repository>
             <id>jgit-repository</id>
@@ -35,11 +39,6 @@
             <version>3.0</version>
         </dependency>
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0</version>
-        </dependency>
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
@@ -60,6 +59,21 @@
             <version>2.0.0</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <version>3.2</version>
@@ -68,12 +82,12 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>3.0.4.Final</version>
+            <version>${my.resteasy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.4.Final</version>
+            <version>${my.resteasy.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -120,6 +134,27 @@
                     <webXml>WebContent/WEB-INF/web.xml</webXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
         </plugins>
     </build>
+    <!--<distributionManagement>-->
+        <!-- use the following if you're not using a snapshot version.
+        <repository>
+            <id>dtg-code</id>
+            <name>RepositoryProxy</name>
+            <url>http://maven.dtg.cl.cam.ac.uk/content/repositories/releases</url>
+        </repository>
+        -->
+        <!-- use the following if you ARE using a snapshot version.
+        <snapshotRepository>
+            <id>dtg-code</id>
+            <name>RepositoryProxy</name>
+            <url>http://maven.dtg.cl.cam.ac.uk/content/repositories/snapshots</url>
+        </snapshotRepository>
+        -->
+    <!--</distributionManagement>-->
 </project>

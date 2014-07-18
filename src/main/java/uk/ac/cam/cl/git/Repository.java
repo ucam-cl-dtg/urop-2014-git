@@ -21,6 +21,9 @@ import com.fasterxml.jackson.annotation.*;
 import org.mongojack.Id;
 import org.mongojack.ObjectId;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
@@ -28,6 +31,9 @@ import org.mongojack.ObjectId;
  */
 public class Repository implements TesterInterface, FrontendRepositoryInterface
 { 
+    /* For logging */
+    private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
+
     private final String parent;
     private final String parent_hidden;
     private final String repo;
@@ -124,15 +130,20 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         /* Clone parent, if it is not null */
         if (parent != null)
         {
+            File dest = new File(
+                    ConfigurationLoader.getConfig()
+                        .getGitoliteHome()
+                            + "/repositories/" + repo + ".git");
+            log.info("I am: " + System.getProperty("user.name"));
+            log.info("Making directory " + dest.getPath());
+            dest.mkdirs(); /* Make necessary directories */
+
             handle = new GitDb(
                      /* src            */
                         ConfigurationLoader.getConfig()
                             .getGitoliteHome()
                                 + "/repositories/" + parent + ".git"
-                    ,/* dest           */ new File(
-                        ConfigurationLoader.getConfig()
-                            .getGitoliteHome()
-                                + "/repositories/" + repo + ".git")
+                    ,/* dest           */ dest
                     ,/* bare           */ true
                     ,/* branch         */ "master"
                     ,/* remote         */ "origin"
@@ -468,11 +479,12 @@ public class Repository implements TesterInterface, FrontendRepositoryInterface
         strb.append("     RW =");
         strb.append(" " + owner);
         /* Usernames or groups */
-        for ( String name : read_write)
-            strb.append(" " + name);
+        if (read_write != null)
+            for ( String name : read_write)
+                strb.append(" " + name);
         strb.append("\n");
 
-        if (read_only.size() > 0)
+        if (read_only != null && read_only.size() > 0)
         {
             strb.append("     R  =");
             /* Usernames or groups */
