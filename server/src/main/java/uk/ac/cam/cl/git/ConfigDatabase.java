@@ -236,10 +236,14 @@ public class ConfigDatabase {
             try
             {
                 JSch ssh = new JSch();
+                ssh.setKnownHosts("~/.ssh/known_hosts");
+                ssh.addIdentity("~/.ssh/id_rsa");
                 Session session = ssh.getSession(ConfigurationLoader
                                                   .getConfig().getRepoUser()
                                                , "localhost"
                                                , 22);
+                session.connect();
+
                 ChannelExec channel = (ChannelExec)session.openChannel("exec");
                 channel.setCommand(command);
 
