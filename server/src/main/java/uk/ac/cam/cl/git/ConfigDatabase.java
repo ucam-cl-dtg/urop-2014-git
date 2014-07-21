@@ -220,6 +220,9 @@ public class ConfigDatabase {
         log.info("Starting gitolite recompilation");
         for (String command : updates)
         {
+            /* `env' runs gitolite from $PATH defined in
+             * environmentVariables
+             */
             Process p = runtime.exec("env gitolite " + command, environmentVariables);
             String line;
             if (p.getErrorStream() != null) {

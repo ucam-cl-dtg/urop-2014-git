@@ -57,6 +57,7 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
         /* The below method calls are expected */
 
+        /* TODO: Mock file writing too */
         mockCollection.insertRepo(testRepo1);
         EasyMock.expectLastCall().once();
         EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());

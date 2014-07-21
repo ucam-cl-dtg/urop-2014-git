@@ -138,7 +138,7 @@ public class ConfigDatabaseIntegrationTests {
     
     /**
      * Checks that calling update repo on an existing repo is fine.
-     * However, is does NOT check that the repo has actually been updated. (TODO?)
+     * However, is does NOT check that the repo has actually been updated.
      * Assumes adding a repo is fine.
      * @throws DuplicateKeyException 
      */
