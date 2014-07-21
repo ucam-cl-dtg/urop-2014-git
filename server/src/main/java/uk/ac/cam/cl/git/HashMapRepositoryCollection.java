@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 
 
 /**
@@ -25,9 +25,9 @@ public class HashMapRepositoryCollection implements RepositoryCollection {
     private static HashMap<String, Repository> collection = new HashMap<String, Repository>();
 
     @Override
-    public void insertRepo(Repository repo) throws DuplicateKeyException {
+    public void insertRepo(Repository repo) throws DuplicateRepoNameException {
         if (collection.containsKey(repo.getName()))
-            throw new DuplicateKeyException();
+            throw new DuplicateRepoNameException();
         collection.put(repo.getName(), repo);
     }
 

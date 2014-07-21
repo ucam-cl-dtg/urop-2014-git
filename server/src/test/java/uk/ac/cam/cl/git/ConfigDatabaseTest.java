@@ -15,7 +15,7 @@ import java.io.InputStream;
 import org.easymock.*;
 import org.junit.Test;
 
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
 /**
@@ -52,10 +52,10 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
     /**
      * Checks that repositories can be added to the database.
-     * @throws DuplicateKeyException 
+     * @throws DuplicateRepoNameException 
      */
     @Test
-    public void testAddRepo() throws IOException, DuplicateKeyException {
+    public void testAddRepo() throws IOException, DuplicateRepoNameException {
 
         /* The below method calls are expected */
 

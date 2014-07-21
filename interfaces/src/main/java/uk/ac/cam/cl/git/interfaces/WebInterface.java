@@ -3,11 +3,13 @@
 package uk.ac.cam.cl.git.interfaces;
 
 import java.io.IOException;
+import java.util.List;
 
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.AddRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -17,109 +19,107 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.core.Response;
 
 /**
  * This is the web interface that is to be used for accessing 
  * repositories and their contents, making fork requests to
  * existing repositories, and requesting the creation of an
- * empty new repository.
+ * empty new repository. It can also be used to delete
+ * repositories, throw an exception (for testing), and add
+ * an SSH key to gitolite.
  * 
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
-/* TODO: Use @return javadoc to comment return types
- * TODO: Document parameters
- * TODO: Have this in a different project, to upload to maven server
- */
 @Path("/")
 public interface WebInterface {
     /**
-     * Returns a JSON object listing the names of the repositories
-     * currently stored in the database.
-     * @return The JSON list of repositories
+     * @return A list of the names of the repositories currently stored in the database
      */
     @GET
     @Path("/git")
     @Produces("application/json")
-    public Response listRepositories();
+    public List<String> listRepositories();
 
     /**
-     * Returns a JSON object listing all of the files contained within
-     * the repository specified.
-     * 
-     * @param repoName The name of the repository whose contents are to be listed
-     * @return The JSON list of contained filenames
+     * @param repoName The name of the repository whose files are to be listed
+     * @return A list of the filenames in the given repository
      * @throws IOException
+     * @throws RepositoryNotFoundException
      */
     @GET
     @Path("/git/{repoName:.*}.git")
     @Produces("application/json")
-    public Response listFiles(@PathParam("repoName") String repoName) throws IOException;
+    public List<String> listFiles(@PathParam("repoName") String repoName)
+            throws IOException, RepositoryNotFoundException;
 
     /**
-     * Returns the contents of the file requested.
-     * 
      * @param fileName The name of the file whose contents are to be returned
      * @param repoName The name of the repository containing the file
-     * @return The requested file
+     * @return The contents of the specified file
      * @throws IOException
+     * @throws RepositoryNotFoundException
      */
     @GET
     @Path("/git/{repoName:.*}.git/{fileName:.*}")
     @Produces("application/octet-stream")
-    public Response getFile(@PathParam("fileName") String fileName
-                          , @PathParam("repoName") String repoName) throws IOException;
+    public String getFile(@PathParam("fileName") String fileName
+                          , @PathParam("repoName") String repoName)
+                                  throws IOException, RepositoryNotFoundException;
     
     /**
      * Forks the specified repository and returns the URL that can be used
      * to clone the forked repository.
      * 
-     * @param details Object giving the relevant information (see ForkRequestInterface)
+     * @param details ForkRequestBean giving the necessary information
      * @return The URL of the forked repository
      * @throws IOException
-     * @throws DuplicateKeyException 
+     * @throws DuplicateRepoNameException 
      */
     @POST
     @Path("/fork")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response getForkURL(ForkRequestBean details) throws IOException, DuplicateKeyException;
+    public String fork(ForkRequestBean details)
+            throws IOException, DuplicateRepoNameException;
     
     /**
      * Creates a new blank repository and returns the URL than can be used
-     * to clone the new repository.
+     * to clone it.
      *  
-     * @param details Object giving the relevant information (see AddRequestInterface)
+     * @param details AddRequestBean giving the necessary information
      * @return The URL of the new repository
-     * @throws DuplicateKeyException 
+     * @throws IOException
+     * @throws DuplicateRepoNameException 
      */
     @PUT
     @Path("/add")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response addRepository(AddRequestBean details) throws IOException, DuplicateKeyException;
+    public String addRepository(AddRequestBean details)
+            throws IOException, DuplicateRepoNameException;
 
     /**
      * Removes the repository from the configuration and the database.
      * <p>
      * Does not remove repository from file system, to remove stale
      * repositories, run TODO: stale repository detector.
+     * 
+     * @param repoName The name of the repository to be deleted
+     * @throws IOException
+     * @throws RepositoryNotFoundException
      */
     @DELETE
     @Path("/del/{repoName:.*}.git")
-    public Response delRepository(@PathParam("repoName") String repoName) throws IOException;
+    public void deleteRepository(@PathParam("repoName") String repoName)
+            throws IOException, RepositoryNotFoundException;
     
     /**
-     * Returns an exception for testing of the exception chains.
-     *
-     * @return This will give an exception, using
-     * resteasy-exception-chains
-     * @throws HereIsYourException An exception you asked for.
+     * @throws HereIsYourException Certain to be thrown each call
      */
     @GET
     @Path("/exception-please")
-    public Response getMeAnException() throws HereIsYourException;
+    public void getMeAnException() throws HereIsYourException;
 
     /**
      * Adds an SSH key to the collection of SSH keys. If the key already
@@ -127,11 +127,10 @@ public interface WebInterface {
      *
      * @param key The body of the PUT request, given as plain text.
      * @param userName The name (CRSID) of the owner of the key.
-     * @return Important part of the return is the HTTP status (success
-     * or failure?)
      */
     @PUT
     @Path("/ssh/add/{userName}")
     @Consumes("text/plain")
-    public Response addSSHKey(String key, @PathParam("userName") String userName) throws IOException;
+    public void addSSHKey(String key, @PathParam("userName") String userName)
+            throws IOException;
 }

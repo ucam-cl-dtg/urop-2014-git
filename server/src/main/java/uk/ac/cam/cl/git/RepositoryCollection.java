@@ -7,7 +7,7 @@ package uk.ac.cam.cl.git;
 
 import java.util.List;
 
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 
 import com.mongodb.MongoException;
 /**
@@ -21,18 +21,16 @@ public interface RepositoryCollection {
      * conf file when generated.
      *
      * @param repo The repository to be added
-     * @throws DuplicateKeyException A repository with this name already
+     * @throws DuplicateRepoNameException A repository with this name already
      * exists.
      */
-    public void insertRepo(Repository repo) throws DuplicateKeyException;
+    public void insertRepo(Repository repo) throws DuplicateRepoNameException;
 
     /**
      * Updates the given repository.
      *
      * @param repo The updated repository (there must also be a
      * repository by this name).
-     * @throws MongoException If the update operation fails (for some
-     * unknown reason). FIXME: should be a more general exception
      */
     public void updateRepo(Repository repo);
 

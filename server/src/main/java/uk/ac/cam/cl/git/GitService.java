@@ -7,12 +7,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
-import javax.ws.rs.core.Response;
-
 import uk.ac.cam.cl.git.api.AddRequestBean;
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.interfaces.*;
 
 import org.slf4j.Logger;
@@ -23,27 +22,25 @@ public class GitService implements WebInterface {
     private static final Logger log = LoggerFactory.getLogger(GitService.class);
    
     @Override
-    public Response listRepositories() {
+    public List<String> listRepositories() {
         List<Repository> repos = ConfigDatabase.instance().getRepos();
         List<String> toReturn = new LinkedList<String>();
         for (Repository repo : repos) {
             toReturn.add(repo.getName());
         }
-        return Response.status(200).entity(toReturn).build();
+        return toReturn;
     }
 
     @Override
-    public Response listFiles(String repoName) throws IOException
+    public List<String> listFiles(String repoName) throws IOException, RepositoryNotFoundException
     {
         if (repoName == null)
-            return Response.status(400)
-                .entity("No repository given.").build();
+            throw new RepositoryNotFoundException("No repository given.");
 
         Repository repo = ConfigDatabase.instance().getRepoByName(repoName);
         if (repo == null)
-            return Response.status(404)
-                .entity("Repository not found in database! "
-                        + "It may exist on disk though.").build();
+            throw new RepositoryNotFoundException("Repository not found in database! "
+                        + "It may exist on disk though.");
 
         try
         {
@@ -53,9 +50,8 @@ public class GitService implements WebInterface {
         {
             /* Stale repository entry, remove from database */
             ConfigDatabase.instance().delRepoByName(repoName);
-            return Response.status(500)
-                .entity("Repository not found on disk! "
-                        + "Removed from database.").build();
+            throw new RepositoryNotFoundException("Repository not found on disk! "
+                        + "Removed from database.");
         }
 
         Collection<String> files = repo.getSources();
@@ -63,23 +59,21 @@ public class GitService implements WebInterface {
         if (files != null)
             for (String file : files)
                 rtn.add(file);
-
-        return Response.status(200).entity(rtn).build();
+        
+        return rtn;
     }
 
     @Override
-    public Response getFile(String fileName
-                          , String repoName) throws IOException
+    public String getFile(String fileName
+                          , String repoName) throws IOException, RepositoryNotFoundException
     {
         if (repoName == null)
-            return Response.status(400)
-                .entity("No repository given.").build();
+            throw new RepositoryNotFoundException("No repository given.");
 
         Repository repo = ConfigDatabase.instance().getRepoByName(repoName);
         if (repo == null)
-            return Response.status(404)
-                .entity("Repository not found in database! "
-                        + "It may exist on disk though.").build();
+            throw new RepositoryNotFoundException("Repository not found in database! "
+                    + "It may exist on disk though.");
 
         try
         {
@@ -89,19 +83,15 @@ public class GitService implements WebInterface {
         {
             /* Stale repository entry, remove from database */
             ConfigDatabase.instance().delRepoByName(repoName);
-            return Response.status(500)
-                .entity("Repository not found on disk! "
-                        + "Removed from database.").build();
+            throw new RepositoryNotFoundException("Repository not found on disk! "
+                    + "Removed from database.");
         }
 
-        String output = repo.getFile(fileName);
-        if (output == null)
-            return Response.status(404).build();
-        return Response.status(200).entity(output).build();
+        return repo.getFile(fileName);
     }
     
     @Override
-    public Response getForkURL(ForkRequestBean details) throws IOException, DuplicateKeyException
+    public String fork(ForkRequestBean details) throws IOException, DuplicateRepoNameException
     {   /* TODO: Test */
         /* This forks the upstream repository
          * This may fail due to permissions, or the shell of tomcat7
@@ -119,11 +109,11 @@ public class GitService implements WebInterface {
                                       , details.getOverlay());
         ConfigDatabase.instance().addRepo(rtn);
         // TODO: better return, e.g. NewRepoName (as repoName perhaps)
-        return Response.status(200).entity(rtn.getRepoPath()).build();
+        return rtn.getRepoPath();
     }
 
     @Override
-    public Response addRepository(AddRequestBean details) throws IOException, DuplicateKeyException
+    public String addRepository(AddRequestBean details) throws IOException, DuplicateRepoNameException
     {
         log.info("Creating new repository \"" + details.getRepoName()
                 + ".git\"" + " for user \"" + details.getRepoOwner()
@@ -134,31 +124,25 @@ public class GitService implements WebInterface {
                                       , null);
         ConfigDatabase.instance().addRepo(rtn);
         // TODO: better return
-        return Response.status(200).entity(rtn.getRepoPath()).build();
+        return rtn.getRepoPath();
     }
 
     @Override
-    public Response delRepository(String repoName) throws IOException
+    public void deleteRepository(String repoName) throws IOException, RepositoryNotFoundException
     {
-        boolean successful = ConfigDatabase.instance().delRepoByName(repoName);
-        if (successful)
-            return Response.status(200).build();
-        else
-            return Response.status(500).entity("The repository specified was not found").build();
+        ConfigDatabase.instance().delRepoByName(repoName);
     }
     
     @Override
-    public Response getMeAnException() throws HereIsYourException {
-        int x = 42;
-        if (x == 42)
+    public void getMeAnException() throws HereIsYourException {
+        boolean TRUE = true;
+        if (TRUE)
             throw new HereIsYourException();
-        return Response.status(500).entity("This should never be reached").build();
     }
 
     @Override
-    public Response addSSHKey(String key, String userName) throws IOException
+    public void addSSHKey(String key, String userName) throws IOException
     {
         ConfigDatabase.instance().addSSHKey(key, userName);
-        return Response.status(200).build();
     }
 }
