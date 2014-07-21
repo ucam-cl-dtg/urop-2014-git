@@ -8,6 +8,9 @@ import java.io.File;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *  A configuration file loader class, set at compile time, loaded at
  *  initialisation.
@@ -21,6 +24,9 @@ import com.fasterxml.jackson.databind.*;
  */
 public class ConfigurationLoader
 {
+    /* For logging */
+    static private final Logger log = LoggerFactory.getLogger(ConfigurationLoader.class);
+
     static public final String fileName = "configuration.json";
     static private File file = new File(fileName);
     static private ObjectMapper mapper = new ObjectMapper();
@@ -41,9 +47,7 @@ public class ConfigurationLoader
         }
         catch (IOException e)
         {
-            /* Exception thrown in getter */
-            /* TODO: log */
-            System.out.println("Error in loading configuration file, using defaults.\n"
+            log.warn("Error in loading configuration file, using defaults.\n"
                     + e.getMessage());
         }
     }
@@ -60,7 +64,7 @@ public class ConfigurationLoader
             }
             catch (IOException e)
             {
-                System.err.println("Unable to load new configuration file!\n"
+                log.warn("Error in loading configuration file, using defaults.\n"
                         + e.getMessage());
             }
         }
