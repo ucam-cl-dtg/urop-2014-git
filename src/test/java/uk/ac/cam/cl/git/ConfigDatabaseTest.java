@@ -165,6 +165,62 @@ public class ConfigDatabaseTest extends EasyMockSupport {
         EasyMock.verify(mockRuntime);
         EasyMock.verify(processToReturn);
     }
+    
+    @Test
+    public void testAddSSHKey() throws IOException {
+        
+        /* The below method calls are expected */
+        
+        EasyMock.expect(
+                mockRuntime.exec("env gitolite trigger SSH_AUTHKEYS", ConfigDatabase.getEnvVar()))
+                          .andReturn(processToReturn);
+        
+        EasyMock.expect(processToReturn.getErrorStream()).andReturn(null).anyTimes();
+        EasyMock.expect(processToReturn.getInputStream()).andReturn(null).anyTimes();
+        
+        EasyMock.replay(mockRuntime);
+        EasyMock.replay(processToReturn);
+        
+        /* The actual test begins here */
+        
+        ConfigDatabase.addSSHKey("TEST-KEY", "testUser");
+        
+        EasyMock.verify(mockRuntime);
+        EasyMock.verify(processToReturn);
+    }
+    
+    @Test
+    public void testDeleteRepo() throws IOException {
+        
+        /* The below method calls are expected */
+        
+        EasyMock.expect(mockCollection.contains("some-name")).andReturn(false);
+        EasyMock.expect(mockCollection.contains("some-other-name")).andReturn(true);
+        mockCollection.removeByName("some-other-name");
+        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
+        EasyMock.expect(
+                mockRuntime.exec("env gitolite compile", ConfigDatabase.getEnvVar()))
+                          .andReturn(processToReturn);
+        EasyMock.expect(
+                mockRuntime.exec("env gitolite trigger POST_COMPILE", ConfigDatabase.getEnvVar()))
+                          .andReturn(processToReturn);
+        
+        EasyMock.expect(processToReturn.getErrorStream()).andReturn(null).anyTimes();
+        EasyMock.expect(processToReturn.getInputStream()).andReturn(null).anyTimes();
+        
+        EasyMock.replay(mockRuntime);
+        EasyMock.replay(mockCollection);
+        EasyMock.replay(processToReturn);
+        
+        /* The actual test begins here */
+        
+        ConfigDatabase.delRepoByName("some-name");
+        ConfigDatabase.delRepoByName("some-other-name");
+        
+        EasyMock.verify(mockRuntime);
+        EasyMock.verify(mockCollection);
+        EasyMock.verify(processToReturn);
+    }
 
 
 
