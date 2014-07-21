@@ -52,7 +52,7 @@ public class ConfigDatabaseIntegrationTests {
      */
     @Before
     public void setUp() throws IOException {        
-        ConfigDatabase.deleteAll();
+        ConfigDatabase.instance().deleteAll();
     }
     
     /**
@@ -63,10 +63,10 @@ public class ConfigDatabaseIntegrationTests {
      */
     @Test
     public void testGenerateConfigFile() throws IOException, DuplicateKeyException {
-        ConfigDatabase.addRepo(testRepo1);
-        ConfigDatabase.addRepo(testRepo2);
+        ConfigDatabase.instance().addRepo(testRepo1);
+        ConfigDatabase.instance().addRepo(testRepo2);
         try {
-            ConfigDatabase.generateConfigFile();
+            ConfigDatabase.instance().generateConfigFile();
         } catch (IOException e) {
             e.printStackTrace();
             fail("Something went wrong with the I/O in the generateConfigFile method");
@@ -108,15 +108,15 @@ public class ConfigDatabaseIntegrationTests {
      */
     @Test
     public void testOnlyOneRepoPerName() throws IOException, DuplicateKeyException {
-        ConfigDatabase.addRepo(testRepo1);
+        ConfigDatabase.instance().addRepo(testRepo1);
         assert testRepo1.getName().equals(testRepo1a.getName()); // conflicting names
         try {
-            ConfigDatabase.addRepo(testRepo1a);
+            ConfigDatabase.instance().addRepo(testRepo1a);
             fail("An exception should have been raised because a repo with this name already exists");
         } catch (DuplicateKeyException dke) {
             /* This should happen - fail otherwise */
         }
-        assertEquals(testRepo1.getCRSID(), ConfigDatabase.getRepoByName("test-repo-name1").getCRSID());
+        assertEquals(testRepo1.getCRSID(), ConfigDatabase.instance().getRepoByName("test-repo-name1").getCRSID());
     }
     
     /**
@@ -126,14 +126,14 @@ public class ConfigDatabaseIntegrationTests {
      */
     @Test
     public void testStoringRepos() throws IOException, DuplicateKeyException {
-        ConfigDatabase.addRepo(testRepo1);
-        ConfigDatabase.addRepo(testRepo2);
+        ConfigDatabase.instance().addRepo(testRepo1);
+        ConfigDatabase.instance().addRepo(testRepo2);
         assertEquals(testRepo1.getCRSID(),
-                ConfigDatabase.getRepoByName("test-repo-name1").getCRSID());
+                ConfigDatabase.instance().getRepoByName("test-repo-name1").getCRSID());
         assertEquals(testRepo2.getCRSID(),
-                ConfigDatabase.getRepoByName("test-repo-name2").getCRSID());
-        assertNotEquals(ConfigDatabase.getRepoByName("test-repo-name1").getCRSID(),
-                ConfigDatabase.getRepoByName("test-repo-name2").getCRSID());
+                ConfigDatabase.instance().getRepoByName("test-repo-name2").getCRSID());
+        assertNotEquals(ConfigDatabase.instance().getRepoByName("test-repo-name1").getCRSID(),
+                ConfigDatabase.instance().getRepoByName("test-repo-name2").getCRSID());
     }
     
     /**
@@ -144,8 +144,8 @@ public class ConfigDatabaseIntegrationTests {
      */
     @Test
     public void testUpdateRepo() throws IOException, DuplicateKeyException {
-        ConfigDatabase.addRepo(testRepo1);
-        ConfigDatabase.updateRepo(testRepo1);
+        ConfigDatabase.instance().addRepo(testRepo1);
+        ConfigDatabase.instance().updateRepo(testRepo1);
     }
     
     /**
@@ -156,21 +156,21 @@ public class ConfigDatabaseIntegrationTests {
      */
     @Test
     public void testGetAndDeleteRepos() throws IOException, DuplicateKeyException {
-        assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
+        assertFalse(containsRepo(ConfigDatabase.instance().getRepos(), "test-repo-name1"));
         
-        ConfigDatabase.addRepo(testRepo1);
-        assertTrue(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
+        ConfigDatabase.instance().addRepo(testRepo1);
+        assertTrue(containsRepo(ConfigDatabase.instance().getRepos(), "test-repo-name1"));
         
-        ConfigDatabase.delRepoByName("test-repo-name1");
-        assertFalse(containsRepo(ConfigDatabase.getRepos(), "test-repo-name1"));
+        ConfigDatabase.instance().delRepoByName("test-repo-name1");
+        assertFalse(containsRepo(ConfigDatabase.instance().getRepos(), "test-repo-name1"));
     }
     
     @Test
     public void testListRepos() throws IOException, DuplicateKeyException {
-        assertEquals(0, ConfigDatabase.getRepos().size());
-        ConfigDatabase.addRepo(testRepo1);
-        ConfigDatabase.addRepo(testRepo2);
-        List<Repository> repoList = ConfigDatabase.getRepos();
+        assertEquals(0, ConfigDatabase.instance().getRepos().size());
+        ConfigDatabase.instance().addRepo(testRepo1);
+        ConfigDatabase.instance().addRepo(testRepo2);
+        List<Repository> repoList = ConfigDatabase.instance().getRepos();
         assertEquals(2, repoList.size());
         assertTrue(containsRepo(repoList, "test-repo-name1"));
         assertTrue(containsRepo(repoList, "test-repo-name2"));
