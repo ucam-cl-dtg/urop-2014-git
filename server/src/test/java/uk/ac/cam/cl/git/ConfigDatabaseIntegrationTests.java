@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
 import com.google.inject.Guice;
@@ -153,9 +154,10 @@ public class ConfigDatabaseIntegrationTests {
      * from the list of repositories.
      * Assumes adding and deleting repos works.
      * @throws DuplicateRepoNameException 
+     * @throws RepositoryNotFoundException 
      */
     @Test
-    public void testGetAndDeleteRepos() throws IOException, DuplicateRepoNameException {
+    public void testGetAndDeleteRepos() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
         assertFalse(containsRepo(ConfigDatabase.instance().getRepos(), "test-repo-name1"));
         
         ConfigDatabase.instance().addRepo(testRepo1);
