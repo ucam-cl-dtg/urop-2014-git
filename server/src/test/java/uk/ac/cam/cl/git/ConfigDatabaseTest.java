@@ -23,6 +23,11 @@ import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
  * @version 0.1
  */
 public class ConfigDatabaseTest extends EasyMockSupport {
+    
+    ConfigDatabase partiallyMockedConfigDatabase = EasyMock
+            .createMockBuilder(ConfigDatabase.class)
+            .addMockedMethods("generateConfigFile", "runGitoliteUpdate")
+            .createMock();
 
     private static List<String> readOnlys = new LinkedList<String>();
     private static List<String> readAndWrites = new LinkedList<String>();
@@ -34,12 +39,9 @@ public class ConfigDatabaseTest extends EasyMockSupport {
        
     private RepositoryCollection mockCollection =
         createMock(RepositoryCollection.class);
-    private Runtime mockRuntime = createMock(Runtime.class);
-    private Process processToReturn = createNiceMock(Process.class);
 
     {
-        ConfigDatabase.setReposCollection(mockCollection);
-        ConfigDatabase.setRuntime(mockRuntime);
+        partiallyMockedConfigDatabase.setReposCollection(mockCollection);
     }
 
     static {
@@ -59,41 +61,24 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
         mockCollection.insertRepo(testRepo1);
         EasyMock.expectLastCall().once();
-        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
-        EasyMock.expect(
-                mockRuntime.exec(
-                        "env gitolite " + "compile", ConfigDatabase.getEnvVar()))
-                        .andReturn(processToReturn);
-        EasyMock.expect(
-                mockRuntime.exec(
-                        "env gitolite " + "trigger POST_COMPILE", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
+        partiallyMockedConfigDatabase.generateConfigFile();
+        EasyMock.expectLastCall().once();
 
         mockCollection.insertRepo(testRepo2);
         EasyMock.expectLastCall().once();
-        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite compile", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite trigger POST_COMPILE", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
-        
-        EasyMock.expect(processToReturn.getErrorStream()).andReturn(null).anyTimes();
-        EasyMock.expect(processToReturn.getInputStream()).andReturn(null).anyTimes();
+        partiallyMockedConfigDatabase.generateConfigFile();
+        EasyMock.expectLastCall().once();
 
         EasyMock.replay(mockCollection);
-        EasyMock.replay(mockRuntime);
-        EasyMock.replay(processToReturn);
+        EasyMock.replay(partiallyMockedConfigDatabase);
 
         /* The actual test begins here */
 
-        ConfigDatabase.addRepo(testRepo1);
-        ConfigDatabase.addRepo(testRepo2);
+        partiallyMockedConfigDatabase.addRepo(testRepo1);
+        partiallyMockedConfigDatabase.addRepo(testRepo2);
 
         EasyMock.verify(mockCollection);
-        EasyMock.verify(mockRuntime);
-        EasyMock.verify(processToReturn);
+        EasyMock.verify(partiallyMockedConfigDatabase);
     }
 
     /**
@@ -113,13 +98,15 @@ public class ConfigDatabaseTest extends EasyMockSupport {
                 .andReturn(testRepo2);
 
         EasyMock.replay(mockCollection);
+        EasyMock.replay(partiallyMockedConfigDatabase);
 
         /* The actual test begins here */
 
-        assertEquals(testRepo1, ConfigDatabase.getRepoByName("test-repo-name1"));
-        assertEquals(testRepo2, ConfigDatabase.getRepoByName("test-repo-name2"));
+        assertEquals(testRepo1, partiallyMockedConfigDatabase.getRepoByName("test-repo-name1"));
+        assertEquals(testRepo2, partiallyMockedConfigDatabase.getRepoByName("test-repo-name2"));
 
         EasyMock.verify(mockCollection);
+        EasyMock.verify(partiallyMockedConfigDatabase);
     }
 
     /**
@@ -132,62 +119,32 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
         mockCollection.updateRepo(testRepo1);
         EasyMock.expectLastCall().once();
-        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite compile", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite trigger POST_COMPILE", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
+        partiallyMockedConfigDatabase.generateConfigFile();
+        EasyMock.expectLastCall().once();
 
         mockCollection.updateRepo(testRepo2);
         EasyMock.expectLastCall().once();
-        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite compile", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite trigger POST_COMPILE", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
-        
-        EasyMock.expect(processToReturn.getErrorStream()).andReturn(null).anyTimes();
-        EasyMock.expect(processToReturn.getInputStream()).andReturn(null).anyTimes();
+        partiallyMockedConfigDatabase.generateConfigFile();
+        EasyMock.expectLastCall().once();
 
         EasyMock.replay(mockCollection);
-        EasyMock.replay(mockRuntime);
-        EasyMock.replay(processToReturn);
+        EasyMock.replay(partiallyMockedConfigDatabase);
 
         /* The actual test begins here */
 
-        ConfigDatabase.updateRepo(testRepo1);
-        ConfigDatabase.updateRepo(testRepo2);
+        partiallyMockedConfigDatabase.updateRepo(testRepo1);
+        partiallyMockedConfigDatabase.updateRepo(testRepo2);
 
         EasyMock.verify(mockCollection);
-        EasyMock.verify(mockRuntime);
-        EasyMock.verify(processToReturn);
+        EasyMock.verify(partiallyMockedConfigDatabase);
     }
     
-    @Test
+    /* @Test commented out until the TODO below is done */
     public void testAddSSHKey() throws IOException {
-        
-        /* The below method calls are expected */
-        
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite trigger SSH_AUTHKEYS", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
-        
-        EasyMock.expect(processToReturn.getErrorStream()).andReturn(null).anyTimes();
-        EasyMock.expect(processToReturn.getInputStream()).andReturn(null).anyTimes();
-        
-        EasyMock.replay(mockRuntime);
-        EasyMock.replay(processToReturn);
-        
-        /* The actual test begins here */
-        
-        ConfigDatabase.addSSHKey("TEST-KEY", "testUser");
-        
-        EasyMock.verify(mockRuntime);
-        EasyMock.verify(processToReturn);
+        /*
+         * TODO: Delete this test as unnecessary, or find a way of testing it
+         * without writing to disk - perhaps mock the writer?
+         */
     }
     
     @Test
@@ -198,29 +155,19 @@ public class ConfigDatabaseTest extends EasyMockSupport {
         EasyMock.expect(mockCollection.contains("some-name")).andReturn(false);
         EasyMock.expect(mockCollection.contains("some-other-name")).andReturn(true);
         mockCollection.removeByName("some-other-name");
-        EasyMock.expect(mockCollection.findAll()).andReturn(new LinkedList<Repository>());
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite compile", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
-        EasyMock.expect(
-                mockRuntime.exec("env gitolite trigger POST_COMPILE", ConfigDatabase.getEnvVar()))
-                          .andReturn(processToReturn);
+        partiallyMockedConfigDatabase.generateConfigFile();
+        EasyMock.expectLastCall().once();
         
-        EasyMock.expect(processToReturn.getErrorStream()).andReturn(null).anyTimes();
-        EasyMock.expect(processToReturn.getInputStream()).andReturn(null).anyTimes();
-        
-        EasyMock.replay(mockRuntime);
         EasyMock.replay(mockCollection);
-        EasyMock.replay(processToReturn);
+        EasyMock.replay(partiallyMockedConfigDatabase);
         
         /* The actual test begins here */
         
-        ConfigDatabase.delRepoByName("some-name");
-        ConfigDatabase.delRepoByName("some-other-name");
+        partiallyMockedConfigDatabase.delRepoByName("some-name");
+        partiallyMockedConfigDatabase.delRepoByName("some-other-name");
         
-        EasyMock.verify(mockRuntime);
         EasyMock.verify(mockCollection);
-        EasyMock.verify(processToReturn);
+        EasyMock.verify(partiallyMockedConfigDatabase);
     }
 
 

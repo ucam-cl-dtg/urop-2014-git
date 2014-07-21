@@ -20,21 +20,15 @@ public class DatabaseModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        requestStaticInjection(ConfigDatabase.class);
         bind(RepositoryCollection.class).to(MongoRepositoryCollection.class);
     }
     
     @Provides
-    public JacksonDBCollection<Repository, String> provideMongoColection() {
+    public JacksonDBCollection<Repository, String> provideMongoCollection() {
         return JacksonDBCollection.wrap
                 ( Mongo.getDB().getCollection("repos")
                         , Repository.class
                         , String.class);
     }
     
-    @Provides
-    public Runtime provideRuntime() {
-        return Runtime.getRuntime();
-    }
-
 }

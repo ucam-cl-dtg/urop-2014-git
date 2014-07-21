@@ -24,7 +24,7 @@ public class GitService implements WebInterface {
    
     @Override
     public Response listRepositories() {
-        List<Repository> repos = ConfigDatabase.getRepos();
+        List<Repository> repos = ConfigDatabase.instance().getRepos();
         List<String> toReturn = new LinkedList<String>();
         for (Repository repo : repos) {
             toReturn.add(repo.getName());
@@ -39,7 +39,7 @@ public class GitService implements WebInterface {
             return Response.status(400)
                 .entity("No repository given.").build();
 
-        Repository repo = ConfigDatabase.getRepoByName(repoName);
+        Repository repo = ConfigDatabase.instance().getRepoByName(repoName);
         if (repo == null)
             return Response.status(404)
                 .entity("Repository not found in database! "
@@ -52,7 +52,7 @@ public class GitService implements WebInterface {
         catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
         {
             /* Stale repository entry, remove from database */
-            ConfigDatabase.delRepoByName(repoName);
+            ConfigDatabase.instance().delRepoByName(repoName);
             return Response.status(500)
                 .entity("Repository not found on disk! "
                         + "Removed from database.").build();
@@ -75,7 +75,7 @@ public class GitService implements WebInterface {
             return Response.status(400)
                 .entity("No repository given.").build();
 
-        Repository repo = ConfigDatabase.getRepoByName(repoName);
+        Repository repo = ConfigDatabase.instance().getRepoByName(repoName);
         if (repo == null)
             return Response.status(404)
                 .entity("Repository not found in database! "
@@ -88,7 +88,7 @@ public class GitService implements WebInterface {
         catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
         {
             /* Stale repository entry, remove from database */
-            ConfigDatabase.delRepoByName(repoName);
+            ConfigDatabase.instance().delRepoByName(repoName);
             return Response.status(500)
                 .entity("Repository not found on disk! "
                         + "Removed from database.").build();
@@ -117,7 +117,7 @@ public class GitService implements WebInterface {
                                       , null /* RO */
                                       , details.getRepoName()
                                       , details.getOverlay());
-        ConfigDatabase.addRepo(rtn);
+        ConfigDatabase.instance().addRepo(rtn);
         // TODO: better return, e.g. NewRepoName (as repoName perhaps)
         return Response.status(200).entity(rtn.getRepoPath()).build();
     }
@@ -132,7 +132,7 @@ public class GitService implements WebInterface {
                                       , details.getRepoOwner()
                                       , null
                                       , null);
-        ConfigDatabase.addRepo(rtn);
+        ConfigDatabase.instance().addRepo(rtn);
         // TODO: better return
         return Response.status(200).entity(rtn.getRepoPath()).build();
     }
@@ -140,7 +140,7 @@ public class GitService implements WebInterface {
     @Override
     public Response delRepository(String repoName) throws IOException
     {
-        boolean successful = ConfigDatabase.delRepoByName(repoName);
+        boolean successful = ConfigDatabase.instance().delRepoByName(repoName);
         if (successful)
             return Response.status(200).build();
         else
@@ -158,7 +158,7 @@ public class GitService implements WebInterface {
     @Override
     public Response addSSHKey(String key, String userName) throws IOException
     {
-        ConfigDatabase.addSSHKey(key, userName);
+        ConfigDatabase.instance().addSSHKey(key, userName);
         return Response.status(200).build();
     }
 }

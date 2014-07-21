@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.mongodb.MongoException;
 
 import uk.ac.cam.cl.git.api.DuplicateKeyException;
@@ -33,16 +34,20 @@ import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 public class ConfigDatabase {
     /* For logging */
     private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
+    
     private static final String[] environmentVariables = new String[]
             {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
             , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
             , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()};
 
-    private static RepositoryCollection reposCollection;
-    private static Runtime runtime;
-
-    static {
-        Guice.createInjector(new DatabaseModule());
+    @Inject private RepositoryCollection reposCollection;
+    
+    private static final Injector injector = Guice.createInjector(new DatabaseModule());
+    
+    private static final ConfigDatabase instance = injector.getInstance(ConfigDatabase.class);
+    
+    public static ConfigDatabase instance() {
+        return instance;
     }
 
     /**
@@ -50,20 +55,9 @@ public class ConfigDatabase {
      * Replaces the repository collection with the argument.
      * @param reposCollection The collection to be used.
      */
-    @Inject
-    static void setReposCollection(RepositoryCollection rCollection) {
+    //@Inject
+    void setReposCollection(RepositoryCollection rCollection) {
         reposCollection = rCollection;
-    }
-    
-    /**
-     * For unit testing only, to allow a mock runtime to be used so that
-     * the gitolite update calls are not actually executed.
-     * Replaces the runtime field with the argument.
-     * @param r The runtime to be used for the gitolite calls.
-     */
-    @Inject
-    static void setRuntime(Runtime r) {
-        runtime = r;
     }
 
     /**
@@ -71,7 +65,7 @@ public class ConfigDatabase {
      *
      * @return List of repository objects in the collection
      */
-    public static List<Repository> getRepos()
+    public List<Repository> getRepos()
     {   /* TODO: Test ordered-ness or repositories. */
         return reposCollection.findAll();
         
@@ -85,7 +79,7 @@ public class ConfigDatabase {
      * @param name The name of the repository
      * @return The requested repository object
      */
-    public static Repository getRepoByName(String name) {
+    public Repository getRepoByName(String name) {
         return reposCollection.findByName(name);
     }
 
@@ -96,7 +90,7 @@ public class ConfigDatabase {
      * @param name The name of the repository to remove
      * @return True if and only if a repository with name repoName existed in the database
      */
-    public static boolean delRepoByName(String repoName) throws IOException {
+    public boolean delRepoByName(String repoName) throws IOException {
         log.info("Deleting repository \"" + repoName + "\"");
         if (!reposCollection.contains(repoName))
             return false;
@@ -110,7 +104,7 @@ public class ConfigDatabase {
      * Removes all repositories from the collection.
      * For unit testing only.
      */
-    static void deleteAll() throws IOException {
+    void deleteAll() throws IOException {
         reposCollection.removeAll();
         generateConfigFile();
     }
@@ -126,7 +120,7 @@ public class ConfigDatabase {
      *
      * @throws IOException Typically an unrecoverable problem.
      */
-    public static void generateConfigFile() throws IOException {
+    public void generateConfigFile() throws IOException {
         log.info("Generating config file \"" +
                 ConfigurationLoader.getConfig()
                     .getGitoliteGeneratedConfigFile()
@@ -158,7 +152,7 @@ public class ConfigDatabase {
      * @throws DuplicateKeyException A repository with this name already
      * exists.
      */
-    public static void addRepo(Repository repo) throws DuplicateKeyException, IOException {
+    public void addRepo(Repository repo) throws DuplicateKeyException, IOException {
         reposCollection.insertRepo(repo);
         generateConfigFile();
     }
@@ -171,7 +165,7 @@ public class ConfigDatabase {
      * @param username The name of the user to be added
      * @throws IOException 
      */
-    public static void addSSHKey(String key, String userName) throws IOException {
+    public void addSSHKey(String key, String userName) throws IOException {
         log.info("Adding key for \"" + userName + "\" to \""
                 + ConfigurationLoader.getConfig()
                     .getGitoliteSSHKeyLocation() + "\"");
@@ -200,7 +194,7 @@ public class ConfigDatabase {
      * @throws MongoException If the update operation fails (for some
      * unknown reason).
      */
-    public static void updateRepo(Repository repo) throws MongoException, IOException
+    public void updateRepo(Repository repo) throws MongoException, IOException
     {
         reposCollection.updateRepo(repo);
         generateConfigFile();
@@ -215,24 +209,20 @@ public class ConfigDatabase {
      *
      * @param updates List of things to recompile/reconfigure.
      */
-    private static void runGitoliteUpdate(String[] updates) throws IOException
+    void runGitoliteUpdate(String[] updates) throws IOException
     {
         log.info("Starting gitolite recompilation");
         for (String command : updates)
         {
-            Process p = runtime.exec("env gitolite " + command, environmentVariables);
+            Process p = Runtime.getRuntime().exec("env gitolite " + command, environmentVariables);
             String line;
-            if (p.getErrorStream() != null) {
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-                while ((line = errorReader.readLine()) != null) {
-                    log.warn(line);
-                }
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            while ((line = errorReader.readLine()) != null) {
+                log.warn(line);
             }
-            if (p.getInputStream() != null) {
-                BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                while ((line = outputReader.readLine()) != null) {
-                    log.info(line);
-                }
+            while ((line = outputReader.readLine()) != null) {
+                log.info(line);
             }
         }
         log.info("Finished gitolite recompilation");
@@ -242,7 +232,7 @@ public class ConfigDatabase {
      * This rebuilds the MongoDB database using the gitolite
      * configuration file, in case the two become out of sync.
      */
-    private static void rebuildDatabaseFromGitolite() throws MongoException, IOException, DuplicateKeyException {
+    private void rebuildDatabaseFromGitolite() throws MongoException, IOException, DuplicateKeyException {
         reposCollection.removeAll(); // Empty database collection
         BufferedReader reader = new BufferedReader(new FileReader(new File(
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
@@ -278,7 +268,5 @@ public class ConfigDatabase {
         }
         reader.close();
     }
-    
-    static String[] getEnvVar() { return environmentVariables; }
 
 }
