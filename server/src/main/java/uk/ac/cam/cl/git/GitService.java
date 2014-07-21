@@ -101,7 +101,7 @@ public class GitService implements WebInterface {
     }
     
     @Override
-    public Response getForkURL(ForkRequestBean details) throws IOException, DuplicateKeyException
+    public Response forkRepository(ForkRequestBean details) throws IOException, DuplicateKeyException
     {   /* TODO: Test */
         /* This forks the upstream repository
          * This may fail due to permissions, or the shell of tomcat7
@@ -118,6 +118,7 @@ public class GitService implements WebInterface {
                                       , details.getRepoName()
                                       , details.getOverlay());
         ConfigDatabase.instance().addRepo(rtn);
+        rtn.cloneParent();
         // TODO: better return, e.g. NewRepoName (as repoName perhaps)
         return Response.status(200).entity(rtn.getRepoPath()).build();
     }

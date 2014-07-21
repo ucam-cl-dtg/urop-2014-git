@@ -118,7 +118,7 @@ public class Repository implements TesterInterface
         , List<String> read_only
         , String parent
         , String parent_hidden
-        ) throws IOException
+        )
     {
         this.parent = parent;
         this.parent_hidden = parent_hidden;
@@ -126,29 +126,6 @@ public class Repository implements TesterInterface
         this.read_write = read_write;
         this.read_only = read_only;
         owner = crsid;
-
-        /* Clone parent, if it is not null */
-        if (parent != null)
-        {
-            File dest = new File(
-                    ConfigurationLoader.getConfig()
-                        .getGitoliteHome()
-                            + "/repositories/" + repo + ".git");
-            log.info("I am: " + System.getProperty("user.name"));
-            log.info("Making directory " + dest.getPath());
-            dest.mkdirs(); /* Make necessary directories */
-
-            handle = new GitDb(
-                     /* src            */
-                        ConfigurationLoader.getConfig()
-                            .getGitoliteHome()
-                                + "/repositories/" + parent + ".git"
-                    ,/* dest           */ dest
-                    ,/* bare           */ true
-                    ,/* branch         */ "master"
-                    ,/* remote         */ "origin"
-                    ,/* privateKeyPath */ null);
-        }
     }
 
     /**
@@ -219,6 +196,38 @@ public class Repository implements TesterInterface
 
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
+    }
+
+    /**
+     * Clones parent repository's contents. Use only once, on the
+     * initialisation of the repository.
+     *
+     * @throws IOException Something went wrong during cloning, perhaps
+     * the directory was not empty?
+     */
+    public void cloneParent() throws IOException
+    {
+        /* Clone parent, if it is not null */
+        if (parent != null)
+        {
+            File dest = new File(
+                    ConfigurationLoader.getConfig()
+                        .getGitoliteHome()
+                            + "/repositories/" + repo + ".git");
+            log.info("I am: " + System.getProperty("user.name"));
+            log.info("Making directory " + dest.getPath());
+
+            handle = new GitDb(
+                     /* src            */
+                        ConfigurationLoader.getConfig()
+                            .getGitoliteHome()
+                                + "/repositories/" + parent + ".git"
+                    ,/* dest           */ dest
+                    ,/* bare           */ true
+                    ,/* branch         */ "master"
+                    ,/* remote         */ "origin"
+                    ,/* privateKeyPath */ null);
+        }
     }
 
     /**

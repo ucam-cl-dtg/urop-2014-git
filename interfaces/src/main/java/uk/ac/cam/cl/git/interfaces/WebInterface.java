@@ -84,7 +84,7 @@ public interface WebInterface {
     @Path("/fork")
     @Consumes("application/json")
     @Produces("application/json")
-    public Response getForkURL(ForkRequestBean details) throws IOException, DuplicateKeyException;
+    public Response forkRepository(ForkRequestBean details) throws IOException, DuplicateKeyException;
     
     /**
      * Creates a new blank repository and returns the URL than can be used
