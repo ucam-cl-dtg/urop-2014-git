@@ -12,7 +12,7 @@ import java.util.List;
 import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
@@ -31,12 +31,12 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public void insertRepo(Repository repo) throws DuplicateKeyException {
+    public void insertRepo(Repository repo) throws DuplicateRepoNameException {
         try {
             collection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
             collection.insert(repo);
         } catch(com.mongodb.MongoException dupKey) {
-            throw new DuplicateKeyException();
+            throw new DuplicateRepoNameException();
         }
     }
 

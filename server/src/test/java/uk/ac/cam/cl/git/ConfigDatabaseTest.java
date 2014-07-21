@@ -15,7 +15,8 @@ import java.io.InputStream;
 import org.easymock.*;
 import org.junit.Test;
 
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
 /**
@@ -52,10 +53,10 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
     /**
      * Checks that repositories can be added to the database.
-     * @throws DuplicateKeyException 
+     * @throws DuplicateRepoNameException 
      */
     @Test
-    public void testAddRepo() throws IOException, DuplicateKeyException {
+    public void testAddRepo() throws IOException, DuplicateRepoNameException {
 
         /* The below method calls are expected */
 
@@ -163,9 +164,17 @@ public class ConfigDatabaseTest extends EasyMockSupport {
         EasyMock.replay(partiallyMockedConfigDatabase);
         
         /* The actual test begins here */
-        
-        partiallyMockedConfigDatabase.delRepoByName("some-name");
-        partiallyMockedConfigDatabase.delRepoByName("some-other-name");
+        try {
+            partiallyMockedConfigDatabase.delRepoByName("some-name");
+            fail("Should have thrown a RepositoryNotFoundException");
+        } catch (RepositoryNotFoundException e) {    
+            /* This is supposed to happen */
+        }
+        try {
+            partiallyMockedConfigDatabase.delRepoByName("some-other-name");
+        } catch (RepositoryNotFoundException e) {
+            fail("Threw a RepositoryNotFoundException when it wasn't suppose to");
+        }
         
         EasyMock.verify(mockCollection);
         EasyMock.verify(partiallyMockedConfigDatabase);

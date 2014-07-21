@@ -13,17 +13,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.mongojack.DBCursor;
-import org.mongojack.JacksonDBCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.mongodb.MongoException;
 
-import uk.ac.cam.cl.git.api.DuplicateKeyException;
+import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
 import com.jcraft.jsch.*;
@@ -90,16 +88,16 @@ public class ConfigDatabase {
      * database if present in the database.
      * 
      * @param name The name of the repository to remove
-     * @return True if and only if a repository with name repoName existed in the database
+     * @throws IOException
+     * @throws RepositoryNotFoundException
      */
-    public boolean delRepoByName(String repoName) throws IOException {
+    public void delRepoByName(String repoName) throws IOException, RepositoryNotFoundException {
         log.info("Deleting repository \"" + repoName + "\"");
         if (!reposCollection.contains(repoName))
-            return false;
+            throw new RepositoryNotFoundException();
         reposCollection.removeByName(repoName);
         generateConfigFile();
         log.info("Deleted repository \"" + repoName + "\"");
-        return true;
     }
     
     /**
@@ -151,10 +149,10 @@ public class ConfigDatabase {
      * conf file when generated.
      *
      * @param repo The repository to be added
-     * @throws DuplicateKeyException A repository with this name already
+     * @throws DuplicateRepoNameException A repository with this name already
      * exists.
      */
-    public void addRepo(Repository repo) throws DuplicateKeyException, IOException {
+    public void addRepo(Repository repo) throws DuplicateRepoNameException, IOException {
         reposCollection.insertRepo(repo);
         generateConfigFile();
     }
@@ -196,7 +194,7 @@ public class ConfigDatabase {
      * @throws MongoException If the update operation fails (for some
      * unknown reason).
      */
-    public void updateRepo(Repository repo) throws MongoException, IOException
+    public void updateRepo(Repository repo) throws IOException
     {
         reposCollection.updateRepo(repo);
         generateConfigFile();
@@ -283,7 +281,7 @@ public class ConfigDatabase {
      * This rebuilds the MongoDB database using the gitolite
      * configuration file, in case the two become out of sync.
      */
-    private void rebuildDatabaseFromGitolite() throws MongoException, IOException, DuplicateKeyException {
+    private void rebuildDatabaseFromGitolite() throws IOException, DuplicateRepoNameException {
         reposCollection.removeAll(); // Empty database collection
         BufferedReader reader = new BufferedReader(new FileReader(new File(
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
