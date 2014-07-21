@@ -278,10 +278,6 @@ public class ConfigDatabase {
         reader.close();
     }
     
-    static Process testRuntime() throws IOException {
-        return runtime.exec("bananas in pyjamas", environmentVariables);
-    }
-    
     static String[] getEnvVar() { return environmentVariables; }
 
 }

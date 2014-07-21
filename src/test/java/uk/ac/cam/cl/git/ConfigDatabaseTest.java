@@ -46,14 +46,6 @@ public class ConfigDatabaseTest extends EasyMockSupport {
         readOnlys.add("readonlyUser2");
         readAndWrites.add("adminUser");
     }
-    
-    @Test
-    public void checkRuntimeIsActuallyMocked() throws IOException {
-        EasyMock.expect(mockRuntime.exec("bananas in pyjamas", ConfigDatabase.getEnvVar())).andReturn(processToReturn);
-        EasyMock.replay(mockRuntime);
-        ConfigDatabase.testRuntime();
-        EasyMock.verify(mockRuntime);
-    }
 
     /**
      * Checks that repositories can be added to the database.
