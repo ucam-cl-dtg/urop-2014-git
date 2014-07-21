@@ -1,6 +1,6 @@
-/target
+**/target
 .settings
 .*.swp
-doc/
-logs/
+**/doc/
+**/logs/
 configuration.json
