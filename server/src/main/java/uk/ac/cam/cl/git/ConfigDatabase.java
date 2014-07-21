@@ -26,6 +26,8 @@ import com.mongodb.MongoException;
 import uk.ac.cam.cl.git.api.DuplicateKeyException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
+import com.jcraft.jsch.*;
+
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
@@ -214,9 +216,11 @@ public class ConfigDatabase {
         log.info("Starting gitolite recompilation");
         for (String command : updates)
         {
+
             /* `env' runs gitolite from $PATH defined in
              * environmentVariables
              */
+            /*
             Process p = Runtime.getRuntime().exec("env gitolite " + command
                                                 , environmentVariables);
             String line;
@@ -227,6 +231,45 @@ public class ConfigDatabase {
             }
             while ((line = outputReader.readLine()) != null) {
                 log.info(line);
+            }
+            */
+            try
+            {
+                JSch ssh = new JSch();
+                Session session = ssh.getSession(ConfigurationLoader
+                                                  .getConfig().getRepoUser()
+                                               , "localhost"
+                                               , 22);
+                ChannelExec channel = (ChannelExec)session.openChannel("exec");
+                channel.setCommand(command);
+
+                channel.setInputStream(null);
+                /* Gitolite does native logging */
+                channel.setOutputStream(null);
+                channel.setErrStream(null);
+
+                channel.connect();
+
+                while (channel.isClosed())
+                {
+                    try
+                    {
+                        Thread.sleep(100);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        /* If we woke up earlier from sleep than
+                         * expected, continue to check for channel
+                         * status.
+                         */
+                    }
+                }
+                channel.disconnect();
+                session.disconnect();
+            }
+            catch (JSchException e)
+            {
+                throw new IOException(e);
             }
         }
         log.info("Finished gitolite recompilation");
