@@ -4,3 +4,6 @@
 **/doc/
 **/logs/
 configuration.json
+**/WEB-INF/classes
+*.class
+*.jar
