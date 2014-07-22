@@ -27,8 +27,17 @@ public class HashMapRepositoryCollection implements RepositoryCollection {
 
     @Override
     public void insertRepo(Repository repo) throws DuplicateRepoNameException {
-        if (collection.containsKey(repo.getName()))
-            throw new DuplicateRepoNameException();
+        if (collection.containsKey(repo.getName())) {
+            try {
+                throw new DuplicateRepoNameException(ConfigDatabase.instance()
+                        .getRepoByName(repo.getName()).getRepoPath());
+            } catch(RepositoryNotFoundException e) {
+                throw new RuntimeException("This should never ever happen");
+                /* This code only runs there both is and isn't a repository
+                 * with the name repo.getName() in the database */
+            }
+            
+        }
         collection.put(repo.getName(), repo);
     }
 

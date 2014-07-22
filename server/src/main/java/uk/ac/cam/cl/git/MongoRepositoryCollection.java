@@ -36,7 +36,21 @@ public class MongoRepositoryCollection implements RepositoryCollection {
             collection.ensureIndex(new BasicDBObject("name", 1), null, true); // each repo name must be unique
             collection.insert(repo);
         } catch(com.mongodb.MongoException dupKey) {
-            throw new DuplicateRepoNameException();
+            try {
+                /*
+                 * If there is already a repo with repo.getName() as its name in the
+                 * database, throw a DuplicateRepoNameException with that repo's URI
+                 * as the message.
+                 */
+                
+                throw new DuplicateRepoNameException(ConfigDatabase.instance()
+                        .getRepoByName(repo.getName()).getRepoPath());
+                
+            } catch(RepositoryNotFoundException e) {
+                throw new RuntimeException("This should never ever happen");
+                /* This code only runs there both is and isn't a repository
+                 * with the name repo.getName() in the database */
+            }
         }
     }
 
