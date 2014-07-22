@@ -22,8 +22,8 @@ public interface ForkRequestInterface
     /**
      * @return The CRSID of the user making the fork request.
      */
-    @JsonProperty("repoOwner")
-    public String getRepoOwner();
+    @JsonProperty("userName")
+    public String getUserName();
 
     /**
      * @return The name of the repository to be forked.

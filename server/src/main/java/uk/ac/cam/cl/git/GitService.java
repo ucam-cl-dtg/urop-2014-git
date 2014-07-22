@@ -102,9 +102,9 @@ public class GitService implements WebInterface {
          */
         log.info("Forking repository \"" + details.getRepoName() + ".git\""
                 + " to \"" + details.getNewRepoName() + ".git\""
-                + " for user \"" + details.getRepoOwner() + "\"");
+                + " for user \"" + details.getUserName() + "\"");
         Repository rtn = new Repository(details.getNewRepoName()
-                                      , details.getRepoOwner()
+                                      , details.getUserName()
                                       , null /* RW */
                                       , null /* RO */
                                       , details.getRepoName()
