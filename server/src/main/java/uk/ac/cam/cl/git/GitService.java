@@ -110,39 +110,20 @@ public class GitService implements WebInterface {
                                       , details.getRepoName()
                                       , details.getOverlay());
         ConfigDatabase.instance().addRepo(rtn);
-        try
-        {
-            while (!rtn.repoExists())
-            {
-                try
-                {
-                    Thread.sleep(100);
-                }
-                catch (InterruptedException e)
-                {
-                    /* If we woke up earlier from sleep than expected,
-                     * continue to check for repo existence.
-                     */
-                }
-            }
-            rtn.cloneParent();
-        }
-        catch(IOException e) /* Will be forwarded too */
+        while (!rtn.repoExists())
         {
             try
             {
-                ConfigDatabase.instance().delRepoByName(details.getNewRepoName());
+                Thread.sleep(100);
             }
-            catch (RepositoryNotFoundException f)
+            catch (InterruptedException e)
             {
-                /* This is an attempt at cleaning up, we can abort and
-                 * panic here!
+                /* If we woke up earlier from sleep than expected,
+                 * continue to check for repo existence.
                  */
-                log.warn("Failed to clean up repo " + details.getNewRepoName()
-                    + " from the database!");
             }
-            throw e;
         }
+        rtn.cloneParent();
         // TODO: better return, e.g. NewRepoName (as repoName perhaps)
         return rtn.getRepoPath();
     }
