@@ -29,14 +29,13 @@ import javax.ws.rs.Consumes;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
-// TODO: Sort out paths so we have a good restful API
 @Path("/")
 public interface WebInterface {
     /**
      * @return A list of the names of the repositories currently stored in the database
      */
     @GET
-    @Path("/git")
+    @Path("/repos")
     @Produces("application/json")
     public List<String> listRepositories();
 
@@ -47,7 +46,7 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException
      */
     @GET
-    @Path("/git/{repoName:.*}.git")
+    @Path("/repos/{repoName:.*}.git")
     @Produces("application/json")
     public List<String> listFiles(@PathParam("repoName") String repoName)
             throws IOException, RepositoryNotFoundException;
@@ -60,7 +59,7 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException
      */
     @GET
-    @Path("/git/{repoName:.*}.git/{fileName:.*}")
+    @Path("/repos/{repoName:.*}.git/{fileName:.*}")
     @Produces("application/octet-stream")
     public String getFile(@PathParam("fileName") String fileName
                           , @PathParam("repoName") String repoName)
@@ -138,8 +137,8 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException 
      */
     @GET
-    @Path("/git/getURL/{repoName:.*}.git")
-    public String getRepoURL(@PathParam("repoName") String repoName) throws RepositoryNotFoundException;
+    @Path("/URI/{repoName:.*}.git/")
+    public String getRepoURI(@PathParam("repoName") String repoName) throws RepositoryNotFoundException;
     
     /**
      * Gives the specified user read-only access (allows cloning of) the
@@ -148,6 +147,6 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException 
      */
     @POST
-    @Path("/addReadOnlyUser")
+    @Path("/permissions/add")
     public void addReadOnlyUser(RepoUserRequestInterface details) throws IOException, RepositoryNotFoundException;
 }

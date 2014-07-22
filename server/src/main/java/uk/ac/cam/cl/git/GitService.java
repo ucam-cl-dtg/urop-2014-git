@@ -149,7 +149,7 @@ public class GitService implements WebInterface {
     }
     
     @Override
-    public String getRepoURL(String repoName) throws RepositoryNotFoundException {
+    public String getRepoURI(String repoName) throws RepositoryNotFoundException {
         return ConfigDatabase.instance()
                 .getRepoByName(repoName)
                 .getRepoPath();
