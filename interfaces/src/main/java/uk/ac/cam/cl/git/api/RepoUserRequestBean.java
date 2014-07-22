@@ -19,7 +19,7 @@ public class RepoUserRequestBean implements RepoUserRequestInterface
 
     @JsonCreator
     public RepoUserRequestBean(@JsonProperty("repoName")  String repoName
-                        , @JsonProperty("userName") String userName)
+                             , @JsonProperty("userName") String userName)
     {
         this.repoName  = repoName;
         this.userName = userName;

@@ -136,6 +136,7 @@ public class ConfigDatabase {
                 .getGitoliteGeneratedConfigFile());
         BufferedWriter buffWriter = new BufferedWriter(new FileWriter(configFile, false));
         buffWriter.write(output.toString());
+        buffWriter.flush();
         buffWriter.close();
         runGitoliteUpdate(new String[] {"compile",
                                         "trigger POST_COMPILE"});

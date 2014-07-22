@@ -17,23 +17,23 @@ public class ForkRequestBean implements ForkRequestInterface
    * Jackson 1 or Jackson 2 but not both!
    */
     private final String newRepoName;
-    private final String repoOwner;
+    private final String userName;
     private final String repoName;
     private final String overlay;
 
     @JsonCreator
     public ForkRequestBean(@JsonProperty("newRepoName") String newRepoName
-                         , @JsonProperty("repoOwner")   String repoOwner
+                         , @JsonProperty("userName")    String userName
                          , @JsonProperty("repoName")    String repoName
                          , @JsonProperty("overlay")     String overlay)
     {
         if (newRepoName == null)
-            this.newRepoName = repoOwner + "/" + repoName;
+            this.newRepoName = userName + "/" + repoName;
         else
             this.newRepoName  = newRepoName;
-        this.repoOwner = repoOwner;
-        this.repoName  = repoName;
-        this.overlay   = overlay;
+        this.userName = userName;
+        this.repoName = repoName;
+        this.overlay  = overlay;
     }
 
     @Override
@@ -41,8 +41,8 @@ public class ForkRequestBean implements ForkRequestInterface
     public String getNewRepoName() { return newRepoName; }
 
     @Override
-    @JsonProperty("repoOwner")
-    public String getRepoOwner() { return repoOwner; }
+    @JsonProperty("userName")
+    public String getUserName() { return userName; }
     
     @Override
     @JsonProperty("repoName")
