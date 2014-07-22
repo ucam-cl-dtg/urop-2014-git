@@ -84,18 +84,19 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
     /**
      * Checks that finding repositories by name calls the correct methods
+     * @throws RepositoryNotFoundException 
      */
     @Test
-    public void testGetRepoByName() {
+    public void testGetRepoByName() throws RepositoryNotFoundException {
 
         /* The below method calls are expected */
 
         EasyMock.expect(mockCollection
-                .findByName("test-repo-name1"))
+                .getRepo("test-repo-name1"))
                 .andReturn(testRepo1);
 
         EasyMock.expect(mockCollection
-                .findByName("test-repo-name2"))
+                .getRepo("test-repo-name2"))
                 .andReturn(testRepo2);
 
         EasyMock.replay(mockCollection);
@@ -112,9 +113,10 @@ public class ConfigDatabaseTest extends EasyMockSupport {
 
     /**
      * Checks that the correct method is called when updating a repository
+     * @throws RepositoryNotFoundException 
      */
     @Test
-    public void testUpdateRepo() throws IOException {
+    public void testUpdateRepo() throws IOException, RepositoryNotFoundException {
 
         /* The below method calls are expected */
 
@@ -149,13 +151,13 @@ public class ConfigDatabaseTest extends EasyMockSupport {
     }
     
     @Test
-    public void testDeleteRepo() throws IOException {
+    public void testDeleteRepo() throws IOException, RepositoryNotFoundException {
         
         /* The below method calls are expected */
         
         EasyMock.expect(mockCollection.contains("some-name")).andReturn(false);
         EasyMock.expect(mockCollection.contains("some-other-name")).andReturn(true);
-        mockCollection.removeByName("some-other-name");
+        mockCollection.removeRepo("some-other-name");
         partiallyMockedConfigDatabase.generateConfigFile();
         EasyMock.expectLastCall().once();
         

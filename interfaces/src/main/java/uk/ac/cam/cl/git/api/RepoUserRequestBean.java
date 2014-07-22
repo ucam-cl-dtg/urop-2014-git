@@ -4,21 +4,21 @@ package uk.ac.cam.cl.git.api;
 
 import com.fasterxml.jackson.annotation.*;
 
-import uk.ac.cam.cl.git.interfaces.AddRequestInterface;
+import uk.ac.cam.cl.git.interfaces.RepoUserRequestInterface;
 
 /**
- * Concrete implementation of ForkRequestInterface, for internal
+ * Concrete implementation of RepoUserRequestInterface, for internal
  * (deserialization) use.
  *
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  */
-public class AddRequestBean implements AddRequestInterface
+public class RepoUserRequestBean implements RepoUserRequestInterface
 {
     private final String repoName;
     private final String repoOwner;
 
     @JsonCreator
-    public AddRequestBean(@JsonProperty("repoName")  String repoName
+    public RepoUserRequestBean(@JsonProperty("repoName")  String repoName
                         , @JsonProperty("repoOwner") String repoOwner)
     {
         this.repoName  = repoName;
@@ -31,5 +31,5 @@ public class AddRequestBean implements AddRequestInterface
 
     @Override
     @JsonProperty("repoOwner")
-    public String getRepoOwner() { return repoOwner; }
+    public String getUserName() { return repoOwner; }
 }

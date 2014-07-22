@@ -9,10 +9,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.mongojack.DBCursor;
 import org.mongojack.JacksonDBCollection;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 
 import com.google.inject.Inject;
 import com.mongodb.BasicDBObject;
@@ -41,7 +41,9 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public void updateRepo(Repository repo) {
+    public void updateRepo(Repository repo) throws RepositoryNotFoundException {
+        if (!contains(repo.getName()))
+            throw new RepositoryNotFoundException();
         collection.updateById(repo.get_id(), repo);
     }
     
@@ -53,7 +55,7 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public List<Repository> findAll() {
+    public List<Repository> listRepos() {
         List<Repository> rtn = new LinkedList<Repository>();
         Iterator<Repository> allRepos = collection.find();
 
@@ -64,8 +66,10 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public Repository findByName(String name) {
-        return collection.findOne(new BasicDBObject("name", name));
+    public Repository getRepo(String repoName) throws RepositoryNotFoundException {
+        if (!contains(repoName))
+            throw new RepositoryNotFoundException();
+        return collection.findOne(new BasicDBObject("name", repoName));
     }
 
     @Override
@@ -74,8 +78,10 @@ public class MongoRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public void removeByName(String name) {
-        collection.remove(new BasicDBObject("name", name));
+    public void removeRepo(String repoName) throws RepositoryNotFoundException {
+        if (!contains(repoName))
+            throw new RepositoryNotFoundException();
+        collection.remove(new BasicDBObject("name", repoName));
     }
 
 }

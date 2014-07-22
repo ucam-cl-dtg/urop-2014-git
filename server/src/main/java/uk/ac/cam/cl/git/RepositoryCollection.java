@@ -8,8 +8,7 @@ package uk.ac.cam.cl.git;
 import java.util.List;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
-
-import com.mongodb.MongoException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  *
@@ -32,14 +31,14 @@ public interface RepositoryCollection {
      * @param repo The updated repository (there must also be a
      * repository by this name).
      */
-    public void updateRepo(Repository repo);
+    public void updateRepo(Repository repo) throws RepositoryNotFoundException;
 
     /**
      * Returns an list containing all the repository objects in the collection
      *
      * @return List of repository objects in the collection
      */
-    public List<Repository> findAll();
+    public List<Repository> listRepos();
     
     /**
      * Returns true iff there is a repository with the given name in the collection
@@ -53,7 +52,7 @@ public interface RepositoryCollection {
      * @param name The name of the repository
      * @return The requested repository object
      */
-    public Repository findByName(String name);    
+    public Repository getRepo(String name) throws RepositoryNotFoundException;    
 
     /**
      * Removes all repositories from the database collection.
@@ -66,5 +65,5 @@ public interface RepositoryCollection {
      * 
      * @param name The name of the repository to remove
      */
-    public void removeByName(String name);
+    public void removeRepo(String name) throws RepositoryNotFoundException;
 }

@@ -106,9 +106,10 @@ public class ConfigDatabaseIntegrationTests {
      * the second is not added and an exception is raised.
      * Assumes adding and getting repositories works as intended.
      * @throws DuplicateRepoNameException 
+     * @throws RepositoryNotFoundException 
      */
     @Test
-    public void testOnlyOneRepoPerName() throws IOException, DuplicateRepoNameException {
+    public void testOnlyOneRepoPerName() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
         ConfigDatabase.instance().addRepo(testRepo1);
         assert testRepo1.getName().equals(testRepo1a.getName()); // conflicting names
         try {
@@ -124,9 +125,10 @@ public class ConfigDatabaseIntegrationTests {
      * Checks that adding repos and getting them by name works.
      * Assumes that deleting repos works, and deleting a non-existent repo is fine.
      * @throws DuplicateRepoNameException 
+     * @throws RepositoryNotFoundException 
      */
     @Test
-    public void testStoringRepos() throws IOException, DuplicateRepoNameException {
+    public void testStoringRepos() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
         ConfigDatabase.instance().addRepo(testRepo1);
         ConfigDatabase.instance().addRepo(testRepo2);
         assertEquals(testRepo1.getCRSID(),
@@ -142,9 +144,10 @@ public class ConfigDatabaseIntegrationTests {
      * However, is does NOT check that the repo has actually been updated. (TODO?)
      * Assumes adding a repo is fine.
      * @throws DuplicateRepoNameException 
+     * @throws RepositoryNotFoundException 
      */
     @Test
-    public void testUpdateRepo() throws IOException, DuplicateRepoNameException {
+    public void testUpdateRepo() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
         ConfigDatabase.instance().addRepo(testRepo1);
         ConfigDatabase.instance().updateRepo(testRepo1);
     }

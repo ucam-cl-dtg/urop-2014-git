@@ -65,7 +65,7 @@ public class ConfigDatabase {
      */
     public List<Repository> getRepos()
     {   /* TODO: Test ordered-ness or repositories. */
-        return reposCollection.findAll();
+        return reposCollection.listRepos();
         
     }
     
@@ -76,9 +76,10 @@ public class ConfigDatabase {
      * 
      * @param name The name of the repository
      * @return The requested repository object
+     * @throws RepositoryNotFoundException 
      */
-    public Repository getRepoByName(String name) {
-        return reposCollection.findByName(name);
+    public Repository getRepoByName(String name) throws RepositoryNotFoundException {
+        return reposCollection.getRepo(name);
     }
 
     /**
@@ -93,7 +94,7 @@ public class ConfigDatabase {
         log.info("Deleting repository \"" + repoName + "\"");
         if (!reposCollection.contains(repoName))
             throw new RepositoryNotFoundException();
-        reposCollection.removeByName(repoName);
+        reposCollection.removeRepo(repoName);
         generateConfigFile();
         log.info("Deleted repository \"" + repoName + "\"");
     }
@@ -189,10 +190,11 @@ public class ConfigDatabase {
      *
      * @param repo The updated repository (there must also be a
      * repository by this name).
+     * @throws RepositoryNotFoundException 
      * @throws MongoException If the update operation fails (for some
      * unknown reason).
      */
-    public void updateRepo(Repository repo) throws IOException
+    public void updateRepo(Repository repo) throws IOException, RepositoryNotFoundException
     {
         reposCollection.updateRepo(repo);
         generateConfigFile();

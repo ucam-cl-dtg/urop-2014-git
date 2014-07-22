@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
-import uk.ac.cam.cl.git.api.AddRequestBean;
+import javax.ws.rs.PathParam;
+
+import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
@@ -91,7 +93,7 @@ public class GitService implements WebInterface {
     }
     
     @Override
-    public String fork(ForkRequestBean details) throws IOException, DuplicateRepoNameException
+    public String fork(ForkRequestInterface details) throws IOException, DuplicateRepoNameException
     {   /* TODO: Test */
         /* This forks the upstream repository
          * This may fail due to permissions, or the shell of tomcat7
@@ -113,13 +115,13 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public String addRepository(AddRequestBean details) throws IOException, DuplicateRepoNameException
+    public String addRepository(RepoUserRequestInterface details) throws IOException, DuplicateRepoNameException
     {
         log.info("Creating new repository \"" + details.getRepoName()
-                + ".git\"" + " for user \"" + details.getRepoOwner()
+                + ".git\"" + " for user \"" + details.getUserName()
                 + "\"");
         Repository rtn = new Repository(details.getRepoName()
-                                      , details.getRepoOwner()
+                                      , details.getUserName()
                                       , null
                                       , null);
         ConfigDatabase.instance().addRepo(rtn);
@@ -144,5 +146,20 @@ public class GitService implements WebInterface {
     public void addSSHKey(String key, String userName) throws IOException
     {
         ConfigDatabase.instance().addSSHKey(key, userName);
+    }
+    
+    @Override
+    public String getRepoURL(String repoName) throws RepositoryNotFoundException {
+        return ConfigDatabase.instance()
+                .getRepoByName(repoName)
+                .getRepoPath();
+    }
+    
+    @Override
+    public void addReadOnlyUser(RepoUserRequestInterface details) throws IOException, RepositoryNotFoundException {
+        Repository repo = ConfigDatabase.instance()
+                .getRepoByName(details.getRepoName());
+        repo.addReadOnlyUser(details.getUserName());
+        ConfigDatabase.instance().updateRepo(repo);
     }
 }

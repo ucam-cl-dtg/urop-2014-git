@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.List;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
-import uk.ac.cam.cl.git.api.ForkRequestBean;
-import uk.ac.cam.cl.git.api.AddRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 
@@ -31,6 +29,7 @@ import javax.ws.rs.Consumes;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
+// TODO: Sort out paths so we have a good restful API
 @Path("/")
 public interface WebInterface {
     /**
@@ -80,14 +79,14 @@ public interface WebInterface {
     @Path("/fork")
     @Consumes("application/json")
     @Produces("application/json")
-    public String fork(ForkRequestBean details)
+    public String fork(ForkRequestInterface details)
             throws IOException, DuplicateRepoNameException;
     
     /**
      * Creates a new blank repository and returns the URL than can be used
      * to clone it.
      *  
-     * @param details AddRequestBean giving the necessary information
+     * @param details RepoUserRequestBean giving the necessary information
      * @return The URL of the new repository
      * @throws IOException
      * @throws DuplicateRepoNameException 
@@ -96,7 +95,7 @@ public interface WebInterface {
     @Path("/add")
     @Consumes("application/json")
     @Produces("application/json")
-    public String addRepository(AddRequestBean details)
+    public String addRepository(RepoUserRequestInterface details)
             throws IOException, DuplicateRepoNameException;
 
     /**
@@ -133,4 +132,22 @@ public interface WebInterface {
     @Consumes("text/plain")
     public void addSSHKey(String key, @PathParam("userName") String userName)
             throws IOException;
+    
+    /**
+     * Returns the SSH URI that can be used to clone the given repository.
+     * @throws RepositoryNotFoundException 
+     */
+    @GET
+    @Path("/git/getURL/{repoName:.*}.git")
+    public String getRepoURL(@PathParam("repoName") String repoName) throws RepositoryNotFoundException;
+    
+    /**
+     * Gives the specified user read-only access (allows cloning of) the
+     * given repository.
+     * @throws IOException 
+     * @throws RepositoryNotFoundException 
+     */
+    @POST
+    @Path("/addReadOnlyUser")
+    public void addReadOnlyUser(RepoUserRequestInterface details) throws IOException, RepositoryNotFoundException;
 }
