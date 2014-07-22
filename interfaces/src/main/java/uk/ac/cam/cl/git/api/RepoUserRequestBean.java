@@ -15,14 +15,14 @@ import uk.ac.cam.cl.git.interfaces.RepoUserRequestInterface;
 public class RepoUserRequestBean implements RepoUserRequestInterface
 {
     private final String repoName;
-    private final String repoOwner;
+    private final String userName;
 
     @JsonCreator
     public RepoUserRequestBean(@JsonProperty("repoName")  String repoName
-                        , @JsonProperty("repoOwner") String repoOwner)
+                        , @JsonProperty("userName") String userName)
     {
         this.repoName  = repoName;
-        this.repoOwner = repoOwner;
+        this.userName = userName;
     }
 
     @Override
@@ -30,6 +30,6 @@ public class RepoUserRequestBean implements RepoUserRequestInterface
     public String getRepoName() { return repoName; }
 
     @Override
-    @JsonProperty("repoOwner")
-    public String getUserName() { return repoOwner; }
+    @JsonProperty("userName")
+    public String getUserName() { return userName; }
 }
