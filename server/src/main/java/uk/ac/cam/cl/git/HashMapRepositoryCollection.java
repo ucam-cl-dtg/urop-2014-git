@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
+import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 
 
 /**
@@ -32,24 +33,28 @@ public class HashMapRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public void updateRepo(Repository repo) {
+    public void updateRepo(Repository repo) throws RepositoryNotFoundException {
+        if (!contains(repo.getName()))
+            throw new RepositoryNotFoundException();
         collection.remove(repo.getName());
         collection.put(repo.getName(), repo);
     }
     
     @Override
-    public boolean contains(String name) {
-        return collection.containsKey(name);
+    public boolean contains(String repoName){
+        return collection.containsKey(repoName);
     }
 
     @Override
-    public List<Repository> findAll() {
+    public List<Repository> listRepos() {
         return new ArrayList<Repository>(collection.values());
     }
 
     @Override
-    public Repository findByName(String name) {
-        return collection.get(name);
+    public Repository getRepo(String repoName) throws RepositoryNotFoundException {
+        if (!contains(repoName))
+            throw new RepositoryNotFoundException();
+        return collection.get(repoName);
     }
 
     @Override
@@ -58,8 +63,10 @@ public class HashMapRepositoryCollection implements RepositoryCollection {
     }
 
     @Override
-    public void removeByName(String name) {
-        collection.remove(name);
+    public void removeRepo(String repoName) throws RepositoryNotFoundException {
+        if (!contains(repoName))
+            throw new RepositoryNotFoundException();
+        collection.remove(repoName);
     }
 
 }

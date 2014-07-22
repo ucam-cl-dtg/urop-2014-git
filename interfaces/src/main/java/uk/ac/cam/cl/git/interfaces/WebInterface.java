@@ -5,11 +5,7 @@ package uk.ac.cam.cl.git.interfaces;
 import java.io.IOException;
 import java.util.List;
 
-import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
-import uk.ac.cam.cl.git.api.ForkRequestBean;
-import uk.ac.cam.cl.git.api.AddRequestBean;
-import uk.ac.cam.cl.git.api.HereIsYourException;
-import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.git.api.*;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -37,7 +33,7 @@ public interface WebInterface {
      * @return A list of the names of the repositories currently stored in the database
      */
     @GET
-    @Path("/git")
+    @Path("/repos")
     @Produces("application/json")
     public List<String> listRepositories();
 
@@ -48,7 +44,7 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException
      */
     @GET
-    @Path("/git/{repoName:.*}.git")
+    @Path("/repos/{repoName:.*}.git")
     @Produces("application/json")
     public List<String> listFiles(@PathParam("repoName") String repoName)
             throws IOException, RepositoryNotFoundException;
@@ -61,7 +57,7 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException
      */
     @GET
-    @Path("/git/{repoName:.*}.git/{fileName:.*}")
+    @Path("/repos/{repoName:.*}.git/{fileName:.*}")
     @Produces("application/octet-stream")
     public String getFile(@PathParam("fileName") String fileName
                           , @PathParam("repoName") String repoName)
@@ -87,7 +83,7 @@ public interface WebInterface {
      * Creates a new blank repository and returns the URL than can be used
      * to clone it.
      *  
-     * @param details AddRequestBean giving the necessary information
+     * @param details RepoUserRequestBean giving the necessary information
      * @return The URL of the new repository
      * @throws IOException
      * @throws DuplicateRepoNameException 
@@ -96,7 +92,7 @@ public interface WebInterface {
     @Path("/add")
     @Consumes("application/json")
     @Produces("application/json")
-    public String addRepository(AddRequestBean details)
+    public String addRepository(RepoUserRequestBean details)
             throws IOException, DuplicateRepoNameException;
 
     /**
@@ -133,4 +129,22 @@ public interface WebInterface {
     @Consumes("text/plain")
     public void addSSHKey(String key, @PathParam("userName") String userName)
             throws IOException;
+    
+    /**
+     * Returns the SSH URI that can be used to clone the given repository.
+     * @throws RepositoryNotFoundException 
+     */
+    @GET
+    @Path("/URI/{repoName:.*}.git/")
+    public String getRepoURI(@PathParam("repoName") String repoName) throws RepositoryNotFoundException;
+    
+    /**
+     * Gives the specified user read-only access (allows cloning of) the
+     * given repository.
+     * @throws IOException 
+     * @throws RepositoryNotFoundException 
+     */
+    @POST
+    @Path("/permissions/add")
+    public void addReadOnlyUser(RepoUserRequestBean details) throws IOException, RepositoryNotFoundException;
 }

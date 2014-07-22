@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
 
-import uk.ac.cam.cl.git.api.AddRequestBean;
+import javax.ws.rs.PathParam;
+
+import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
@@ -146,13 +148,13 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public String addRepository(AddRequestBean details) throws IOException, DuplicateRepoNameException
+    public String addRepository(RepoUserRequestBean details) throws IOException, DuplicateRepoNameException
     { /* Triggers compile don't work */
         log.info("Creating new repository \"" + details.getRepoName()
-                + ".git\"" + " for user \"" + details.getRepoOwner()
+                + ".git\"" + " for user \"" + details.getUserName()
                 + "\"");
         Repository rtn = new Repository(details.getRepoName()
-                                      , details.getRepoOwner()
+                                      , details.getUserName()
                                       , null
                                       , null);
         ConfigDatabase.instance().addRepo(rtn);
@@ -177,5 +179,20 @@ public class GitService implements WebInterface {
     public void addSSHKey(String key, String userName) throws IOException
     {
         ConfigDatabase.instance().addSSHKey(key, userName);
+    }
+    
+    @Override
+    public String getRepoURI(String repoName) throws RepositoryNotFoundException {
+        return ConfigDatabase.instance()
+                .getRepoByName(repoName)
+                .getRepoPath();
+    }
+    
+    @Override
+    public void addReadOnlyUser(RepoUserRequestBean details) throws IOException, RepositoryNotFoundException {
+        Repository repo = ConfigDatabase.instance()
+                .getRepoByName(details.getRepoName());
+        repo.addReadOnlyUser(details.getUserName());
+        ConfigDatabase.instance().updateRepo(repo);
     }
 }

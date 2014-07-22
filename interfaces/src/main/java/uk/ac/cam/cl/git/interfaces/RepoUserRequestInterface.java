@@ -9,16 +9,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This is the interface for the object that we expect when a request
- * is made to add a new repository. The object can be in JSON, Jackson2
- * will convert it into this format.
+ * is made to add a new repository or to allow a user access to an
+ * existing repository - it simply speicifes a repository and a user.
+ * The object can be in JSON, Jackson2 will convert it into this format.
  * 
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
-public interface AddRequestInterface {
+public interface RepoUserRequestInterface {
     @JsonProperty("repoName")
     public String getRepoName();
     
-    @JsonProperty("repoOwner")
-    public String getRepoOwner();
+    @JsonProperty("userName")
+    public String getUserName();
 
 }

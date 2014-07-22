@@ -164,6 +164,15 @@ public class Repository implements TesterInterface
         this.read_only = read_only;
         owner = crsid;
     }
+    
+    /**
+     * Adds the given user to the list of users with read-only permissions
+     * for this repository. Note that it does not then update gitolite to
+     * reflect the change.
+     */
+    public void addReadOnlyUser(String user) {
+        read_only.add(user);
+    }
 
     /**
      * Clones repository to specified directory, if it can get
