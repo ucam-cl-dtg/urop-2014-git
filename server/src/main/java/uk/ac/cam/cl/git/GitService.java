@@ -108,14 +108,46 @@ public class GitService implements WebInterface {
                                       , details.getRepoName()
                                       , details.getOverlay());
         ConfigDatabase.instance().addRepo(rtn);
-        rtn.cloneParent();
+        try
+        {
+            while (!rtn.repoExists())
+            {
+                try
+                {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e)
+                {
+                    /* If we woke up earlier from sleep than expected,
+                     * continue to check for repo existence.
+                     */
+                }
+            }
+            rtn.cloneParent();
+        }
+        catch(IOException e) /* Will be forwarded too */
+        {
+            try
+            {
+                ConfigDatabase.instance().delRepoByName(details.getNewRepoName());
+            }
+            catch (RepositoryNotFoundException f)
+            {
+                /* This is an attempt at cleaning up, we can abort and
+                 * panic here!
+                 */
+                log.warn("Failed to clean up repo " + details.getNewRepoName()
+                    + " from the database!");
+            }
+            throw e;
+        }
         // TODO: better return, e.g. NewRepoName (as repoName perhaps)
         return rtn.getRepoPath();
     }
 
     @Override
     public String addRepository(AddRequestBean details) throws IOException, DuplicateRepoNameException
-    {
+    { /* Triggers compile don't work */
         log.info("Creating new repository \"" + details.getRepoName()
                 + ".git\"" + " for user \"" + details.getRepoOwner()
                 + "\"");

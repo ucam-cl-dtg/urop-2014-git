@@ -214,23 +214,6 @@ public class ConfigDatabase {
         log.info("Starting gitolite recompilation");
         for (String command : updates)
         {
-
-            /* `env' runs gitolite from $PATH defined in
-             * environmentVariables
-             */
-            /*
-            Process p = Runtime.getRuntime().exec("env gitolite " + command
-                                                , environmentVariables);
-            String line;
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            BufferedReader outputReader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            while ((line = errorReader.readLine()) != null) {
-                log.warn(line);
-            }
-            while ((line = outputReader.readLine()) != null) {
-                log.info(line);
-            }
-            */
             try
             {
                 JSch ssh = new JSch();

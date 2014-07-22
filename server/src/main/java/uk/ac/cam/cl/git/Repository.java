@@ -207,26 +207,20 @@ public class Repository implements TesterInterface
      */
     public void cloneParent() throws IOException
     {
-        /* Clone parent, if it is not null */
-        if (parent != null)
-        {
-            File dest = new File(
-                    ConfigurationLoader.getConfig()
-                        .getGitoliteHome()
-                            + "/repositories/" + repo + ".git");
-            log.info("I am: " + System.getProperty("user.name"));
-            log.info("Making directory " + dest.getPath());
+        GitDb tmp = new GitDb(ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + parent + ".git");
 
-            handle = new GitDb(
-                     /* src            */
-                        ConfigurationLoader.getConfig()
-                            .getGitoliteHome()
-                                + "/repositories/" + parent + ".git"
-                    ,/* dest           */ dest
-                    ,/* bare           */ true
-                    ,/* branch         */ "master"
-                    ,/* remote         */ "origin"
-                    ,/* privateKeyPath */ null);
+        /* Now parent is cloned at tmpDir, push back to child */
+        try
+        {
+            tmp.pushTo(ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + repo + ".git");
+        }
+        catch (PushFailedException e)
+        {
+            throw new IOException(
+                    "Failed to push parent repo onto child. "
+                    + "You will get an empty repository.\n", e);
         }
     }
 
@@ -510,6 +504,17 @@ public class Repository implements TesterInterface
     }
 
     /**
+     * Gets the parent repository path as an SSH URI.
+     *
+     * @return Parent repository path as an SSH URI.
+     */
+    @JsonIgnore
+    public String getParentRepoPath()
+    {
+        return "ssh://" + user  + "@" + host + "/" + parent + ".git";
+    }
+
+    /**
      * Gets the repository path as an SSH URI.
      *
      * @return Repository path as an SSH URI.
@@ -518,5 +523,17 @@ public class Repository implements TesterInterface
     public String getRepoPath()
     {
         return "ssh://" + user  + "@" + host + "/" + repo + ".git";
+    }
+
+    /**
+     * Checks if this repository exists on disk.
+     *
+     * @return True if repository exists.
+     */
+    public boolean repoExists()
+    {
+        return new File(ConfigurationLoader.getConfig()
+                        .getGitoliteHome()
+                        + "/repositories/" + repo + ".git").exists();
     }
 }

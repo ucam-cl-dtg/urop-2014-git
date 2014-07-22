@@ -145,6 +145,7 @@ public class GitDb
             if (src != null)
                 SshSessionFactory.setInstance(factory);
 
+            log.info("Cloning " + src + " to " + dest);
             this.gitHandle =  Git.cloneRepository()
                 .setURI(src)
                 .setDirectory(dest)
@@ -159,7 +160,7 @@ public class GitDb
                     "Error while trying to clone the repository.",
                     e);
             throw new RuntimeException(
-                    "Error while trying to clone the repository."+
+                    "Error while trying to clone the repository.",
                     e);
         }
     }
@@ -498,6 +499,23 @@ public class GitDb
 		}
 		return result;
 	}
+
+    /**
+     * Pushes the current GitDb back to the given repository.
+     *
+     * @param remote The remote (uri or name) used for the push operation.
+     */
+    public void pushTo(String remote) throws PushFailedException
+    {
+        try
+        {
+            gitHandle.push().setRemote(remote).setPushAll().call();
+        }
+        catch (GitAPIException e)
+        {
+            throw new PushFailedException(e);
+        }
+    }
 
 	/**
 	 * Will find an object from the git repository if given a sha and a full git
