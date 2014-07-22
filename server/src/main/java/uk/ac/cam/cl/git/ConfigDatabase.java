@@ -139,6 +139,8 @@ public class ConfigDatabase {
         buffWriter.flush();
         buffWriter.close();
         runGitoliteUpdate(new String[] {"compile",
+        /* Workaround first compile not updating file, only
+         * doing git init --bare    */  "compile",
                                         "trigger POST_COMPILE"});
         log.info("Generated config file \"" +
                 ConfigurationLoader.getConfig()
