@@ -190,11 +190,13 @@ public class GitService implements WebInterface {
         for (String repo : ConfigDatabase.instance()
                             .listStaleRepositories())
         {
+            log.info("Removing (stale) repository \"" + repo + "\"!");
             recursiveDelete(new File(
                         ConfigurationLoader.getConfig()
                             .getGitoliteHome() + "/repositories/"
                                 + repo + ".git"));
 
+            log.info("Removed (stale) repository \"" + repo + "\"!");
         }
     }
 
