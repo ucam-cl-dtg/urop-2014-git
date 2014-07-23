@@ -1,8 +1,6 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-/**
- * 
- */
+
 package uk.ac.cam.cl.git.api;
 
 /**
@@ -12,7 +10,7 @@ package uk.ac.cam.cl.git.api;
 public class DuplicateRepoNameException extends Exception {
 
     private static final long serialVersionUID = -8435627648504161495L; // generated
-    
+
     public DuplicateRepoNameException(String url) {
         super(url);
     }

@@ -8,9 +8,9 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 
 public class Mongo {
-	
+
 	private static DB db;
-	
+
 	static {
 		try {
 			MongoClient client = new MongoClient();
@@ -19,7 +19,7 @@ public class Mongo {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Returns a handle to the local mongoDB instance
      *

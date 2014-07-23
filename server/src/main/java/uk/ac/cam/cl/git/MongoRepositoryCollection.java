@@ -1,8 +1,6 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-/**
- * 
- */
+
 package uk.ac.cam.cl.git;
 
 import java.util.Iterator;
@@ -24,7 +22,7 @@ import com.mongodb.BasicDBObject;
 public class MongoRepositoryCollection implements RepositoryCollection {
 
     private static JacksonDBCollection<Repository, String> collection;
-    
+
     @Inject
     public void setCollection(JacksonDBCollection<Repository, String> newCollection) {
         collection = newCollection;
@@ -42,10 +40,10 @@ public class MongoRepositoryCollection implements RepositoryCollection {
                  * database, throw a DuplicateRepoNameException with that repo's URI
                  * as the message.
                  */
-                
+
                 throw new DuplicateRepoNameException(ConfigDatabase.instance()
                         .getRepoByName(repo.getName()).getRepoPath());
-                
+
             } catch(RepositoryNotFoundException e) {
                 throw new RuntimeException("This should never ever happen");
                 /* This code only runs there both is and isn't a repository
@@ -60,7 +58,7 @@ public class MongoRepositoryCollection implements RepositoryCollection {
             throw new RepositoryNotFoundException();
         collection.updateById(repo.get_id(), repo);
     }
-    
+
     @Override
     public boolean contains(String name) {
         int matchingRepos = collection.find(new BasicDBObject("name", name)).count();

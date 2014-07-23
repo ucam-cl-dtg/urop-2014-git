@@ -13,9 +13,9 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.ExceptionHandler;
 /**
  * This class registers the resteasy handlers. The name is important since it is
  * used as a String in HttpServletDispatcherV3
- * 
+ *
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
- * 
+ *
  */
 public class ApplicationRegister extends Application {
 
@@ -23,9 +23,8 @@ public class ApplicationRegister extends Application {
 	public Set<Class<?>> getClasses() {
 		Set<Class<?>> result = new HashSet<Class<?>>();
 		result.add(GitService.class);
-		// TODO: Uncomment for production
-		// result.add(RemoteFailureHandler.class);
-		// result.add(ExceptionHandler.class);
+		result.add(RemoteFailureHandler.class);
+		result.add(ExceptionHandler.class);
 		return result;
 	}
 

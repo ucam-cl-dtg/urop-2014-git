@@ -1,8 +1,6 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-/**
- * 
- */
+
 package uk.ac.cam.cl.git;
 
 import org.mongojack.JacksonDBCollection;
@@ -22,7 +20,7 @@ public class DatabaseModule extends AbstractModule {
     protected void configure() {
         bind(RepositoryCollection.class).to(MongoRepositoryCollection.class);
     }
-    
+
     @Provides
     public JacksonDBCollection<Repository, String> provideMongoCollection() {
         return JacksonDBCollection.wrap
@@ -30,5 +28,5 @@ public class DatabaseModule extends AbstractModule {
                         , Repository.class
                         , String.class);
     }
-    
+
 }

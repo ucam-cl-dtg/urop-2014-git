@@ -1,10 +1,10 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
+
 package uk.ac.cam.cl.git;
 
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -32,7 +32,7 @@ public class RepositoryTest
     private Repository testRepo4 = new Repository("test-repo-name4",
             "yet-another-repository-owner", emptyList, emptyList,
             "parent4", "hidden4", null);
-    
+
     {
         readOnlys.add("readonlyUser1");
         readOnlys.add("readonlyUser2");
@@ -40,13 +40,13 @@ public class RepositoryTest
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
     }
-    
+
     /**
      * Tests that the String representations of repositories are as expected.
      */
     @Test
     public void checkStringRepresentation() {
-        String shouldBeTestRepo1 = 
+        String shouldBeTestRepo1 =
                 "repo test-repo-name1" + "\n" +
                 "     RW = repository-owner adminUser1 adminUser2" + "\n" +
                 "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
@@ -55,7 +55,7 @@ public class RepositoryTest
                 "repo test-repo-name2" + "\n" +
                 "     RW = repository-owner adminUser1 adminUser2" + "\n" +
                 "# parent2 hidden2" + "\n";
-        String shouldBeTestRepo3 = 
+        String shouldBeTestRepo3 =
                 "repo test-repo-name3" + "\n" +
                 "     RW = other-repository-owner" + "\n" +
                 "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +

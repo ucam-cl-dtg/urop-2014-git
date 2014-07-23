@@ -12,7 +12,6 @@ import org.eclipse.jgit.treewalk.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
@@ -21,8 +20,6 @@ import com.fasterxml.jackson.annotation.*;
 
 import org.mongojack.Id;
 import org.mongojack.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -30,10 +27,7 @@ import org.slf4j.LoggerFactory;
  * @version 0.1
  */
 public class Repository implements TesterInterface
-{ 
-    /* For logging */
-    private static final Logger log = LoggerFactory.getLogger(Repository.class);
-
+{
     private final String parent;
     private final String parent_hidden;
     private final String repo;
@@ -63,7 +57,6 @@ public class Repository implements TesterInterface
      * @param read_write A list of people or groups who can read and write to
      * the repository. This does not need to include the owner (toString method
      * automatically includes owner as RW).
-     * TODO: testing and frontend team servers
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off.
@@ -100,7 +93,6 @@ public class Repository implements TesterInterface
      * @param read_write A list of people or groups who can read and write to
      * the repository. This does not need to include the owner (toString method
      * automatically includes owner as RW).
-     * TODO: testing and frontend team servers
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off
@@ -139,7 +131,6 @@ public class Repository implements TesterInterface
      * @param read_write A list of people or groups who can read and write to
      * the repository. This does not need to include the owner (toString method
      * automatically includes owner as RW).
-     * TODO: testing and frontend team servers
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off
@@ -164,7 +155,7 @@ public class Repository implements TesterInterface
         this.read_only = read_only;
         owner = crsid;
     }
-    
+
     /**
      * Adds the given user to the list of users with read-only permissions
      * for this repository. Note that it does not then update gitolite to
@@ -196,7 +187,7 @@ public class Repository implements TesterInterface
 
         handle = new GitDb(
                  /* src            */ getRepoPath()
-                ,/* dest           */ directory 
+                ,/* dest           */ directory
                 ,/* bare           */ false
                 ,/* branch         */ "master"
                 ,/* remote         */ "origin"
@@ -235,7 +226,7 @@ public class Repository implements TesterInterface
 
     /**
      * Opens a local repository
-     * 
+     *
      * @param repoName the name of the repository to open.
      * @throws IOException Something went wrong (typically not
      * recoverable).
@@ -250,30 +241,12 @@ public class Repository implements TesterInterface
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
     }
-    
-    /**
-     * Pulls in student repo and tick repo and hands over relevant files to be tested.
-     *
-     */
-    public void submit() {
-        /* TODO: implement
-         * 
-         * 1) Pull in student's repo (the one this class is encapsulating)
-         * 2) Pull in ticker's repo (the one the origin of this class)
-         * 3) Package up in some format for the testers' API to call
-         * 4) Call the testers' test function
-         * 4) i) Perhaps we could call it with an argument of this
-         *       class, then they could use the visitor pattern on to
-         *       get at the files and then use the saveTestResults
-         *       method to give us the test results.
-         */
-    }
-    
+
     /**
      * Saves test results into mongo database.
      * <p>
      * Needs to store commit number or similar, so that the test results cannot be changed.
-     * 
+     *
      * @param results The results to be saved
      */
     @JsonIgnore
@@ -284,12 +257,12 @@ public class Repository implements TesterInterface
          * 2) Store the test result in a database
          */
     }
-    
+
     /**
      * Returns requested test results.
-     * 
+     *
      * @param request Specifies which results are wanted
-     * 
+     *
      * @return The requested test results
      */
     @JsonIgnore
@@ -308,7 +281,7 @@ public class Repository implements TesterInterface
      * <p>
      * Repository must first be cloned using cloneTo!
      *
-     * @return The list of source files, (TODO: as specified by the tick setter?)
+     * @return The list of source files
      */
     @JsonIgnore
     public Collection<String> getSources() throws IOException
@@ -337,7 +310,7 @@ public class Repository implements TesterInterface
      * Repository must first be cloned using cloneTo!
      *
      * @param filter Filter files according to this
-     * @return The list of source files, (TODO: as specified by the tick setter?)
+     * @return The list of source files
      *
      * @throws IOException Something went wrong (typically not
      * recoverable).
@@ -391,20 +364,6 @@ public class Repository implements TesterInterface
     }
 
     /**
-     * Returns a map of test files and a list of required files for
-     * those tests to run
-     *
-     * @return Map of test files and a list of the test's dependencies
-     */
-    @JsonIgnore
-    public Map<String, Collection<String>> getTests()
-    {
-        /* TODO: implement
-         */
-        return null;
-    }
-
-    /**
      * Gets the CRSID of the repository owner
      *
      * @return CRSID of the repository owner
@@ -445,7 +404,7 @@ public class Repository implements TesterInterface
      */
     @JsonProperty("parent")
     public String parent() { return this.parent; }
-    
+
     /**
      * For storing this in MongoDB
      *
@@ -453,7 +412,7 @@ public class Repository implements TesterInterface
      */
     @Id @ObjectId
     protected String get_id() { return this._id; }
-    
+
     /**
      * For storing this in MongoDB
      *
@@ -465,7 +424,7 @@ public class Repository implements TesterInterface
     /**
      * Gets the hidden parent of this repository, or null if this
      * repository has no hidden parent.
-     * 
+     *
      * @return Hidden parent or null
      */
     @JsonProperty("parent_hidden")
@@ -474,7 +433,7 @@ public class Repository implements TesterInterface
     /**
      * Gives the string representation of the repository, to be used in
      * conjuction with Gitolite.
-     * 
+     *
      * Please do not change this method without appropriately updating
      * rebuildDatabaseFromGitolite in ConfigDatabase!
      *
@@ -482,6 +441,7 @@ public class Repository implements TesterInterface
      * repository
      */
     @Override
+    @JsonIgnore
     public String toString()
     {
         StringBuilder strb = new StringBuilder("repo ");
@@ -504,8 +464,8 @@ public class Repository implements TesterInterface
                 strb.append(" " + name);
             strb.append("\n");
         }
-        
-        strb.append("# "); // To allow the rebuilding of the database 
+
+        strb.append("# "); // To allow the rebuilding of the database
         strb.append(parent + " "); // from the gitolite config file
         strb.append(parent_hidden + "\n");
 
@@ -539,6 +499,7 @@ public class Repository implements TesterInterface
      *
      * @return True if repository exists.
      */
+    @JsonIgnore
     public boolean repoExists()
     {
         return new File(ConfigurationLoader.getConfig()

@@ -1,8 +1,6 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-/**
- * 
- */
+
 package uk.ac.cam.cl.git;
 
 import static org.junit.Assert.*;
@@ -22,8 +20,6 @@ import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
-import com.google.inject.Guice;
-
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
@@ -32,7 +28,7 @@ public class ConfigDatabaseIntegrationTests {
     private static List<String> readOnlys = new LinkedList<String>();
     private static List<String> readAndWrites = new LinkedList<String>();
     private static List<String> emptyList = new LinkedList<String>();
-    
+
     static {
         readOnlys.add("readonlyUser1");
         readOnlys.add("readonlyUser2");
@@ -40,7 +36,7 @@ public class ConfigDatabaseIntegrationTests {
         readAndWrites.add("adminUser1");
         readAndWrites.add("adminUser2");
     }
-    
+
     private static Repository testRepo1 = new Repository("test-repo-name1",
             "repository-owner", readAndWrites, readOnlys, "p1", "h1", null);
     private static Repository testRepo1a = new Repository("test-repo-name1",
@@ -52,15 +48,15 @@ public class ConfigDatabaseIntegrationTests {
      * Before each test, empty the database.
      */
     @Before
-    public void setUp() throws IOException {        
+    public void setUp() throws IOException {
         ConfigDatabase.instance().deleteAll();
     }
-    
+
     /**
-     * @throws DuplicateRepoNameException 
+     * @throws DuplicateRepoNameException
      * Checks that the gitolite config file is written as expected and the
      * repositories are found in the expected place.
-     * @throws  
+     * @throws
      */
     @Test
     public void testGenerateConfigFile() throws IOException, DuplicateRepoNameException {
@@ -100,13 +96,13 @@ public class ConfigDatabaseIntegrationTests {
             fail("An I/O exception occurred when reading the config file");
         }
     }
-    
+
     /**
      * Checks that when two repositories of the same name are inserted,
      * the second is not added and an exception is raised.
      * Assumes adding and getting repositories works as intended.
-     * @throws DuplicateRepoNameException 
-     * @throws RepositoryNotFoundException 
+     * @throws DuplicateRepoNameException
+     * @throws RepositoryNotFoundException
      */
     @Test
     public void testOnlyOneRepoPerName() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
@@ -120,12 +116,12 @@ public class ConfigDatabaseIntegrationTests {
         }
         assertEquals(testRepo1.getCRSID(), ConfigDatabase.instance().getRepoByName("test-repo-name1").getCRSID());
     }
-    
+
     /**
      * Checks that adding repos and getting them by name works.
      * Assumes that deleting repos works, and deleting a non-existent repo is fine.
-     * @throws DuplicateRepoNameException 
-     * @throws RepositoryNotFoundException 
+     * @throws DuplicateRepoNameException
+     * @throws RepositoryNotFoundException
      */
     @Test
     public void testStoringRepos() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
@@ -138,38 +134,38 @@ public class ConfigDatabaseIntegrationTests {
         assertNotEquals(ConfigDatabase.instance().getRepoByName("test-repo-name1").getCRSID(),
                 ConfigDatabase.instance().getRepoByName("test-repo-name2").getCRSID());
     }
-    
+
     /**
      * Checks that calling update repo on an existing repo is fine.
      * However, is does NOT check that the repo has actually been updated.
      * Assumes adding a repo is fine.
-     * @throws DuplicateRepoNameException 
-     * @throws RepositoryNotFoundException 
+     * @throws DuplicateRepoNameException
+     * @throws RepositoryNotFoundException
      */
     @Test
     public void testUpdateRepo() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
         ConfigDatabase.instance().addRepo(testRepo1);
         ConfigDatabase.instance().updateRepo(testRepo1);
     }
-    
+
     /**
-     * Checks that when a repo is added and deleted, it appears and disappears 
+     * Checks that when a repo is added and deleted, it appears and disappears
      * from the list of repositories.
      * Assumes adding and deleting repos works.
-     * @throws DuplicateRepoNameException 
-     * @throws RepositoryNotFoundException 
+     * @throws DuplicateRepoNameException
+     * @throws RepositoryNotFoundException
      */
     @Test
     public void testGetAndDeleteRepos() throws IOException, DuplicateRepoNameException, RepositoryNotFoundException {
         assertFalse(containsRepo(ConfigDatabase.instance().getRepos(), "test-repo-name1"));
-        
+
         ConfigDatabase.instance().addRepo(testRepo1);
         assertTrue(containsRepo(ConfigDatabase.instance().getRepos(), "test-repo-name1"));
-        
+
         ConfigDatabase.instance().delRepoByName("test-repo-name1");
         assertFalse(containsRepo(ConfigDatabase.instance().getRepos(), "test-repo-name1"));
     }
-    
+
     @Test
     public void testListRepos() throws IOException, DuplicateRepoNameException {
         assertEquals(0, ConfigDatabase.instance().getRepos().size());
@@ -180,7 +176,7 @@ public class ConfigDatabaseIntegrationTests {
         assertTrue(containsRepo(repoList, "test-repo-name1"));
         assertTrue(containsRepo(repoList, "test-repo-name2"));
     }
-    
+
     private boolean containsRepo(List<Repository> repos, String repoName) {
         for (Repository repo : repos) {
             if (repo.getName().equals(repoName)) {

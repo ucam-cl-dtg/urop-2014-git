@@ -15,9 +15,9 @@ public class ConfigurationFile
     private String gitoliteSSHKeyLocation = System.getProperty("user.home") + "/.gitolite/keydir/UROP/";
     private String gitoliteHome = "/var/lib/gitolite3";
     private String gitolitePath = "/bin:/usr/bin";
-    private String gitoliteLibdir = "/usr/share/gitolite3/lib"; 
+    private String gitoliteLibdir = "/usr/share/gitolite3/lib";
     private String sshPrivateKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa";
-    
+
     /**
      * @return the repoHost
      */
@@ -25,7 +25,7 @@ public class ConfigurationFile
     {
         return repoHost;
     }
-    
+
     /**
      * @param repoHost the repoHost to set
      */
@@ -33,7 +33,7 @@ public class ConfigurationFile
     {
         this.repoHost = repoHost;
     }
-    
+
     /**
      * @return the repoUser
      */
@@ -41,7 +41,7 @@ public class ConfigurationFile
     {
         return repoUser;
     }
-    
+
     /**
      * @param repoUser the repoUser to set
      */
@@ -49,7 +49,7 @@ public class ConfigurationFile
     {
         this.repoUser = repoUser;
     }
-    
+
     /**
      * @return the repoDatabase
      */
@@ -57,7 +57,7 @@ public class ConfigurationFile
     {
         return repoDatabase;
     }
-    
+
     /**
      * @param repoDatabase the repoDatabase to set
      */

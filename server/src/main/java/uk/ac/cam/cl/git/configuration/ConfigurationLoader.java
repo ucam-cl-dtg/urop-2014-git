@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  *  A configuration file loader class, set at compile time, loaded at
  *  initialisation.
- *  
+ *
  * This just a simple class to load the file {@value fileName} in the
  * current directory and convert it into a
  * {@link uk.ac.cam.cl.git.configuration.ConfigurationFile}

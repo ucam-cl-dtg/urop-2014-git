@@ -2,7 +2,6 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.cl.git.interfaces;
 
-import java.util.Map;
 import java.util.Collection;
 import java.io.File;
 import java.io.IOException;
@@ -45,14 +44,6 @@ public interface TesterInterface
      * recoverable).
      */
     public Collection<String> getSources() throws IOException;
-
-    /**
-     * Returns a map of test files and a list of required files for
-     * those tests to run
-     *
-     * @return Map of test files and a list of the test's dependencies
-     */
-    public Map<String, Collection<String>> getTests();
 
     /**
      * Callback to let the repository store the test result

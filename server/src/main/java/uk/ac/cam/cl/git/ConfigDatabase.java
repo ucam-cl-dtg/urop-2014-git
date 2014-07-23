@@ -3,6 +3,7 @@
 package uk.ac.cam.cl.git;
 
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.BufferedReader;
@@ -11,7 +12,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +36,13 @@ import com.jcraft.jsch.*;
 public class ConfigDatabase {
     /* For logging */
     private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
-    
-    private static final String[] environmentVariables = new String[]
-            {"HOME="  + ConfigurationLoader.getConfig().getGitoliteHome()
-            , "PATH=" + ConfigurationLoader.getConfig().getGitolitePath()
-            , "GL_LIBDIR=" + ConfigurationLoader.getConfig().getGitoliteLibdir()};
 
     @Inject private RepositoryCollection reposCollection;
-    
+
     private static final Injector injector = Guice.createInjector(new DatabaseModule());
-    
+
     private static final ConfigDatabase instance = injector.getInstance(ConfigDatabase.class);
-    
+
     public static ConfigDatabase instance() {
         return instance;
     }
@@ -66,19 +63,17 @@ public class ConfigDatabase {
      * @return List of repository objects in the collection
      */
     public List<Repository> getRepos()
-    {   /* TODO: Test ordered-ness or repositories. */
+    {
         return reposCollection.listRepos();
-        
     }
-    
-    
+
     /**
      * Returns the repository object with the given name in the
      * database.
-     * 
+     *
      * @param name The name of the repository
      * @return The requested repository object
-     * @throws RepositoryNotFoundException 
+     * @throws RepositoryNotFoundException
      */
     public Repository getRepoByName(String name) throws RepositoryNotFoundException {
         return reposCollection.getRepo(name);
@@ -87,7 +82,7 @@ public class ConfigDatabase {
     /**
      * Removes the repository object with the given name from the
      * database if present in the database.
-     * 
+     *
      * @param name The name of the repository to remove
      * @throws IOException
      * @throws RepositoryNotFoundException
@@ -100,7 +95,7 @@ public class ConfigDatabase {
         generateConfigFile();
         log.info("Deleted repository \"" + repoName + "\"");
     }
-    
+
     /**
      * Removes all repositories from the collection.
      * For unit testing only.
@@ -167,12 +162,13 @@ public class ConfigDatabase {
      *
      * @param key The SSH key to be added
      * @param username The name of the user to be added
-     * @throws IOException 
+     * @throws IOException
      */
     public void addSSHKey(String key, String userName) throws IOException {
         log.info("Adding key for \"" + userName + "\" to \""
                 + ConfigurationLoader.getConfig()
                     .getGitoliteSSHKeyLocation() + "\"");
+
         File keyFile = new File(ConfigurationLoader.getConfig()
                 .getGitoliteSSHKeyLocation() + "/" + userName + ".pub");
         if (!keyFile.exists()) {
@@ -182,8 +178,10 @@ public class ConfigDatabase {
         }
         BufferedWriter buffWriter = new BufferedWriter(new FileWriter(keyFile));
         buffWriter.write(key);
+        buffWriter.flush();
         buffWriter.close();
         runGitoliteUpdate(new String[] {"trigger SSH_AUTHKEYS"});
+
         log.info("Finished adding key for \"" + userName + "\"");
     }
 
@@ -195,7 +193,7 @@ public class ConfigDatabase {
      *
      * @param repo The updated repository (there must also be a
      * repository by this name).
-     * @throws RepositoryNotFoundException 
+     * @throws RepositoryNotFoundException
      * @throws MongoException If the update operation fails (for some
      * unknown reason).
      */
@@ -214,11 +212,15 @@ public class ConfigDatabase {
      *
      * @param updates List of things to recompile/reconfigure.
      */
-    protected void runGitoliteUpdate(String[] updates) throws IOException
+    protected Deque<OutputStream> runGitoliteUpdate(String[] updates) throws IOException
     {
         log.info("Starting gitolite recompilation");
+        Deque<OutputStream> rtn = new LinkedList<OutputStream>();
+
         for (String command : updates)
         {
+            rtn.add(new ByteArrayOutputStream());
+
             try
             {
                 JSch ssh = new JSch();
@@ -234,8 +236,9 @@ public class ConfigDatabase {
                 channel.setCommand(command);
 
                 channel.setInputStream(null);
+
                 /* Gitolite does native logging */
-                channel.setOutputStream(null);
+                channel.setOutputStream(rtn.getLast());
                 channel.setErrStream(null);
 
                 channel.connect();
@@ -263,8 +266,17 @@ public class ConfigDatabase {
             }
         }
         log.info("Finished gitolite recompilation");
+        return rtn;
     }
-    
+
+    public String[] listStaleRepositories() throws IOException
+    {
+        return /* Deque<ByteArrayOutputStream> */
+                runGitoliteUpdate(new String[] { "list-dangling-repos" })
+                    .getFirst().toString()
+                    .split("\\s\\+\n\\s\\+");
+    }
+
     /**
      * This rebuilds the MongoDB database using the gitolite
      * configuration file, in case the two become out of sync.
@@ -276,10 +288,10 @@ public class ConfigDatabase {
         String firstLine;
         while ((firstLine = reader.readLine()) != null) { // While not end of file
             String repoName = firstLine.split("\\s\\+")[1]; // Repo name is second word of first line
-            
+
             String[] readWriteLine = reader.readLine().split("=")[1].trim().split("\\s\\+");
             // We want the words to the right of the "RW ="
-            
+
             String nextLine = reader.readLine();
             String[] readOnlyLine;
             String[] auxiliaryLine;
@@ -291,7 +303,7 @@ public class ConfigDatabase {
                 readOnlyLine = nextLine.split("=")[1].trim().split("\\s\\+");
                 auxiliaryLine = reader.readLine().split("\\s\\+");
             }
-            
+
             String owner = readWriteLine[0]; // Owner is always first RW entry - see Repository.toString()
             List<String> readWrites = new LinkedList<String>(Arrays.asList(readWriteLine));
             readWrites.remove(0); // remove owner from RW list as owner is automatically added
@@ -305,5 +317,4 @@ public class ConfigDatabase {
         }
         reader.close();
     }
-
 }

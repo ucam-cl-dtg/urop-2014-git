@@ -1,8 +1,6 @@
 /* vim: set et ts=4 sts=4 sw=4 tw=72 : */
 /* See the LICENSE file for the license of the project */
-/**
- * 
- */
+
 package uk.ac.cam.cl.git;
 
 import java.util.List;
@@ -39,7 +37,7 @@ public interface RepositoryCollection {
      * @return List of repository objects in the collection
      */
     public List<Repository> listRepos();
-    
+
     /**
      * Returns true iff there is a repository with the given name in the collection
      */
@@ -48,11 +46,11 @@ public interface RepositoryCollection {
     /**
      * Returns the repository object with the given name in the
      * database collection.
-     * 
+     *
      * @param name The name of the repository
      * @return The requested repository object
      */
-    public Repository getRepo(String name) throws RepositoryNotFoundException;    
+    public Repository getRepo(String name) throws RepositoryNotFoundException;
 
     /**
      * Removes all repositories from the database collection.
@@ -62,7 +60,7 @@ public interface RepositoryCollection {
     /**
      * Removes the repository object with the given name from the
      * database.
-     * 
+     *
      * @param name The name of the repository to remove
      */
     public void removeRepo(String name) throws RepositoryNotFoundException;

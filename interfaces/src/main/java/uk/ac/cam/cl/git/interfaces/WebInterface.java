@@ -17,13 +17,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 
 /**
- * This is the web interface that is to be used for accessing 
+ * This is the web interface that is to be used for accessing
  * repositories and their contents, making fork requests to
  * existing repositories, and requesting the creation of an
  * empty new repository. It can also be used to delete
  * repositories, throw an exception (for testing), and add
  * an SSH key to gitolite.
- * 
+ *
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  */
@@ -62,15 +62,15 @@ public interface WebInterface {
     public String getFile(@PathParam("fileName") String fileName
                           , @PathParam("repoName") String repoName)
                                   throws IOException, RepositoryNotFoundException;
-    
+
     /**
      * Forks the specified repository and returns the URL that can be used
      * to clone the forked repository.
-     * 
+     *
      * @param details ForkRequestBean giving the necessary information
      * @return The URL of the forked repository
      * @throws IOException
-     * @throws DuplicateRepoNameException 
+     * @throws DuplicateRepoNameException
      */
     @POST
     @Path("/fork")
@@ -78,15 +78,15 @@ public interface WebInterface {
     @Produces("application/json")
     public String forkRepository(ForkRequestBean details)
             throws IOException, DuplicateRepoNameException;
-    
+
     /**
      * Creates a new blank repository and returns the URL than can be used
      * to clone it.
-     *  
+     *
      * @param details RepoUserRequestBean giving the necessary information
      * @return The URL of the new repository
      * @throws IOException
-     * @throws DuplicateRepoNameException 
+     * @throws DuplicateRepoNameException
      */
     @PUT
     @Path("/add")
@@ -99,8 +99,9 @@ public interface WebInterface {
      * Removes the repository from the configuration and the database.
      * <p>
      * Does not remove repository from file system, to remove stale
-     * repositories, run TODO: stale repository detector.
-     * 
+     * repositories, run removeStaleRepos(); (though list them first
+     * with getStaleRepos(); to be sure!).
+     *
      * @param repoName The name of the repository to be deleted
      * @throws IOException
      * @throws RepositoryNotFoundException
@@ -109,7 +110,7 @@ public interface WebInterface {
     @Path("/del/{repoName:.*}.git")
     public void deleteRepository(@PathParam("repoName") String repoName)
             throws IOException, RepositoryNotFoundException;
-    
+
     /**
      * @throws HereIsYourException Certain to be thrown each call
      */
@@ -129,22 +130,39 @@ public interface WebInterface {
     @Consumes("text/plain")
     public void addSSHKey(String key, @PathParam("userName") String userName)
             throws IOException;
-    
+
     /**
      * Returns the SSH URI that can be used to clone the given repository.
-     * @throws RepositoryNotFoundException 
+     * @throws RepositoryNotFoundException
      */
     @GET
     @Path("/URI/{repoName:.*}.git/")
     public String getRepoURI(@PathParam("repoName") String repoName) throws RepositoryNotFoundException;
-    
+
     /**
      * Gives the specified user read-only access (allows cloning of) the
      * given repository.
-     * @throws IOException 
-     * @throws RepositoryNotFoundException 
+     * @throws IOException
+     * @throws RepositoryNotFoundException
      */
     @POST
     @Path("/permissions/add")
     public void addReadOnlyUser(RepoUserRequestBean details) throws IOException, RepositoryNotFoundException;
+
+    /**
+     * Gives the stale repositories (those not managed by gitolite).
+     *
+     * @return The stale repositories.
+     */
+    @GET
+    @Path("/stale-repos")
+    public String[] getStaleRepos() throws IOException;
+
+    /**
+     * Permanently removes the stale repositories. Use with caution, at
+     * least check with getStaleRepos first before removing.
+     */
+    @DELETE
+    @Path("/stale-repos")
+    public void removeStaleRepos() throws IOException;
 }

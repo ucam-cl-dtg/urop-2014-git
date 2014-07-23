@@ -13,9 +13,7 @@ import uk.ac.cam.cl.git.interfaces.ForkRequestInterface;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
  */
 public class ForkRequestBean implements ForkRequestInterface
-{ /* TODO: Figure out what is causing import of Jackson 1, only use
-   * Jackson 1 or Jackson 2 but not both!
-   */
+{
     private final String newRepoName;
     private final String userName;
     private final String repoName;
@@ -43,7 +41,7 @@ public class ForkRequestBean implements ForkRequestInterface
     @Override
     @JsonProperty("userName")
     public String getUserName() { return userName; }
-    
+
     @Override
     @JsonProperty("repoName")
     public String getRepoName() { return repoName; }
