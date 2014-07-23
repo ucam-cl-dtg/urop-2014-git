@@ -27,7 +27,7 @@
     <dependency>
       <groupId>uk.ac.cam.cl.git</groupId>
       <artifactId>remote</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
