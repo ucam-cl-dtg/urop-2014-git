@@ -56,7 +56,7 @@ public class ConfigDatabase {
      * @param reposCollection The collection to be used.
      */
     //@Inject
-    void setReposCollection(RepositoryCollection rCollection) {
+    protected void setReposCollection(RepositoryCollection rCollection) {
         reposCollection = rCollection;
     }
 
@@ -105,7 +105,7 @@ public class ConfigDatabase {
      * Removes all repositories from the collection.
      * For unit testing only.
      */
-    void deleteAll() throws IOException {
+    protected void deleteAll() throws IOException {
         reposCollection.removeAll();
         generateConfigFile();
     }
@@ -214,7 +214,7 @@ public class ConfigDatabase {
      *
      * @param updates List of things to recompile/reconfigure.
      */
-    void runGitoliteUpdate(String[] updates) throws IOException
+    protected void runGitoliteUpdate(String[] updates) throws IOException
     {
         log.info("Starting gitolite recompilation");
         for (String command : updates)

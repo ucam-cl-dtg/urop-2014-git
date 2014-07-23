@@ -452,7 +452,7 @@ public class Repository implements TesterInterface
      * @return ID of this object in MongoDB
      */
     @Id @ObjectId
-    String get_id() { return this._id; }
+    protected String get_id() { return this._id; }
     
     /**
      * For storing this in MongoDB
@@ -460,7 +460,7 @@ public class Repository implements TesterInterface
      * @param id Object ID to set
      */
     @Id @ObjectId
-    void set_id(String id) { _id = id; }
+    protected void set_id(String id) { _id = id; }
 
     /**
      * Gets the hidden parent of this repository, or null if this
