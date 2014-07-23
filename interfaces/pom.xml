@@ -18,9 +18,9 @@
       <version>3.0.8.Final</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.13</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.4.1</version>
     </dependency>
   </dependencies>
 
@@ -61,7 +61,7 @@
     <snapshotRepository>
       <id>dtg-code</id>
       <name>RepositoryProxy</name>
-      <url>http://maven.dtg.cl.cam.ac.uk/content/repositories/snapshots</url>
+      <url>http://urop2014-1.dtg.cl.cam.ac.uk/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
