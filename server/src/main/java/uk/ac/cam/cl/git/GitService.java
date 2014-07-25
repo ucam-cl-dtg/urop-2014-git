@@ -4,6 +4,7 @@ package uk.ac.cam.cl.git;
 
 import java.io.IOException;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
@@ -173,12 +174,12 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public String[] getDanglingRepos() throws IOException
+    public List<String> getDanglingRepos() throws IOException
     {
         /* Just to be sure! */
         ConfigDatabase.instance().generateConfigFile();
 
-        return ConfigDatabase.instance().listDanglingRepositories();
+        return Arrays.asList(ConfigDatabase.instance().listDanglingRepositories());
     }
 
     @Override
