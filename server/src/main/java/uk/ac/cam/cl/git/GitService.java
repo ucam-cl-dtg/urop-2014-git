@@ -50,7 +50,7 @@ public class GitService implements WebInterface {
         }
         catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
         {
-            /* Stale repository entry, remove from database */
+            /* Dangling repository entry, remove from database */
             ConfigDatabase.instance().delRepoByName(repoName);
             throw new RepositoryNotFoundException("Repository not found on disk! "
                         + "Removed from database.");
@@ -83,7 +83,7 @@ public class GitService implements WebInterface {
         }
         catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
         {
-            /* Stale repository entry, remove from database */
+            /* Dangling repository entry, remove from database */
             ConfigDatabase.instance().delRepoByName(repoName);
             throw new RepositoryNotFoundException("Repository not found on disk! "
                     + "Removed from database.");
@@ -173,30 +173,30 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public String[] getStaleRepos() throws IOException
+    public String[] getDanglingRepos() throws IOException
     {
         /* Just to be sure! */
         ConfigDatabase.instance().generateConfigFile();
 
-        return ConfigDatabase.instance().listStaleRepositories();
+        return ConfigDatabase.instance().listDanglingRepositories();
     }
 
     @Override
-    public void removeStaleRepos() throws IOException
+    public void removeDanglingRepos() throws IOException
     {
         /* Just to be sure! */
         ConfigDatabase.instance().generateConfigFile();
 
         for (String repo : ConfigDatabase.instance()
-                            .listStaleRepositories())
+                            .listDanglingRepositories())
         {
-            log.info("Removing (stale) repository \"" + repo + "\"!");
+            log.info("Removing (dangling) repository \"" + repo + "\"!");
             recursiveDelete(new File(
                         ConfigurationLoader.getConfig()
                             .getGitoliteHome() + "/repositories/"
                                 + repo + ".git"));
 
-            log.info("Removed (stale) repository \"" + repo + "\"!");
+            log.info("Removed (dangling) repository \"" + repo + "\"!");
         }
     }
 

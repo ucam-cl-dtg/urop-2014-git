@@ -269,7 +269,7 @@ public class ConfigDatabase {
         return rtn;
     }
 
-    public String[] listStaleRepositories() throws IOException
+    public String[] listDanglingRepositories() throws IOException
     {
         return /* Deque<ByteArrayOutputStream> */
                 runGitoliteUpdate(new String[] { "list-dangling-repos" })
