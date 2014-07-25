@@ -98,9 +98,9 @@ public interface WebInterface {
     /**
      * Removes the repository from the configuration and the database.
      * <p>
-     * Does not remove repository from file system, to remove stale
-     * repositories, run removeStaleRepos(); (though list them first
-     * with getStaleRepos(); to be sure!).
+     * Does not remove repository from file system, to remove dangling
+     * repositories, run removeDanglingRepos(); (though list them first
+     * with getDanglingRepos(); to be sure!).
      *
      * @param repoName The name of the repository to be deleted
      * @throws IOException
@@ -146,23 +146,26 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException
      */
     @POST
+    @Consumes("application/json")
     @Path("/permissions/add")
     public void addReadOnlyUser(RepoUserRequestBean details) throws IOException, RepositoryNotFoundException;
 
     /**
-     * Gives the stale repositories (those not managed by gitolite).
+     * Gives the dangling repositories (those not managed by gitolite).
      *
-     * @return The stale repositories.
+     * @return The dangling repositories.
      */
     @GET
-    @Path("/stale-repos")
-    public String[] getStaleRepos() throws IOException;
+    @Path("/dangling-repos")
+    @Produces("application/json")
+    public List<String> getDanglingRepos() throws IOException;
 
     /**
-     * Permanently removes the stale repositories. Use with caution, at
-     * least check with getStaleRepos first before removing.
+     * Permanently removes the dangling repositories. Use with caution, at
+     * least check with getDanglingRepos first before removing.
      */
     @DELETE
-    @Path("/stale-repos")
-    public void removeStaleRepos() throws IOException;
+    @Consumes("application/json")
+    @Path("/dangling-repos")
+    public void removeDanglingRepos() throws IOException;
 }
