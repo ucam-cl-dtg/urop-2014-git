@@ -243,7 +243,7 @@ public class ConfigDatabase {
 
                 channel.connect();
 
-                while (channel.isClosed())
+                while (!channel.isClosed())
                 {
                     try
                     {
@@ -274,7 +274,7 @@ public class ConfigDatabase {
         return /* Deque<ByteArrayOutputStream> */
                 runGitoliteUpdate(new String[] { "list-dangling-repos" })
                     .getFirst().toString()
-                    .split("\\s\\+\n\\s\\+");
+                    .split("\\s+");
     }
 
     /**
