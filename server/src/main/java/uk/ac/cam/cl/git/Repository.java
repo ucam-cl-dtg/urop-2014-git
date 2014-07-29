@@ -4,7 +4,6 @@ package uk.ac.cam.cl.git;
 
 import uk.ac.cam.cl.git.api.EmptyDirectoryExpectedException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
-import uk.ac.cam.cl.git.database.*;
 import uk.ac.cam.cl.git.interfaces.*;
 
 import org.eclipse.jgit.treewalk.*;
@@ -20,6 +19,8 @@ import com.fasterxml.jackson.annotation.*;
 
 import org.mongojack.Id;
 import org.mongojack.ObjectId;
+
+import uk.ac.cam.cl.dtg.segue.git.*;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -61,7 +62,10 @@ public class Repository implements TesterInterface
      * @param parent The parent repository, which is the one this was
      * forked off.
      * @param parent_hidden The hidden parent repository which at the
-     * moment does nothing. TODO
+     * moment does nothing. This at the moment is only left in for code
+     * compatibility, we have decided that it is perhaps better if the
+     * UI team manages the linking of the hidden and this repo.
+     * TODO: Refactor, when UI team has time to change code too.
      */
     @JsonIgnore
     public Repository
@@ -97,7 +101,10 @@ public class Repository implements TesterInterface
      * @param parent The parent repository, which is the one this was
      * forked off
      * @param parent_hidden The hidden parent repository which at the
-     * moment does nothing. TODO
+     * moment does nothing. This at the moment is only left in for code
+     * compatibility, we have decided that it is perhaps better if the
+     * UI team manages the linking of the hidden and this repo.
+     * TODO: Refactor, when UI team has time to change code too.
      *
      * @throws IOException Unrecoverable error in cloning the parent
      * repository.
@@ -135,7 +142,10 @@ public class Repository implements TesterInterface
      * @param parent The parent repository, which is the one this was
      * forked off
      * @param parent_hidden The hidden parent repository which at the
-     * moment does nothing. TODO
+     * moment does nothing. This at the moment is only left in for code
+     * compatibility, we have decided that it is perhaps better if the
+     * UI team manages the linking of the hidden and this repo.
+     * TODO: Refactor, when UI team has time to change code too.
      */
     @JsonCreator
     Repository
@@ -242,39 +252,9 @@ public class Repository implements TesterInterface
             workingCommit = handle.getHeadSha();
     }
 
-    /**
-     * Saves test results into mongo database.
-     * <p>
-     * Needs to store commit number or similar, so that the test results cannot be changed.
-     *
-     * @param results The results to be saved
+    /* Test team stores test results now. This is a placeholder to say
+     * why code was removed.
      */
-    @JsonIgnore
-    public void saveTestResults(Object results) { // won't be an Object eventually
-        /* TODO: implement
-         *
-         * 1) Append the commit hash to the test result
-         * 2) Store the test result in a database
-         */
-    }
-
-    /**
-     * Returns requested test results.
-     *
-     * @param request Specifies which results are wanted
-     *
-     * @return The requested test results
-     */
-    @JsonIgnore
-    public Object getTestResults(String request) { // these types will change
-        /* TODO: implement
-         *
-         * 1) Get the test result corresponding to the request
-         * 2) Get the commit the test result refers to
-         * 3) Return files and comments
-         */
-        return new Object();
-    }
 
     /**
      * Returns a list of the source files in the repository.
