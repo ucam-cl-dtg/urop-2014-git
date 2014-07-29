@@ -62,6 +62,33 @@ public class GitService implements WebInterface {
     }
 
     @Override
+    public String resolveCommit(String repoName, String commitName)
+        throws IOException, RepositoryNotFoundException
+    {
+        if (repoName == null)
+            throw new RepositoryNotFoundException("No repository given.");
+
+        Repository repo = ConfigDatabase.instance().getRepoByName(repoName);
+        if (repo == null)
+            throw new RepositoryNotFoundException("Repository not found in database! "
+                        + "It may exist on disk though.");
+
+        try
+        {
+            repo.openLocal(repoName); /* throws IOException */
+        }
+        catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
+        {
+            /* Dangling repository entry, remove from database */
+            ConfigDatabase.instance().delRepoByName(repoName);
+            throw new RepositoryNotFoundException("Repository not found on disk! "
+                        + "Removed from database.");
+        }
+
+        return repo.resolveCommit(commitName);
+    }
+
+    @Override
     public List<String> listFiles(String repoName, String commitID)
         throws IOException, RepositoryNotFoundException
     {

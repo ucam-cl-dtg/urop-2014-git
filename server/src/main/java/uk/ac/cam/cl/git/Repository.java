@@ -294,6 +294,18 @@ public class Repository implements TesterInterface
         return rtn;
     }
 
+    /**
+     * Resolves a commit reference such as HEAD or a branch name such as
+     * master to a SHA.
+     *
+     * @param name The name to resolve.
+     * @return The SHA of the latest matching commit.
+     */
+    public String resolveCommit(String name)
+    {
+        return handle.getSha(name);
+    }
+
     /* Test team stores test results now. This is a placeholder to say
      * why code was removed.
      */

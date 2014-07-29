@@ -49,6 +49,23 @@ public interface WebInterface {
             throws IOException, RepositoryNotFoundException;
 
     /**
+     * Resolves a commit reference (such as HEAD) to a SHA-1.
+     *
+     * @param repoName The name of the repository whose files are to be listed
+     * @param commitID Either a SHA-1 or some other way for git to
+     * identify the commit, e.g. HEAD or master TODO: <- Check validity.
+     * @return A list of the filenames in the given repository
+     * @throws IOException
+     * @throws RepositoryNotFoundException
+     */
+    @GET
+    @Path("/resolve/{repoName:.*}.git/{commitName}")
+    @Produces("text/plain")
+    public String resolveCommit(@PathParam("repoName")   String repoName
+                              , @PathParam("commitName") String commitName)
+            throws IOException, RepositoryNotFoundException;
+
+    /**
      * @param repoName The name of the repository whose files are to be listed
      * @param commitID Either a SHA-1 or some other way for git to
      * identify the commit, e.g. HEAD or master TODO: <- Check validity.
