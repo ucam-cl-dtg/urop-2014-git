@@ -7,3 +7,4 @@ configuration.json
 **/WEB-INF/classes
 *.class
 *.jar
+tags
