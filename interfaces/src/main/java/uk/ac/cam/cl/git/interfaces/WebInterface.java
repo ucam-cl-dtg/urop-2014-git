@@ -38,15 +38,29 @@ public interface WebInterface {
     public List<String> listRepositories();
 
     /**
+     * Lists the commits.
+     *
+     * @param repoName The name of the repository.
+     */
+    @GET
+    @Path("/repos/{repoName:.*}.git")
+    @Produces("application/json")
+    public List<Commit> listCommits(@PathParam("repoName") String repoName)
+            throws IOException, RepositoryNotFoundException;
+
+    /**
      * @param repoName The name of the repository whose files are to be listed
+     * @param commitID Either a SHA-1 or some other way for git to
+     * identify the commit, e.g. HEAD or master TODO: <- Check validity.
      * @return A list of the filenames in the given repository
      * @throws IOException
      * @throws RepositoryNotFoundException
      */
     @GET
-    @Path("/repos/{repoName:.*}.git")
+    @Path("/repos/{repoName:.*}.git/{commitID}")
     @Produces("application/json")
-    public List<String> listFiles(@PathParam("repoName") String repoName)
+    public List<String> listFiles(@PathParam("repoName") String repoName
+                                , @PathParam("commitID") String commitID)
             throws IOException, RepositoryNotFoundException;
 
     /**
@@ -57,10 +71,11 @@ public interface WebInterface {
      * @throws RepositoryNotFoundException
      */
     @GET
-    @Path("/repos/{repoName:.*}.git/{fileName:.*}")
+    @Path("/repos/{repoName:.*}.git/{commitID}/{fileName:.*}")
     @Produces("application/octet-stream")
     public String getFile(@PathParam("fileName") String fileName
-                          , @PathParam("repoName") String repoName)
+                        , @PathParam("commitID") String commitID
+                        , @PathParam("repoName") String repoName)
                                   throws IOException, RepositoryNotFoundException;
 
     /**

@@ -2,13 +2,16 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.cl.git;
 
+import uk.ac.cam.cl.git.api.Commit;
 import uk.ac.cam.cl.git.api.EmptyDirectoryExpectedException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.interfaces.*;
 
 import org.eclipse.jgit.treewalk.*;
+import org.eclipse.jgit.revwalk.*;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.File;
@@ -235,9 +238,9 @@ public class Repository implements TesterInterface
     }
 
     /**
-     * Opens a local repository
+     * Opens a local repository.
      *
-     * @param repoName the name of the repository to open.
+     * @param repoName The name of the repository to open.
      * @throws IOException Something went wrong (typically not
      * recoverable).
      */
@@ -250,6 +253,45 @@ public class Repository implements TesterInterface
 
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
+    }
+
+    /**
+     * Opens a local repository with the given commit.
+     *
+     * @param repoName The name of the repository to open.
+     * @param commitID Identification for a commit.
+     * @throws IOException Something went wrong (typically not
+     * recoverable).
+     */
+    public void openLocal(String repoName, String commitID)
+        throws IOException
+    {
+        System.out.println("Opening : " + ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + repoName + ".git");
+        handle = new GitDb(ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/" + repoName + ".git");
+
+        workingCommit = commitID;
+    }
+
+    /**
+     * List the commits in the repository.
+     */
+    public List<Commit> listCommits()
+    {
+        List<Commit> rtn = new LinkedList<Commit>();
+
+        for (RevCommit commit : handle.listCommits())
+        {
+            rtn.add(new Commit
+                        (commit.getName()
+                       , commit.getAuthorIdent().getName()
+                       , commit.getFullMessage()
+                       , new Date(commit.getCommitTime())
+                   ));
+        }
+
+        return rtn;
     }
 
     /* Test team stores test results now. This is a placeholder to say

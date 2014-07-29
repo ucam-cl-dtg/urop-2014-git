@@ -14,6 +14,7 @@ import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.git.api.Commit;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.interfaces.*;
 
@@ -35,7 +36,7 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public List<String> listFiles(String repoName) throws IOException, RepositoryNotFoundException
+    public List<Commit> listCommits(String repoName) throws IOException, RepositoryNotFoundException
     {
         if (repoName == null)
             throw new RepositoryNotFoundException("No repository given.");
@@ -47,7 +48,34 @@ public class GitService implements WebInterface {
 
         try
         {
-            repo.openLocal(repoName);
+            repo.openLocal(repoName); /* throws IOException */
+        }
+        catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
+        {
+            /* Dangling repository entry, remove from database */
+            ConfigDatabase.instance().delRepoByName(repoName);
+            throw new RepositoryNotFoundException("Repository not found on disk! "
+                        + "Removed from database.");
+        }
+
+        return repo.listCommits();
+    }
+
+    @Override
+    public List<String> listFiles(String repoName, String commitID)
+        throws IOException, RepositoryNotFoundException
+    {
+        if (repoName == null)
+            throw new RepositoryNotFoundException("No repository given.");
+
+        Repository repo = ConfigDatabase.instance().getRepoByName(repoName);
+        if (repo == null)
+            throw new RepositoryNotFoundException("Repository not found in database! "
+                        + "It may exist on disk though.");
+
+        try
+        {
+            repo.openLocal(repoName, commitID); /* throws IOException */
         }
         catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
         {
@@ -68,7 +96,9 @@ public class GitService implements WebInterface {
 
     @Override
     public String getFile(String fileName
-                          , String repoName) throws IOException, RepositoryNotFoundException
+                        , String commitID
+                        , String repoName)
+        throws IOException, RepositoryNotFoundException
     {
         if (repoName == null)
             throw new RepositoryNotFoundException("No repository given.");
@@ -80,7 +110,7 @@ public class GitService implements WebInterface {
 
         try
         {
-            repo.openLocal(repoName);
+            repo.openLocal(repoName, commitID);
         }
         catch (org.eclipse.jgit.errors.RepositoryNotFoundException e)
         {
