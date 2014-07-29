@@ -9,7 +9,7 @@ package uk.ac.cam.cl.git.api;
  */
 public class RepositoryNotFoundException extends Exception {
 
-    private static final long serialVersionUID = -1330502365505285622L; // generated ID
+    private static final long serialVersionUID = -1330502365505285622L; /* Generated */
 
     public RepositoryNotFoundException(String message) {
         super(message);

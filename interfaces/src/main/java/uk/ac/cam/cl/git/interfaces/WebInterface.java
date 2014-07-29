@@ -168,4 +168,12 @@ public interface WebInterface {
     @Consumes("application/json")
     @Path("/dangling-repos")
     public void removeDanglingRepos() throws IOException;
+
+    /**
+     * Rebuilds repository database from gitolite configuration file, in
+     * case the two become out of sync.
+     */
+    @GET
+    @Path("/rebuild-database")
+    public void rebuildDatabase() throws IOException, DuplicateRepoNameException;
 }

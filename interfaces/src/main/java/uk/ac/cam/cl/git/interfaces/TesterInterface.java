@@ -46,14 +46,6 @@ public interface TesterInterface
     public Collection<String> getSources() throws IOException;
 
     /**
-     * Callback to let the repository store the test result
-     *
-     * @param results The object file encapsulating the results of the
-     * test.
-     */
-    public void saveTestResults(Object results);
-
-    /**
      * Gets the CRSID of the repository owner
      *
      * @return CRSID of the repository owner

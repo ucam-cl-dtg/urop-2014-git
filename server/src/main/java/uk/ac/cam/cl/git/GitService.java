@@ -120,7 +120,9 @@ public class GitService implements WebInterface {
             }
         }
         rtn.cloneParent();
-        // TODO: better return, e.g. NewRepoName (as repoName perhaps)
+        /* No need to return only repo-name, as we either had it given
+         * to us, or we created it in a known manner.
+         */
         return rtn.getRepoPath();
     }
 
@@ -135,7 +137,8 @@ public class GitService implements WebInterface {
                                       , null
                                       , null);
         ConfigDatabase.instance().addRepo(rtn);
-        // TODO: better return
+        /* No need to return repo-name as we had it given to us.
+         */
         return rtn.getRepoPath();
     }
 
@@ -222,5 +225,15 @@ public class GitService implements WebInterface {
         {
             f.delete();
         }
+    }
+
+    /**
+     * Rebuilds database from gitolite configuration file, in case the
+     * two become out of sync.
+     */
+    @Override
+    public void rebuildDatabase() throws IOException, DuplicateRepoNameException
+    {
+        ConfigDatabase.instance().rebuildDatabaseFromGitolite();
     }
 }

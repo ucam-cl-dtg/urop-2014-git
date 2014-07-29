@@ -17,6 +17,7 @@ public class ConfigurationFile
     private String gitolitePath = "/bin:/usr/bin";
     private String gitoliteLibdir = "/usr/share/gitolite3/lib";
     private String sshPrivateKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa";
+    private String knownHostsFile = System.getProperty("user.home") + "/.ssh/known_hosts";
 
     /**
      * @return the repoHost
@@ -160,5 +161,21 @@ public class ConfigurationFile
     public void setSshPrivateKeyFile(String sshPrivateKeyFile)
     {
         this.sshPrivateKeyFile = sshPrivateKeyFile;
+    }
+
+    /**
+     * @return the knownHostsFile
+     */
+    public String getKnownHostsFile()
+    {
+        return knownHostsFile;
+    }
+
+    /**
+     * @param knownHostsFile the knownHostsFile to set
+     */
+    public void setKnownHostsFile(String knownHostsFile)
+    {
+        this.knownHostsFile = knownHostsFile;
     }
 }

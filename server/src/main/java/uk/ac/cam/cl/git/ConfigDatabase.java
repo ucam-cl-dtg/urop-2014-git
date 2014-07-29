@@ -224,12 +224,16 @@ public class ConfigDatabase {
             try
             {
                 JSch ssh = new JSch();
-                ssh.setKnownHosts("~/.ssh/known_hosts");
-                ssh.addIdentity("~/.ssh/id_rsa");
-                Session session = ssh.getSession(ConfigurationLoader
-                                                  .getConfig().getRepoUser()
-                                               , "localhost"
-                                               , 22);
+                ssh.setKnownHosts(ConfigurationLoader.getConfig()
+                                            .getKnownHostsFile());
+                ssh.addIdentity(ConfigurationLoader.getConfig()
+                                            .getSshPrivateKeyFile());
+
+                Session session = ssh.getSession
+                    ( ConfigurationLoader.getConfig().getRepoUser()
+                    , ConfigurationLoader.getConfig().getRepoHost()
+                    , 22);
+
                 session.connect();
 
                 ChannelExec channel = (ChannelExec)session.openChannel("exec");
@@ -281,7 +285,7 @@ public class ConfigDatabase {
      * This rebuilds the MongoDB database using the gitolite
      * configuration file, in case the two become out of sync.
      */
-    private void rebuildDatabaseFromGitolite() throws IOException, DuplicateRepoNameException {
+    public void rebuildDatabaseFromGitolite() throws IOException, DuplicateRepoNameException {
         reposCollection.removeAll(); // Empty database collection
         BufferedReader reader = new BufferedReader(new FileReader(new File(
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));

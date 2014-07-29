@@ -8,5 +8,5 @@ package uk.ac.cam.cl.git.api;
  */
 public class EmptyDirectoryExpectedException extends Exception
 {
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1970569606330528190L; /* Generated */
 }
