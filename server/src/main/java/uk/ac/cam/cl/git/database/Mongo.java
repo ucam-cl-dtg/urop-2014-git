@@ -9,24 +9,24 @@ import com.mongodb.MongoClient;
 
 public class Mongo {
 
-	private static DB db;
+    private static DB db;
 
-	static {
-		try {
-			MongoClient client = new MongoClient();
-			db = client.getDB("UROP");
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-	}
+    static {
+        try {
+            MongoClient client = new MongoClient();
+            db = client.getDB("UROP");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
 
-	/**
-	 * Returns a handle to the local mongoDB instance
+    /**
+     * Returns a handle to the local mongoDB instance
      *
      * @return The single Mongo DB object instance
-	 */
-	public static DB getDB() {
-		return db;
-	}
+     */
+    public static DB getDB() {
+        return db;
+    }
 
 }

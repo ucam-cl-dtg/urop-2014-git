@@ -10,8 +10,8 @@ import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = { "/rest/*" },
 initParams = {
-		@WebInitParam(name = "javax.ws.rs.Application", value = "uk.ac.cam.cl.git.ApplicationRegister"),
-		@WebInitParam(name = "resteasy.servlet.mapping.prefix", value="/rest/")
+        @WebInitParam(name = "javax.ws.rs.Application", value = "uk.ac.cam.cl.git.ApplicationRegister"),
+        @WebInitParam(name = "resteasy.servlet.mapping.prefix", value="/rest/")
 })
 public class HttpServletDispatcherV3 extends HttpServletDispatcher {
 }

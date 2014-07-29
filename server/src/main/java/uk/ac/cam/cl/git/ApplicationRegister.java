@@ -19,13 +19,13 @@ import uk.ac.cam.cl.dtg.teaching.exceptions.ExceptionHandler;
  */
 public class ApplicationRegister extends Application {
 
-	@Override
-	public Set<Class<?>> getClasses() {
-		Set<Class<?>> result = new HashSet<Class<?>>();
-		result.add(GitService.class);
-		result.add(RemoteFailureHandler.class);
-		result.add(ExceptionHandler.class);
-		return result;
-	}
+    @Override
+    public Set<Class<?>> getClasses() {
+        Set<Class<?>> result = new HashSet<Class<?>>();
+        result.add(GitService.class);
+        result.add(RemoteFailureHandler.class);
+        result.add(ExceptionHandler.class);
+        return result;
+    }
 
 }
