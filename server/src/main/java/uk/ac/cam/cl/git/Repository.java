@@ -224,16 +224,19 @@ public class Repository implements TesterInterface
                 .getGitoliteHome() + "/repositories/" + parent + ".git");
 
         /* Now parent is cloned at tmpDir, push back to child */
-        try
+        if (tmp.listCommits().size() > 0)
         {
-            tmp.pushTo(ConfigurationLoader.getConfig()
-                .getGitoliteHome() + "/repositories/" + repo + ".git");
-        }
-        catch (PushFailedException e)
-        {
-            throw new IOException(
-                    "Failed to push parent repo onto child. "
-                    + "You will get an empty repository.\n", e);
+            try
+            {
+                tmp.pushTo(ConfigurationLoader.getConfig()
+                    .getGitoliteHome() + "/repositories/" + repo + ".git");
+            }
+            catch (PushFailedException e)
+            {
+                throw new IOException(
+                        "Failed to push parent repo onto child. "
+                        + "You will get an empty repository.\n", e);
+            }
         }
     }
 
