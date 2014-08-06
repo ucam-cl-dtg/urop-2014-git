@@ -224,7 +224,7 @@ public class Repository implements TesterInterface
                 .getGitoliteHome() + "/repositories/" + parent + ".git");
 
         /* Now parent is cloned at tmpDir, push back to child */
-        if (tmp.listCommits() == null)
+        if (tmp.listCommits() != null)
         {
             try
             {
