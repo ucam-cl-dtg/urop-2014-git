@@ -83,6 +83,7 @@ public interface WebInterface {
     /**
      * @param fileName The name of the file whose contents are to be returned
      * @param repoName The name of the repository containing the file
+     * @param commitID The revision to get.
      * @return The contents of the specified file
      * @throws IOException
      * @throws RepositoryNotFoundException
@@ -93,7 +94,22 @@ public interface WebInterface {
     public String getFile(@PathParam("fileName") String fileName
                         , @PathParam("commitID") String commitID
                         , @PathParam("repoName") String repoName)
-                                  throws IOException, RepositoryNotFoundException;
+                        throws IOException, RepositoryNotFoundException;
+
+    /**
+     * Packs up the repository into a JSON file. Used to make only one
+     * call to retrieve the repository, instead of multiple calls.
+     *
+     * @param repoName The name of the repo.
+     * @param commitID The revision to pack up.
+     * @return A list of {name: ?, content: ?} objects.
+     */
+    @GET
+    @Path("/bundle/{repoName:.*}.git/{commitID}")
+    @Produces("application/json")
+    public List<FileBean> getAllFiles(@PathParam("repoName") String repoName
+                                    , @PathParam("commitID") String commitID)
+                        throws IOException, RepositoryNotFoundException;
 
     /**
      * Forks the specified repository and returns the URL that can be used

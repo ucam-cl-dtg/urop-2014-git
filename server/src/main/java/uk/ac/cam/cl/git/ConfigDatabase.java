@@ -37,7 +37,7 @@ public class ConfigDatabase {
     /* For logging */
     private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
 
-    @Inject private RepositoryCollection reposCollection;
+    private RepositoryCollection reposCollection;
 
     private static final Injector injector = Guice.createInjector(new DatabaseModule());
 
@@ -52,7 +52,7 @@ public class ConfigDatabase {
      * Replaces the repository collection with the argument.
      * @param reposCollection The collection to be used.
      */
-    //@Inject
+    @Inject
     protected void setReposCollection(RepositoryCollection rCollection) {
         reposCollection = rCollection;
     }

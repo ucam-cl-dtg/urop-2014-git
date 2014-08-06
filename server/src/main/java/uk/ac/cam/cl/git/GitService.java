@@ -15,11 +15,20 @@ import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
 import uk.ac.cam.cl.git.api.Commit;
+import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.interfaces.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+/**
+ * This is the concrete implementation of WebInterface, used on the
+ * server to serve repos, files, add SSH keys, etc.
+ *
+ * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
+ * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
+ */
 
 public class GitService implements WebInterface {
     /* For logging */
@@ -149,6 +158,20 @@ public class GitService implements WebInterface {
 
         return repo.getFile(fileName);
     }
+
+    @Override
+    public List<FileBean> getAllFiles(String repoName, String commitID)
+        throws IOException, RepositoryNotFoundException
+    {
+        List<FileBean> rtn = new LinkedList<FileBean>();
+        for (String file : listFiles(repoName, commitID))
+        {
+            rtn.add(new FileBean(file, getFile(file, commitID, repoName)));
+        }
+
+        return rtn;
+    }
+                                    
 
     @Override
     public String forkRepository(ForkRequestBean details) throws IOException, DuplicateRepoNameException
