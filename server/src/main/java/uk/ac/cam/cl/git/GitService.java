@@ -186,6 +186,7 @@ public class GitService implements WebInterface {
                                       , details.getRepoName()
                                       , details.getOverlay());
         ConfigDatabase.instance().addRepo(rtn);
+        log.info("Waiting for repo to come to existence.");
         while (!rtn.repoExists())
         {
             try
@@ -199,10 +200,14 @@ public class GitService implements WebInterface {
                  */
             }
         }
+        log.info("About to clone parent repository.");
         rtn.cloneParent();
         /* No need to return only repo-name, as we either had it given
          * to us, or we created it in a known manner.
          */
+        log.info("Forked repository \"" + details.getRepoName() + ".git\""
+                + " to \"" + details.getNewRepoName() + ".git\""
+                + " for user \"" + details.getUserName() + "\"");
         return rtn.getRepoPath();
     }
 

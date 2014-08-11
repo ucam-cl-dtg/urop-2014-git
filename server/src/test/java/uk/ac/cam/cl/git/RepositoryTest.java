@@ -48,21 +48,21 @@ public class RepositoryTest
     public void checkStringRepresentation() {
         String shouldBeTestRepo1 =
                 "repo test-repo-name1" + "\n" +
-                "     RW = repository-owner adminUser1 adminUser2" + "\n" +
+                "     RW = repository-owner tomcat7 adminUser1 adminUser2" + "\n" +
                 "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
                 "# parent1 hidden1" + "\n";
         String shouldBeTestRepo2 =
                 "repo test-repo-name2" + "\n" +
-                "     RW = repository-owner adminUser1 adminUser2" + "\n" +
+                "     RW = repository-owner tomcat7 adminUser1 adminUser2" + "\n" +
                 "# parent2 hidden2" + "\n";
         String shouldBeTestRepo3 =
                 "repo test-repo-name3" + "\n" +
-                "     RW = other-repository-owner" + "\n" +
+                "     RW = other-repository-owner tomcat7" + "\n" +
                 "     R  = readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
                 "# parent3 hidden3" + "\n";
         String shouldBeTestRepo4 =
                 "repo test-repo-name4" + "\n" +
-                "     RW = yet-another-repository-owner" + "\n" +
+                "     RW = yet-another-repository-owner tomcat7" + "\n" +
                 "# parent4 hidden4" + "\n";
         assertEquals(shouldBeTestRepo1, testRepo1.toString());
         assertEquals(shouldBeTestRepo2, testRepo2.toString());

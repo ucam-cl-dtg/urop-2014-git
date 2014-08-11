@@ -25,6 +25,9 @@ import org.mongojack.ObjectId;
 
 import uk.ac.cam.cl.dtg.segue.git.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
  * @author Kovacsics Robert &lt;rmk35@cam.ac.uk&gt;
@@ -32,6 +35,9 @@ import uk.ac.cam.cl.dtg.segue.git.*;
  */
 public class Repository implements TesterInterface
 {
+    /* For logging */
+    private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
+
     private final String parent;
     private final String parent_hidden;
     private final String repo;
@@ -228,8 +234,10 @@ public class Repository implements TesterInterface
         {
             try
             {
-                tmp.pushTo(ConfigurationLoader.getConfig()
-                    .getGitoliteHome() + "/repositories/" + repo + ".git");
+                /* tmp.pushTo(ConfigurationLoader.getConfig()
+                    .getGitoliteHome() + "/repositories/" + repo + ".git"); */
+                log.info("Will push to " + getRepoPath());
+                tmp.pushTo(getRepoPath());
             }
             catch (PushFailedException e)
             {
@@ -487,6 +495,7 @@ public class Repository implements TesterInterface
 
         strb.append("     RW =");
         strb.append(" " + owner);
+        strb.append(" tomcat7");
         /* Usernames or groups */
         if (read_write != null)
             for ( String name : read_write)
