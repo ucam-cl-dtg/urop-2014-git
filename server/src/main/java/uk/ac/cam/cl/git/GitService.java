@@ -176,7 +176,7 @@ public class GitService implements WebInterface {
     @Override
     public String forkRepository(ForkRequestBean details) throws IOException, DuplicateRepoNameException
     {
-        log.info("Forking repository \"" + details.getRepoName() + ".git\""
+        log.debug("Forking repository \"" + details.getRepoName() + ".git\""
                 + " to \"" + details.getNewRepoName() + ".git\""
                 + " for user \"" + details.getUserName() + "\"");
         Repository rtn = new Repository(details.getNewRepoName()
@@ -186,7 +186,6 @@ public class GitService implements WebInterface {
                                       , details.getRepoName()
                                       , details.getOverlay());
         ConfigDatabase.instance().addRepo(rtn);
-        log.info("Waiting for repo to come to existence.");
         while (!rtn.repoExists())
         {
             try
@@ -200,12 +199,11 @@ public class GitService implements WebInterface {
                  */
             }
         }
-        log.info("About to clone parent repository.");
         rtn.cloneParent();
         /* No need to return only repo-name, as we either had it given
          * to us, or we created it in a known manner.
          */
-        log.info("Forked repository \"" + details.getRepoName() + ".git\""
+        log.debug("Forked repository \"" + details.getRepoName() + ".git\""
                 + " to \"" + details.getNewRepoName() + ".git\""
                 + " for user \"" + details.getUserName() + "\"");
         return rtn.getRepoPath();
@@ -214,7 +212,7 @@ public class GitService implements WebInterface {
     @Override
     public String addRepository(RepoUserRequestBean details) throws IOException, DuplicateRepoNameException
     { /* Triggers compile don't work */
-        log.info("Creating new repository \"" + details.getRepoName()
+        log.debug("Creating new repository \"" + details.getRepoName()
                 + ".git\"" + " for user \"" + details.getUserName()
                 + "\"");
         Repository rtn = new Repository(details.getRepoName()
@@ -225,6 +223,9 @@ public class GitService implements WebInterface {
         /* No need to return repo-name as we had it given to us.
          */
         return rtn.getRepoPath();
+        log.debug("Created new repository \"" + details.getRepoName()
+                + ".git\"" + " for user \"" + details.getUserName()
+                + "\"");
     }
 
     @Override

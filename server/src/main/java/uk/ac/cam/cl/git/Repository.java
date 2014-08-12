@@ -236,7 +236,8 @@ public class Repository implements TesterInterface
             {
                 /* tmp.pushTo(ConfigurationLoader.getConfig()
                     .getGitoliteHome() + "/repositories/" + repo + ".git"); */
-                log.info("Will push to " + getRepoPath());
+                log.debug("Cloning parent; will push to "
+                        + getRepoPath());
                 tmp.pushTo(getRepoPath());
             }
             catch (PushFailedException e)

@@ -88,12 +88,12 @@ public class ConfigDatabase {
      * @throws RepositoryNotFoundException
      */
     public void delRepoByName(String repoName) throws IOException, RepositoryNotFoundException {
-        log.info("Deleting repository \"" + repoName + "\"");
+        log.debug("Deleting repository \"" + repoName + "\"");
         if (!reposCollection.contains(repoName))
             throw new RepositoryNotFoundException();
         reposCollection.removeRepo(repoName);
         generateConfigFile();
-        log.info("Deleted repository \"" + repoName + "\"");
+        log.debug("Deleted repository \"" + repoName + "\"");
     }
 
     /**
@@ -117,7 +117,7 @@ public class ConfigDatabase {
      * @throws IOException Typically an unrecoverable problem.
      */
     public void generateConfigFile() throws IOException {
-        log.info("Generating config file \"" +
+        log.debug("Generating config file \"" +
                 ConfigurationLoader.getConfig()
                     .getGitoliteGeneratedConfigFile()
                 + "\"");
@@ -137,7 +137,7 @@ public class ConfigDatabase {
         /* Workaround first compile not updating file, only
          * doing git init --bare    */  "compile",
                                         "trigger POST_COMPILE"});
-        log.info("Generated config file \"" +
+        log.debug("Generated config file \"" +
                 ConfigurationLoader.getConfig()
                     .getGitoliteGeneratedConfigFile()
                 + "\"");
@@ -165,7 +165,7 @@ public class ConfigDatabase {
      * @throws IOException
      */
     public void addSSHKey(String key, String userName) throws IOException {
-        log.info("Adding key for \"" + userName + "\" to \""
+        log.debug("Adding key for \"" + userName + "\" to \""
                 + ConfigurationLoader.getConfig()
                     .getGitoliteSSHKeyLocation() + "\"");
 
@@ -182,7 +182,7 @@ public class ConfigDatabase {
         buffWriter.close();
         runGitoliteUpdate(new String[] {"trigger SSH_AUTHKEYS"});
 
-        log.info("Finished adding key for \"" + userName + "\"");
+        log.debug("Finished adding key for \"" + userName + "\"");
     }
 
     /**
@@ -214,11 +214,13 @@ public class ConfigDatabase {
      */
     protected Deque<OutputStream> runGitoliteUpdate(String[] updates) throws IOException
     {
-        log.info("Starting gitolite recompilation");
+        log.debug("Running gitolite commands:");
         Deque<OutputStream> rtn = new LinkedList<OutputStream>();
 
         for (String command : updates)
         {
+            log.debug("Running gitolite " + command);
+            int status;
             rtn.add(new ByteArrayOutputStream());
 
             try
@@ -261,6 +263,7 @@ public class ConfigDatabase {
                          */
                     }
                 }
+                channel.getExitStatus();
                 channel.disconnect();
                 session.disconnect();
             }
@@ -268,8 +271,14 @@ public class ConfigDatabase {
             {
                 throw new IOException(e);
             }
+            log.debug("gitolite " + command + " returned with " + status);
+            if (status != 0)
+            {
+                log.info("Not null (" + status + ") status with"
+                       + " gitolite " + command + "!");
+            }
         }
-        log.info("Finished gitolite recompilation");
+        log.debug("Finished gitolite recompilation");
         return rtn;
     }
 
@@ -286,6 +295,8 @@ public class ConfigDatabase {
      * configuration file, in case the two become out of sync.
      */
     public void rebuildDatabaseFromGitolite() throws IOException, DuplicateRepoNameException {
+        log.debug("Rebuilding database from gitolite configuration file");
+
         reposCollection.removeAll(); // Empty database collection
         BufferedReader reader = new BufferedReader(new FileReader(new File(
                 ConfigurationLoader.getConfig().getGitoliteGeneratedConfigFile())));
@@ -320,5 +331,7 @@ public class ConfigDatabase {
             reader.readLine(); // extra line between repos
         }
         reader.close();
+
+        log.debug("Rebuilt database from gitolite configuration file");
     }
 }
