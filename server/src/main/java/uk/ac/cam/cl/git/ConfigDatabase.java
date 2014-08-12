@@ -220,7 +220,7 @@ public class ConfigDatabase {
         for (String command : updates)
         {
             log.debug("Running gitolite " + command);
-            int status;
+            int status = 0;
             rtn.add(new ByteArrayOutputStream());
 
             try

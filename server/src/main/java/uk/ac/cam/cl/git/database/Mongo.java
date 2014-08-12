@@ -2,6 +2,8 @@
 /* See the LICENSE file for the license of the project */
 package uk.ac.cam.cl.git.database;
 
+import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
+
 import java.net.UnknownHostException;
 
 import com.mongodb.DB;
@@ -14,7 +16,8 @@ public class Mongo {
     static {
         try {
             MongoClient client = new MongoClient();
-            db = client.getDB("UROP");
+            db = client.getDB(ConfigurationLoader.getConfig().
+                                getRepoDatabase());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

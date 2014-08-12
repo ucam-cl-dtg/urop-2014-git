@@ -222,10 +222,10 @@ public class GitService implements WebInterface {
         ConfigDatabase.instance().addRepo(rtn);
         /* No need to return repo-name as we had it given to us.
          */
-        return rtn.getRepoPath();
         log.debug("Created new repository \"" + details.getRepoName()
                 + ".git\"" + " for user \"" + details.getUserName()
                 + "\"");
+        return rtn.getRepoPath();
     }
 
     @Override
