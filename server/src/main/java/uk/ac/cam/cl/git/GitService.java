@@ -14,6 +14,7 @@ import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.git.api.KeyException;
 import uk.ac.cam.cl.git.api.Commit;
 import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
@@ -242,7 +243,7 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public void addSSHKey(String key, String userName) throws IOException
+    public void addSSHKey(String key, String userName) throws IOException, KeyException
     {
         ConfigDatabase.instance().addSSHKey(key, userName);
     }

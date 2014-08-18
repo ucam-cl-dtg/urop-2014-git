@@ -177,7 +177,7 @@ public interface WebInterface {
     @Path("/ssh/add/{userName}")
     @Consumes("text/plain")
     public void addSSHKey(String key, @PathParam("userName") String userName)
-            throws IOException;
+            throws IOException, KeyException;
 
     /**
      * Returns the SSH URI that can be used to clone the given repository.

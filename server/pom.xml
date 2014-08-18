@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cl</groupId>
   <artifactId>git</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.3-SNAPSHOT</version>
   <name>UROP_GIT</name>
   <description>Git integration for UROP 2014 at Cambridge CL, DTG.</description>
   <packaging>war</packaging>

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cl.git</groupId>
   <artifactId>remote</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.3-SNAPSHOT</version>
   <name>Git service interfaces</name>
   <description>Interfaces for using web proxy (REST based RPC) calls on this library.</description>
   <packaging>jar</packaging>

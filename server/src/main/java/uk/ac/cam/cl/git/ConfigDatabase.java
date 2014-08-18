@@ -24,6 +24,7 @@ import com.google.inject.Injector;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.git.api.KeyException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
 import com.jcraft.jsch.*;
@@ -164,7 +165,7 @@ public class ConfigDatabase {
      * @param username The name of the user to be added
      * @throws IOException
      */
-    public void addSSHKey(String key, String userName) throws IOException
+    public void addSSHKey(String key, String userName) throws IOException, KeyException
     {
         log.debug("Adding key for \"" + userName + "\" to \""
                 + ConfigurationLoader.getConfig()
@@ -182,6 +183,7 @@ public class ConfigDatabase {
         buffWriter.flush();
         buffWriter.close();
 
+        String taintedKeys = "";
         while (true)
         {
             ProcessOutput recompilation =
@@ -199,18 +201,25 @@ public class ConfigDatabase {
                 {
                     if (line.contains("FATAL: fingerprinting failed"))
                     {
-                        String badKeyName = ConfigurationLoader.getConfig()
-                            .getGitoliteSSHKeyLocation() + "/" +
-                            line.substring(line.indexOf("'keydir/")+8,
-                                           line.lastIndexOf("'"));
-                        File badKey = new File(badKeyName);
-                        log.warn("Deleting malformated key: " +
-                                badKeyName);
+                        String badKeyName = line.substring(
+                                line.indexOf("'keydir/")+8,
+                                line.lastIndexOf("'"));
+
+                        String badKeyPath = ConfigurationLoader.getConfig()
+                            .getGitoliteSSHKeyLocation() + "/" + badKeyName;
+
+                        taintedKeys += " " + badKeyName;
+
+                        File badKey = new File(badKeyPath);
+                        log.warn("Deleting \"" + badKeyName +
+                                "\"'s malformated key: " + badKeyPath);
                         badKey.delete();
                     }
                 }
             }
         }
+
+        if (taintedKeys.length() > 0) throw new KeyException(taintedKeys);
 
         log.debug("Finished adding key for \"" + userName + "\"");
     }
