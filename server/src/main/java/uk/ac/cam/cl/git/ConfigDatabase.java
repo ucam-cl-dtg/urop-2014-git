@@ -164,7 +164,8 @@ public class ConfigDatabase {
      * @param username The name of the user to be added
      * @throws IOException
      */
-    public void addSSHKey(String key, String userName) throws IOException {
+    public void addSSHKey(String key, String userName) throws IOException
+    {
         log.debug("Adding key for \"" + userName + "\" to \""
                 + ConfigurationLoader.getConfig()
                     .getGitoliteSSHKeyLocation() + "\"");
@@ -180,7 +181,36 @@ public class ConfigDatabase {
         buffWriter.write(key);
         buffWriter.flush();
         buffWriter.close();
-        runGitoliteUpdate(new String[] {"trigger SSH_AUTHKEYS"});
+
+        while (true)
+        {
+            ProcessOutput recompilation =
+                runGitoliteUpdate(new String[] {"trigger SSH_AUTHKEYS"})
+                .getFirst();
+
+            if (recompilation.getStatus() == 0)
+            {
+                break;
+            }
+            else
+            {
+                for (String line : recompilation.getErr().toString()
+                                                        .split("\n"))
+                {
+                    if (line.contains("FATAL: fingerprinting failed"))
+                    {
+                        String badKeyName = ConfigurationLoader.getConfig()
+                            .getGitoliteSSHKeyLocation() + "/" +
+                            line.substring(line.indexOf("'keydir/")+8,
+                                           line.lastIndexOf("'"));
+                        File badKey = new File(badKeyName);
+                        log.warn("Deleting malformated key: " +
+                                badKeyName);
+                        badKey.delete();
+                    }
+                }
+            }
+        }
 
         log.debug("Finished adding key for \"" + userName + "\"");
     }
@@ -212,16 +242,16 @@ public class ConfigDatabase {
      *
      * @param updates List of things to recompile/reconfigure.
      */
-    protected Deque<OutputStream> runGitoliteUpdate(String[] updates) throws IOException
+    protected Deque<ProcessOutput> runGitoliteUpdate(String[] updates) throws IOException
     {
         log.debug("Running gitolite commands:");
-        Deque<OutputStream> rtn = new LinkedList<OutputStream>();
+        Deque<ProcessOutput> rtn = new LinkedList<ProcessOutput>();
 
         for (String command : updates)
         {
             log.debug("Running gitolite " + command);
             int status = 0;
-            rtn.add(new ByteArrayOutputStream());
+            rtn.add(new ProcessOutput());
 
             try
             {
@@ -244,8 +274,8 @@ public class ConfigDatabase {
                 channel.setInputStream(null);
 
                 /* Gitolite does native logging */
-                channel.setOutputStream(rtn.getLast());
-                channel.setErrStream(null);
+                channel.setOutputStream(rtn.getLast().getOut());
+                channel.setErrStream(rtn.getLast().getErr());
 
                 channel.connect();
 
@@ -263,7 +293,7 @@ public class ConfigDatabase {
                          */
                     }
                 }
-                channel.getExitStatus();
+                status = channel.getExitStatus();
                 channel.disconnect();
                 session.disconnect();
             }
@@ -271,12 +301,7 @@ public class ConfigDatabase {
             {
                 throw new IOException(e);
             }
-            log.debug("gitolite " + command + " returned with " + status);
-            if (status != 0)
-            {
-                log.info("Not null (" + status + ") status with"
-                       + " gitolite " + command + "!");
-            }
+            rtn.getLast().setStatus(status);
         }
         log.debug("Finished gitolite recompilation");
         return rtn;
@@ -286,7 +311,9 @@ public class ConfigDatabase {
     {
         return /* Deque<ByteArrayOutputStream> */
                 runGitoliteUpdate(new String[] { "list-dangling-repos" })
-                    .getFirst().toString()
+                    .getFirst()
+                    .getOut()
+                    .toString()
                     .split("\\s+");
     }
 
