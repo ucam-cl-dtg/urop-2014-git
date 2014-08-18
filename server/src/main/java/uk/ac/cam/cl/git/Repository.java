@@ -503,14 +503,13 @@ public class Repository implements TesterInterface
                 strb.append(" " + name);
         strb.append("\n");
 
-        if (read_only != null && read_only.size() > 0)
-        {
-            strb.append("     R  =");
+        strb.append("     R  =");
+        strb.append(" unitTest");
+        if (read_only != null)
             /* Usernames or groups */
             for ( String name : read_only)
                 strb.append(" " + name);
-            strb.append("\n");
-        }
+        strb.append("\n");
 
         strb.append("# "); // To allow the rebuilding of the database
         strb.append(parent + " "); // from the gitolite config file
