@@ -18,6 +18,7 @@ public class ConfigurationFile
     private String gitoliteLibdir = "/usr/share/gitolite3/lib";
     private String sshPrivateKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa";
     private String knownHostsFile = System.getProperty("user.home") + "/.ssh/known_hosts";
+    private String securityToken = null;
 
     /**
      * @return the repoHost
@@ -177,5 +178,21 @@ public class ConfigurationFile
     public void setKnownHostsFile(String knownHostsFile)
     {
         this.knownHostsFile = knownHostsFile;
+    }
+
+    /**
+     * @return the securityToken
+     */
+    public String getSecurityToken()
+    {
+        return securityToken;
+    }
+
+    /**
+     * @param securityToken the securityToken to set
+     */
+    public void setSecurityToken(String securityToken)
+    {
+        this.securityToken = securityToken;
     }
 }

@@ -12,6 +12,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
@@ -35,7 +36,8 @@ public interface WebInterface {
     @GET
     @Path("/repos")
     @Produces("application/json")
-    public List<String> listRepositories();
+    public List<String> listRepositories
+           (@QueryParam("securityToken") String securityToken);
 
     /**
      * Lists the commits.
@@ -45,7 +47,9 @@ public interface WebInterface {
     @GET
     @Path("/repos/{repoName:.*}.git")
     @Produces("application/json")
-    public List<Commit> listCommits(@PathParam("repoName") String repoName)
+    public List<Commit> listCommits
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("repoName")       String repoName)
             throws IOException, RepositoryNotFoundException;
 
     /**
@@ -61,8 +65,10 @@ public interface WebInterface {
     @GET
     @Path("/resolve/{repoName:.*}.git/{commitName}")
     @Produces("text/plain")
-    public String resolveCommit(@PathParam("repoName")   String repoName
-                              , @PathParam("commitName") String commitName)
+    public String resolveCommit
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("repoName")       String repoName
+          , @PathParam("commitName")     String commitName)
             throws IOException, RepositoryNotFoundException;
 
     /**
@@ -76,8 +82,10 @@ public interface WebInterface {
     @GET
     @Path("/repos/{repoName:.*}.git/{commitID}")
     @Produces("application/json")
-    public List<String> listFiles(@PathParam("repoName") String repoName
-                                , @PathParam("commitID") String commitID)
+    public List<String> listFiles
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("repoName")       String repoName
+          , @PathParam("commitID")       String commitID)
             throws IOException, RepositoryNotFoundException;
 
     /**
@@ -91,9 +99,11 @@ public interface WebInterface {
     @GET
     @Path("/repos/{repoName:.*}.git/{commitID}/{fileName:.*}")
     @Produces("application/octet-stream")
-    public String getFile(@PathParam("fileName") String fileName
-                        , @PathParam("commitID") String commitID
-                        , @PathParam("repoName") String repoName)
+    public String getFile
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("fileName") String fileName
+          , @PathParam("commitID") String commitID
+          , @PathParam("repoName") String repoName)
                         throws IOException, RepositoryNotFoundException;
 
     /**
@@ -107,8 +117,10 @@ public interface WebInterface {
     @GET
     @Path("/bundle/{repoName:.*}.git/{commitID}")
     @Produces("application/json")
-    public List<FileBean> getAllFiles(@PathParam("repoName") String repoName
-                                    , @PathParam("commitID") String commitID)
+    public List<FileBean> getAllFiles
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("repoName")       String repoName
+          , @PathParam("commitID")       String commitID)
                         throws IOException, RepositoryNotFoundException;
 
     /**
@@ -124,7 +136,9 @@ public interface WebInterface {
     @Path("/fork")
     @Consumes("application/json")
     @Produces("application/json")
-    public String forkRepository(ForkRequestBean details)
+    public String forkRepository
+           (@QueryParam("securityToken") String securityToken
+          , ForkRequestBean details)
             throws IOException, DuplicateRepoNameException;
 
     /**
@@ -140,7 +154,9 @@ public interface WebInterface {
     @Path("/add")
     @Consumes("application/json")
     @Produces("application/json")
-    public String addRepository(RepoUserRequestBean details)
+    public String addRepository
+           (@QueryParam("securityToken") String securityToken
+          , RepoUserRequestBean details)
             throws IOException, DuplicateRepoNameException;
 
     /**
@@ -156,7 +172,9 @@ public interface WebInterface {
      */
     @DELETE
     @Path("/del/{repoName:.*}.git")
-    public void deleteRepository(@PathParam("repoName") String repoName)
+    public void deleteRepository
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("repoName") String repoName)
             throws IOException, RepositoryNotFoundException;
 
     /**
@@ -164,7 +182,9 @@ public interface WebInterface {
      */
     @GET
     @Path("/exception-please")
-    public void getMeAnException() throws HereIsYourException;
+    public void getMeAnException
+           (@QueryParam("securityToken") String securityToken)
+           throws HereIsYourException;
 
     /**
      * Adds an SSH key to the collection of SSH keys. If the key already
@@ -176,7 +196,10 @@ public interface WebInterface {
     @PUT
     @Path("/ssh/add/{userName}")
     @Consumes("text/plain")
-    public void addSSHKey(String key, @PathParam("userName") String userName)
+    public void addSSHKey
+           (@QueryParam("securityToken") String securityToken
+          , String key
+          , @PathParam("userName") String userName)
             throws IOException, KeyException;
 
     /**
@@ -185,7 +208,10 @@ public interface WebInterface {
      */
     @GET
     @Path("/URI/{repoName:.*}.git/")
-    public String getRepoURI(@PathParam("repoName") String repoName) throws RepositoryNotFoundException;
+    public String getRepoURI
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("repoName") String repoName)
+           throws RepositoryNotFoundException;
 
     /**
      * Gives the specified user read-only access (allows cloning of) the
@@ -196,7 +222,10 @@ public interface WebInterface {
     @POST
     @Consumes("application/json")
     @Path("/permissions/add")
-    public void addReadOnlyUser(RepoUserRequestBean details) throws IOException, RepositoryNotFoundException;
+    public void addReadOnlyUser
+           (@QueryParam("securityToken") String securityToken
+          , RepoUserRequestBean details)
+           throws IOException, RepositoryNotFoundException;
 
     /**
      * Gives the dangling repositories (those not managed by gitolite).
@@ -206,7 +235,9 @@ public interface WebInterface {
     @GET
     @Path("/dangling-repos")
     @Produces("application/json")
-    public List<String> getDanglingRepos() throws IOException;
+    public List<String> getDanglingRepos
+           (@QueryParam("securityToken") String securityToken)
+           throws IOException;
 
     /**
      * Permanently removes the dangling repositories. Use with caution, at
@@ -215,7 +246,9 @@ public interface WebInterface {
     @DELETE
     @Consumes("application/json")
     @Path("/dangling-repos")
-    public void removeDanglingRepos() throws IOException;
+    public void removeDanglingRepos
+           (@QueryParam("securityToken") String securityToken)
+           throws IOException;
 
     /**
      * Rebuilds repository database from gitolite configuration file, in
@@ -223,5 +256,7 @@ public interface WebInterface {
      */
     @GET
     @Path("/rebuild-database")
-    public void rebuildDatabase() throws IOException, DuplicateRepoNameException;
+    public void rebuildDatabase
+           (@QueryParam("securityToken") String securityToken)
+           throws IOException, DuplicateRepoNameException;
 }

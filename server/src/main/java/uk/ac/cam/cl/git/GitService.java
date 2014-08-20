@@ -36,7 +36,9 @@ public class GitService implements WebInterface {
     private static final Logger log = LoggerFactory.getLogger(GitService.class);
 
     @Override
-    public List<String> listRepositories() {
+    public List<String> listRepositories(String securityToken)
+    {
+        checkSecurityToken(securityToken);
         List<Repository> repos = ConfigDatabase.instance().getRepos();
         List<String> toReturn = new LinkedList<String>();
         for (Repository repo : repos) {
@@ -46,8 +48,12 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public List<Commit> listCommits(String repoName) throws IOException, RepositoryNotFoundException
+    public List<Commit> listCommits
+           (String securityToken
+          , String repoName)
+            throws IOException, RepositoryNotFoundException
     {
+        checkSecurityToken(securityToken);
         if (repoName == null)
             throw new RepositoryNotFoundException("No repository given.");
 
@@ -72,9 +78,13 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public String resolveCommit(String repoName, String commitName)
-        throws IOException, RepositoryNotFoundException
+    public String resolveCommit
+           (String securityToken
+          , String repoName
+          , String commitName)
+            throws IOException, RepositoryNotFoundException
     {
+        checkSecurityToken(securityToken);
         if (repoName == null)
             throw new RepositoryNotFoundException("No repository given.");
 
@@ -99,9 +109,13 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public List<String> listFiles(String repoName, String commitID)
-        throws IOException, RepositoryNotFoundException
+    public List<String> listFiles
+    (String securityToken
+          , String repoName
+          , String commitID)
+            throws IOException, RepositoryNotFoundException
     {
+        checkSecurityToken(securityToken);
         if (repoName == null)
             throw new RepositoryNotFoundException("No repository given.");
 
@@ -132,11 +146,14 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public String getFile(String fileName
-                        , String commitID
-                        , String repoName)
-        throws IOException, RepositoryNotFoundException
+    public String getFile
+           (String securityToken
+          , String fileName
+          , String commitID
+          , String repoName)
+            throws IOException, RepositoryNotFoundException
     {
+        checkSecurityToken(securityToken);
         if (repoName == null)
             throw new RepositoryNotFoundException("No repository given.");
 
@@ -161,13 +178,18 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public List<FileBean> getAllFiles(String repoName, String commitID)
-        throws IOException, RepositoryNotFoundException
+    public List<FileBean> getAllFiles
+           (String securityToken
+          , String repoName
+          , String commitID)
+            throws IOException, RepositoryNotFoundException
     {
+        checkSecurityToken(securityToken);
         List<FileBean> rtn = new LinkedList<FileBean>();
-        for (String file : listFiles(repoName, commitID))
+        for (String file : listFiles(securityToken, repoName, commitID))
         {
-            rtn.add(new FileBean(file, getFile(file, commitID, repoName)));
+            rtn.add(new FileBean(file, getFile(securityToken,
+                                        file, commitID, repoName)));
         }
 
         return rtn;
@@ -175,8 +197,12 @@ public class GitService implements WebInterface {
                                     
 
     @Override
-    public String forkRepository(ForkRequestBean details) throws IOException, DuplicateRepoNameException
+    public String forkRepository
+           (String securityToken
+          , ForkRequestBean details)
+            throws IOException, DuplicateRepoNameException
     {
+        checkSecurityToken(securityToken);
         log.debug("Forking repository \"" + details.getRepoName() + ".git\""
                 + " to \"" + details.getNewRepoName() + ".git\""
                 + " for user \"" + details.getUserName() + "\"");
@@ -211,8 +237,12 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public String addRepository(RepoUserRequestBean details) throws IOException, DuplicateRepoNameException
-    { /* Triggers compile don't work */
+    public String addRepository
+           (String securityToken
+          , RepoUserRequestBean details)
+            throws IOException, DuplicateRepoNameException
+    {
+        checkSecurityToken(securityToken);
         log.debug("Creating new repository \"" + details.getRepoName()
                 + ".git\"" + " for user \"" + details.getUserName()
                 + "\"");
@@ -230,33 +260,62 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public void deleteRepository(String repoName) throws IOException, RepositoryNotFoundException
+    public void deleteRepository
+           (String securityToken
+          , String repoName)
+            throws IOException, RepositoryNotFoundException
     {
+        checkSecurityToken(securityToken);
         ConfigDatabase.instance().delRepoByName(repoName);
+
+        /* Delete the repository on disk */
+        recursiveDelete(new File(
+            ConfigurationLoader.getConfig()
+                .getGitoliteHome() + "/repositories/"
+                    + repoName + ".git"));
     }
 
     @Override
-    public void getMeAnException() throws HereIsYourException {
+    public void getMeAnException
+           (String securityToken)
+            throws HereIsYourException
+    {
+        checkSecurityToken(securityToken);
         boolean TRUE = true;
         if (TRUE)
             throw new HereIsYourException();
     }
 
     @Override
-    public void addSSHKey(String key, String userName) throws IOException, KeyException
+    public void addSSHKey
+           (String securityToken
+          , String key
+          , String userName)
+            throws IOException, KeyException
     {
+        checkSecurityToken(securityToken);
         ConfigDatabase.instance().addSSHKey(key, userName);
     }
 
     @Override
-    public String getRepoURI(String repoName) throws RepositoryNotFoundException {
+    public String getRepoURI
+           (String securityToken
+          , String repoName)
+            throws RepositoryNotFoundException
+    {
+        checkSecurityToken(securityToken);
         return ConfigDatabase.instance()
                 .getRepoByName(repoName)
                 .getRepoPath();
     }
 
     @Override
-    public void addReadOnlyUser(RepoUserRequestBean details) throws IOException, RepositoryNotFoundException {
+    public void addReadOnlyUser
+           (String securityToken
+          , RepoUserRequestBean details)
+            throws IOException, RepositoryNotFoundException
+    {
+        checkSecurityToken(securityToken);
         Repository repo = ConfigDatabase.instance()
                 .getRepoByName(details.getRepoName());
         repo.addReadOnlyUser(details.getUserName());
@@ -264,8 +323,11 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public List<String> getDanglingRepos() throws IOException
+    public List<String> getDanglingRepos
+           (String securityToken)
+            throws IOException
     {
+        checkSecurityToken(securityToken);
         /* Just to be sure! */
         ConfigDatabase.instance().generateConfigFile();
 
@@ -273,8 +335,11 @@ public class GitService implements WebInterface {
     }
 
     @Override
-    public void removeDanglingRepos() throws IOException
+    public void removeDanglingRepos
+           (String securityToken)
+            throws IOException
     {
+        checkSecurityToken(securityToken);
         /* Just to be sure! */
         ConfigDatabase.instance().generateConfigFile();
 
@@ -319,8 +384,40 @@ public class GitService implements WebInterface {
      * two become out of sync.
      */
     @Override
-    public void rebuildDatabase() throws IOException, DuplicateRepoNameException
+    public void rebuildDatabase
+           (String securityToken)
+            throws IOException, DuplicateRepoNameException
     {
+        checkSecurityToken(securityToken);
         ConfigDatabase.instance().rebuildDatabaseFromGitolite();
+    }
+
+    /**
+     * Checks the security token in the configuration file against the
+     * argument.
+     *
+     * @throws SecurityException When the token does not match or can
+     * not be verified. This is a runtime exception as we can not
+     * recover from this.
+     */
+    private void checkSecurityToken(String securityToken)
+    {
+        if (securityToken == null)
+        {
+            log.error("No securityToken query parameter given!");
+            throw new SecurityException("No securityToken query parameter given!");
+        }
+        else if (ConfigurationLoader.getConfig()
+                    .getSecurityToken() == null)
+        {
+            log.error("No securityToken configuration option set!");
+            throw new SecurityException("No securityToken configuration option set!");
+        }
+        else if (ConfigurationLoader.getConfig()
+                    .getSecurityToken() != securityToken)
+        {
+            log.error("The given securityToken is invalid!");
+            throw new SecurityException("The given securityToken is invalid!");
+        }
     }
 }
