@@ -413,10 +413,14 @@ public class GitService implements WebInterface {
             log.error("No securityToken configuration option set!");
             throw new SecurityException("No securityToken configuration option set!");
         }
-        else if (ConfigurationLoader.getConfig()
-                    .getSecurityToken() != securityToken)
+        else if (!ConfigurationLoader.getConfig()
+                    .getSecurityToken().equals(securityToken))
         {
-            log.error("The given securityToken is invalid!");
+            log.error("The given securityToken is invalid!\n"
+                    + "Got      \"" + securityToken + "\"\n"
+                    + "expected \""
+                    + ConfigurationLoader.getConfig()
+                        .getSecurityToken() + "\"");
             throw new SecurityException("The given securityToken is invalid!");
         }
     }
