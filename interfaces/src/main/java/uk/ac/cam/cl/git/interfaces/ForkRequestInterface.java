@@ -30,10 +30,4 @@ public interface ForkRequestInterface
      */
     @JsonProperty("upstream")
     public String getRepoName();
-
-    /**
-     * @return The name of the repository to be overlaid on submission.
-     */
-    @JsonProperty("overlay")
-    public String getOverlay();
 }

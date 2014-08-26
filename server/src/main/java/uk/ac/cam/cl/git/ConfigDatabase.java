@@ -360,9 +360,8 @@ public class ConfigDatabase {
             readWrites.remove(0); // remove owner from RW list as owner is automatically added
             List<String> readOnlys = Arrays.asList(readOnlyLine);
             String parent = auxiliaryLine[1]; // see Repository.toString()
-            String parent_hidden = auxiliaryLine[2];
             Repository toInsert = new Repository(repoName, owner, readWrites,
-                            readOnlys, parent, parent_hidden, null);
+                            readOnlys, parent, null);
             reposCollection.insertRepo(toInsert);
             reader.readLine(); // extra line between repos
         }

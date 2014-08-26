@@ -13,9 +13,11 @@ import java.io.IOException;
 
 import org.easymock.*;
 import org.junit.Test;
+import org.junit.Before;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.git.api.IllegalCharacterException;
 
 /**
  * @author Isaac Dunn &lt;ird28@cam.ac.uk&gt;
@@ -28,13 +30,23 @@ public class ConfigDatabaseTest extends EasyMockSupport {
             .addMockedMethods("generateConfigFile", "runGitoliteUpdate")
             .createMock();
 
-    private static List<String> readOnlys = new LinkedList<String>();
-    private static List<String> readAndWrites = new LinkedList<String>();
-    private static List<String> emptyList = new LinkedList<String>();
-    private static Repository testRepo1 = new Repository("test-repo-name1",
-            "repository-owner", readAndWrites, readOnlys);
-    private static Repository testRepo2 = new Repository("test-repo-name2",
-            "repository-owner", readAndWrites, emptyList);
+    private List<String> readOnlys = new LinkedList<String>();
+    private List<String> readAndWrites = new LinkedList<String>();
+    private List<String> emptyList = new LinkedList<String>();
+    private Repository testRepo1, testRepo2;
+
+    @Before
+    public void initialize() throws IllegalCharacterException
+    {
+        testRepo1 = new Repository("test-repo-name1",
+                "repository-owner", readAndWrites, readOnlys);
+        testRepo2 = new Repository("test-repo-name2",
+                "repository-owner", readAndWrites, emptyList);
+
+        readOnlys.add("readonlyUser1");
+        readOnlys.add("readonlyUser2");
+        readAndWrites.add("adminUser");
+    }
 
     private RepositoryCollection mockCollection =
         createMock(RepositoryCollection.class);
@@ -43,18 +55,13 @@ public class ConfigDatabaseTest extends EasyMockSupport {
         partiallyMockedConfigDatabase.setReposCollection(mockCollection);
     }
 
-    static {
-        readOnlys.add("readonlyUser1");
-        readOnlys.add("readonlyUser2");
-        readAndWrites.add("adminUser");
-    }
-
     /**
      * Checks that repositories can be added to the database.
      * @throws DuplicateRepoNameException
      */
     @Test
-    public void testAddRepo() throws IOException, DuplicateRepoNameException {
+    public void testAddRepo() throws IOException,
+           DuplicateRepoNameException, IllegalCharacterException {
 
         /* The method calls below are expected */
         mockCollection.insertRepo(testRepo1);
@@ -73,6 +80,27 @@ public class ConfigDatabaseTest extends EasyMockSupport {
         /* The actual test begins here */
         partiallyMockedConfigDatabase.addRepo(testRepo1);
         partiallyMockedConfigDatabase.addRepo(testRepo2);
+
+        /* Test if we would try using incorrect strings */
+        try
+        {
+            new Repository("_underscore", "foo", null, null);
+            fail("Expected an IllegalCharacterException to be thrown.");
+        }
+        catch (IllegalCharacterException e)
+        {
+            /* Expecting an IllegalCharacterException */
+        }
+
+        try
+        {
+            new Repository("spaces in names", "bar", null, null);
+            fail("Expected an IllegalCharacterException to be thrown.");
+        }
+        catch (IllegalCharacterException e)
+        {
+            /* Expecting an IllegalCharacterException */
+        }
 
         EasyMock.verify(mockCollection);
         EasyMock.verify(partiallyMockedConfigDatabase);

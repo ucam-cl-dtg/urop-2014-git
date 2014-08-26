@@ -139,7 +139,8 @@ public interface WebInterface {
     public String forkRepository
            (@QueryParam("securityToken") String securityToken
           , ForkRequestBean details)
-            throws IOException, DuplicateRepoNameException;
+            throws IOException, DuplicateRepoNameException,
+                              IllegalCharacterException;
 
     /**
      * Creates a new blank repository and returns the URL than can be used
@@ -157,7 +158,8 @@ public interface WebInterface {
     public String addRepository
            (@QueryParam("securityToken") String securityToken
           , RepoUserRequestBean details)
-            throws IOException, DuplicateRepoNameException;
+            throws IOException, DuplicateRepoNameException,
+                              IllegalCharacterException;
 
     /**
      * Removes the repository from the configuration and the database.

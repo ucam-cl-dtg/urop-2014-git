@@ -4,6 +4,7 @@ package uk.ac.cam.cl.git;
 
 import uk.ac.cam.cl.git.api.Commit;
 import uk.ac.cam.cl.git.api.EmptyDirectoryExpectedException;
+import uk.ac.cam.cl.git.api.IllegalCharacterException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.interfaces.*;
 
@@ -14,6 +15,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
@@ -39,7 +42,6 @@ public class Repository implements TesterInterface
     private static final Logger log = LoggerFactory.getLogger(ConfigDatabase.class);
 
     private final String parent;
-    private final String parent_hidden;
     private final String repo;
     private final String host =
         ConfigurationLoader.getConfig().getRepoHost();
@@ -68,13 +70,6 @@ public class Repository implements TesterInterface
      * the repository. This does not need to include the owner (toString method
      * automatically includes owner as RW).
      * @param read_only Like read_write without the write.
-     * @param parent The parent repository, which is the one this was
-     * forked off.
-     * @param parent_hidden The hidden parent repository which at the
-     * moment does nothing. This at the moment is only left in for code
-     * compatibility, we have decided that it is perhaps better if the
-     * UI team manages the linking of the hidden and this repo.
-     * TODO: Refactor, when UI team has time to change code too.
      */
     @JsonIgnore
     public Repository
@@ -82,10 +77,34 @@ public class Repository implements TesterInterface
         , String crsid
         , List<String> read_write
         , List<String> read_only
-        )
+        ) throws IllegalCharacterException
     {
+        Matcher illegalChar =
+            Pattern.compile("[^0-9a-zA-Z_-]").matcher(name);
+        if (name.charAt(0) == '_')
+        {
+            throw new IllegalCharacterException("You can not start" +
+                    "with underscores");
+        }
+        else if (illegalChar.find())
+        {
+            boolean singular = true;
+            StringBuilder match = new StringBuilder(illegalChar
+                    .group());
+
+            while (illegalChar.find())
+            {
+                singular = false;
+                match.append(", " + illegalChar.group());
+            }
+
+            throw new IllegalCharacterException(
+                    "Illegal character" +
+                    (singular?"":"s") + ": " +
+                    match.toString());
+        }
+
         this.parent = null;
-        this.parent_hidden = null;
         this.repo = name;
         this.read_write = read_write;
         this.read_only = read_only;
@@ -109,11 +128,6 @@ public class Repository implements TesterInterface
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off
-     * @param parent_hidden The hidden parent repository which at the
-     * moment does nothing. This at the moment is only left in for code
-     * compatibility, we have decided that it is perhaps better if the
-     * UI team manages the linking of the hidden and this repo.
-     * TODO: Refactor, when UI team has time to change code too.
      *
      * @throws IOException Unrecoverable error in cloning the parent
      * repository.
@@ -125,11 +139,59 @@ public class Repository implements TesterInterface
         , List<String> read_write
         , List<String> read_only
         , String parent
-        , String parent_hidden
-        )
+        ) throws IllegalCharacterException
     {
+        Pattern illegalChars = Pattern.compile("[^0-9a-zA-Z_-]");
+        Matcher nameIllegalChar =
+            illegalChars.matcher(name);
+        Matcher parentIllegalChar =
+            illegalChars.matcher(name);
+        if (name.charAt(0) == '_')
+        {
+            throw new IllegalCharacterException("You can not start " +
+                    "with underscores");
+        }
+        else if (parent.charAt(0) == '_')
+        {
+            throw new IllegalCharacterException("Parent repository " +
+                    " begins with an underscore.");
+        }
+        else if (nameIllegalChar.find())
+        {
+            boolean singular = true;
+            StringBuilder match = new StringBuilder(nameIllegalChar
+                    .group());
+
+            while (nameIllegalChar.find())
+            {
+                singular = false;
+                match.append(", " + nameIllegalChar.group());
+            }
+
+            throw new IllegalCharacterException(
+                    "Illegal character" +
+                    (singular?"":"s") + ": " +
+                    match.toString());
+        }
+        else if (parentIllegalChar.find())
+        {
+            boolean singular = true;
+            StringBuilder match = new StringBuilder(parentIllegalChar
+                    .group());
+
+            while (parentIllegalChar.find())
+            {
+                singular = false;
+                match.append(", " + parentIllegalChar.group());
+            }
+
+            throw new IllegalCharacterException(
+                    "Illegal character" +
+                    (singular?"":"s") + ": " +
+                    match.toString());
+        }
+
         this.parent = parent;
-        this.parent_hidden = parent_hidden;
         this.repo = name;
         this.read_write = read_write;
         this.read_only = read_only;
@@ -150,11 +212,6 @@ public class Repository implements TesterInterface
      * @param read_only Like read_write without the write.
      * @param parent The parent repository, which is the one this was
      * forked off
-     * @param parent_hidden The hidden parent repository which at the
-     * moment does nothing. This at the moment is only left in for code
-     * compatibility, we have decided that it is perhaps better if the
-     * UI team manages the linking of the hidden and this repo.
-     * TODO: Refactor, when UI team has time to change code too.
      */
     @JsonCreator
     Repository
@@ -163,12 +220,10 @@ public class Repository implements TesterInterface
         , @JsonProperty("rw")            List<String> read_write
         , @JsonProperty("r")             List<String> read_only
         , @JsonProperty("parent")        String parent
-        , @JsonProperty("parent_hidden") String parent_hidden
         , @JsonProperty("_id")           String id
         )
     {
         this.parent = parent;
-        this.parent_hidden = parent_hidden;
         this.repo = name;
         this.read_write = read_write;
         this.read_only = read_only;
@@ -468,15 +523,6 @@ public class Repository implements TesterInterface
     protected void set_id(String id) { _id = id; }
 
     /**
-     * Gets the hidden parent of this repository, or null if this
-     * repository has no hidden parent.
-     *
-     * @return Hidden parent or null
-     */
-    @JsonProperty("parent_hidden")
-    public String parent_hidden() { return this.parent_hidden; }
-
-    /**
      * Gives the string representation of the repository, to be used in
      * conjuction with Gitolite.
      *
@@ -512,8 +558,7 @@ public class Repository implements TesterInterface
         strb.append("\n");
 
         strb.append("# "); // To allow the rebuilding of the database
-        strb.append(parent + " "); // from the gitolite config file
-        strb.append(parent_hidden + "\n");
+        strb.append(parent + "\n"); // from the gitolite config file
 
         return strb.toString();
     }

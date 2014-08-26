@@ -14,6 +14,7 @@ import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.ForkRequestBean;
 import uk.ac.cam.cl.git.api.HereIsYourException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.git.api.IllegalCharacterException;
 import uk.ac.cam.cl.git.api.KeyException;
 import uk.ac.cam.cl.git.api.Commit;
 import uk.ac.cam.cl.git.api.FileBean;
@@ -200,7 +201,8 @@ public class GitService implements WebInterface {
     public String forkRepository
            (String securityToken
           , ForkRequestBean details)
-            throws IOException, DuplicateRepoNameException
+            throws IOException, DuplicateRepoNameException,
+                              IllegalCharacterException
     {
         checkSecurityToken(securityToken);
         log.debug("Forking repository \"" + details.getRepoName() + ".git\""
@@ -210,8 +212,7 @@ public class GitService implements WebInterface {
                                       , details.getUserName()
                                       , null /* RW */
                                       , null /* RO */
-                                      , details.getRepoName()
-                                      , details.getOverlay());
+                                      , details.getRepoName());
         ConfigDatabase.instance().addRepo(rtn);
         while (!rtn.repoExists())
         {
@@ -240,7 +241,8 @@ public class GitService implements WebInterface {
     public String addRepository
            (String securityToken
           , RepoUserRequestBean details)
-            throws IOException, DuplicateRepoNameException
+            throws IOException, DuplicateRepoNameException,
+                              IllegalCharacterException
     {
         checkSecurityToken(securityToken);
         log.debug("Creating new repository \"" + details.getRepoName()

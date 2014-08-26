@@ -17,13 +17,11 @@ public class ForkRequestBean implements ForkRequestInterface
     private final String newRepoName;
     private final String userName;
     private final String repoName;
-    private final String overlay;
 
     @JsonCreator
     public ForkRequestBean(@JsonProperty("newRepoName") String newRepoName
                          , @JsonProperty("userName")    String userName
-                         , @JsonProperty("repoName")    String repoName
-                         , @JsonProperty("overlay")     String overlay)
+                         , @JsonProperty("repoName")    String repoName)
     {
         if (newRepoName == null)
             this.newRepoName = userName + "/" + repoName;
@@ -31,7 +29,6 @@ public class ForkRequestBean implements ForkRequestInterface
             this.newRepoName  = newRepoName;
         this.userName = userName;
         this.repoName = repoName;
-        this.overlay  = overlay;
     }
 
     @Override
@@ -45,8 +42,4 @@ public class ForkRequestBean implements ForkRequestInterface
     @Override
     @JsonProperty("repoName")
     public String getRepoName() { return repoName; }
-
-    @Override
-    @JsonProperty("overlay")
-    public String getOverlay() { return overlay; }
 }

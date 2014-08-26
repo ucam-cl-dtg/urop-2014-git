@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
 import uk.ac.cam.cl.git.api.RepositoryNotFoundException;
+import uk.ac.cam.cl.git.api.IllegalCharacterException;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 
 /**
@@ -25,30 +26,30 @@ import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
  */
 public class ConfigDatabaseIntegrationTests {
 
-    private static List<String> readOnlys = new LinkedList<String>();
-    private static List<String> readAndWrites = new LinkedList<String>();
-    private static List<String> emptyList = new LinkedList<String>();
+    private List<String> readOnlys = new LinkedList<String>();
+    private List<String> readAndWrites = new LinkedList<String>();
+    private List<String> emptyList = new LinkedList<String>();
 
-    static {
-        readOnlys.add("readonlyUser1");
-        readOnlys.add("readonlyUser2");
-        readOnlys.add("readonlyUser3");
-        readAndWrites.add("adminUser1");
-        readAndWrites.add("adminUser2");
-    }
-
-    private static Repository testRepo1 = new Repository("test-repo-name1",
-            "repository-owner", readAndWrites, readOnlys, "p1", "h1", null);
-    private static Repository testRepo1a = new Repository("test-repo-name1",
-            "other-owner", emptyList, readOnlys, "p1", "h1", null);
-    private static Repository testRepo2 = new Repository("test-repo-name2",
-            "other-owner", readAndWrites, emptyList, "p2", "h2", null);
+    private Repository testRepo1, testRepo1a, testRepo2;
 
     /**
      * Before each test, empty the database.
      */
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, IllegalCharacterException {
+        readOnlys.add("readonlyUser1");
+        readOnlys.add("readonlyUser2");
+        readOnlys.add("readonlyUser3");
+        readAndWrites.add("adminUser1");
+        readAndWrites.add("adminUser2");
+        
+        testRepo1 = new Repository("test-repo-name1",
+            "repository-owner", readAndWrites, readOnlys, "p1", null);
+        testRepo1a = new Repository("test-repo-name1",
+            "other-owner", emptyList, readOnlys, "p1", null);
+        testRepo2 = new Repository("test-repo-name2",
+            "other-owner", readAndWrites, emptyList, "p2", null);
+
         ConfigDatabase.instance().deleteAll();
     }
 
@@ -75,16 +76,18 @@ public class ConfigDatabaseIntegrationTests {
             assertEquals(br.readLine(),
                     "repo test-repo-name1");
             assertEquals(br.readLine(),
-                    "     RW = repository-owner adminUser1 adminUser2");
+                    "     RW = repository-owner tomcat7 adminUser1 adminUser2");
             assertEquals(br.readLine(),
-                    "     R  = readonlyUser1 readonlyUser2 readonlyUser3");
-            assertEquals("# p1 h1", br.readLine());
+                    "     R  = unitTest readonlyUser1 readonlyUser2 readonlyUser3");
+            assertEquals("# p1", br.readLine());
             assertEquals(br.readLine(), "");
             assertEquals(br.readLine(),
                     "repo test-repo-name2");
             assertEquals(br.readLine(),
-                    "     RW = other-owner adminUser1 adminUser2");
-            assertEquals("# p2 h2", br.readLine());
+                    "     RW = other-owner tomcat7 adminUser1 adminUser2");
+            assertEquals(br.readLine(),
+                    "     R  = unitTest");
+            assertEquals("# p2", br.readLine());
             assertEquals(br.readLine(), "");
             assertNull(br.readLine()); // end of file reached
             br.close();
