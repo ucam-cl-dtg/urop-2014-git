@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
 
 import uk.ac.cam.cl.git.api.RepoUserRequestBean;
 import uk.ac.cam.cl.git.api.DuplicateRepoNameException;
@@ -39,6 +42,9 @@ import org.slf4j.LoggerFactory;
 public class GitService implements WebInterface {
     /* For logging */
     private static final Logger log = LoggerFactory.getLogger(GitService.class);
+
+    private static Set<String> sshKeyGeneration =
+        Collections.synchronizedSet(new HashSet<String>());
 
     @Override
     public List<String> listRepositories(String securityToken)
@@ -444,6 +450,28 @@ public class GitService implements WebInterface {
                 userName + ".pub");
         JSch jsch = new JSch();
 
+        /* Make sure for one user, only one key is being generated,
+         * otherwise we will have two keys being passed back, the first
+         * one being wrong.
+         */
+        synchronized (sshKeyGeneration)
+        {
+            while (sshKeyGeneration.contains(userName))
+            {
+                log.info("Waiting for another thread to finish with " +
+                        userName);
+                try
+                {
+                    sshKeyGeneration.wait();
+                }
+                catch (InterruptedException e)
+                {
+                    /* We will check again, by looping. */
+                }
+            }
+            sshKeyGeneration.add(userName);
+        }
+
         if (!privKey.exists() || !pubKey.exists())
         { /* Generate key pair */
             log.info("Generating keys for " + userName +
@@ -487,6 +515,13 @@ public class GitService implements WebInterface {
 
         /* Remove last line separator */
         rtn.deleteCharAt(rtn.length()-1);
+
+        /* Tell other threads we have finished with this key */
+        synchronized (sshKeyGeneration)
+        {
+            sshKeyGeneration.remove(userName);
+            sshKeyGeneration.notify();
+        }
 
         return rtn.toString();
     }

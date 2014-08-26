@@ -3,7 +3,7 @@
   <groupId>uk.ac.cam.cl</groupId>
   <artifactId>git</artifactId>
   <version>3.0.4-SNAPSHOT</version>
-  <name>UROP_GIT</name>
+  <name>UROP_GIT_SECURED</name>
   <description>Git integration for UROP 2014 at Cambridge CL, DTG.</description>
   <packaging>war</packaging>
 
@@ -104,7 +104,7 @@
     <dependency>
       <groupId>uk.ac.cam.cl.dtg.web</groupId>
       <artifactId>resteasy-exception-chains</artifactId>
-      <version>1.0.5</version>
+      <version>1.0.3</version>
     </dependency>
     <dependency>
       <groupId>uk.ac.cam.cl.dtg.teaching</groupId>
@@ -167,7 +167,7 @@
         <configuration>
           <url>http://urop2014.dtg.cl.cam.ac.uk/manager/text</url>
           <server>urop2014-dtg</server>
-          <path>/UROP_GIT</path>
+          <path>/UROP_GIT_SECURED</path>
         </configuration>
       </plugin>
     </plugins>
