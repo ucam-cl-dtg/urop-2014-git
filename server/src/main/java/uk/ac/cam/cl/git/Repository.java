@@ -80,7 +80,7 @@ public class Repository implements TesterInterface
         ) throws IllegalCharacterException
     {
         Matcher illegalChar =
-            Pattern.compile("[^0-9a-zA-Z_-]").matcher(name);
+            Pattern.compile("[^0-9a-zA-Z_-/]").matcher(name);
         if (name.charAt(0) == '_')
         {
             throw new IllegalCharacterException("You can not start" +
@@ -89,13 +89,13 @@ public class Repository implements TesterInterface
         else if (illegalChar.find())
         {
             boolean singular = true;
-            StringBuilder match = new StringBuilder(illegalChar
-                    .group());
+            StringBuilder match = new StringBuilder(
+                    "\"" + illegalChar.group()+"\"");
 
             while (illegalChar.find())
             {
                 singular = false;
-                match.append(", " + illegalChar.group());
+                match.append(", \"" + illegalChar.group() + "\"");
             }
 
             throw new IllegalCharacterException(
@@ -141,7 +141,7 @@ public class Repository implements TesterInterface
         , String parent
         ) throws IllegalCharacterException
     {
-        Pattern illegalChars = Pattern.compile("[^0-9a-zA-Z_-]");
+        Pattern illegalChars = Pattern.compile("[^0-9a-zA-Z_-/]");
         Matcher nameIllegalChar =
             illegalChars.matcher(name);
         Matcher parentIllegalChar =
@@ -159,13 +159,13 @@ public class Repository implements TesterInterface
         else if (nameIllegalChar.find())
         {
             boolean singular = true;
-            StringBuilder match = new StringBuilder(nameIllegalChar
-                    .group());
+            StringBuilder match = new StringBuilder(
+                    "\"" + nameIllegalChar.group() "\"");
 
             while (nameIllegalChar.find())
             {
                 singular = false;
-                match.append(", " + nameIllegalChar.group());
+                match.append(", \"" + nameIllegalChar.group() + "\"");
             }
 
             throw new IllegalCharacterException(
@@ -176,13 +176,13 @@ public class Repository implements TesterInterface
         else if (parentIllegalChar.find())
         {
             boolean singular = true;
-            StringBuilder match = new StringBuilder(parentIllegalChar
-                    .group());
+            StringBuilder match = new StringBuilder(
+                    "\"" + parentIllegalChar.group() + "\"");
 
             while (parentIllegalChar.find())
             {
                 singular = false;
-                match.append(", " + parentIllegalChar.group());
+                match.append(", \"" + parentIllegalChar.group() + "\"");
             }
 
             throw new IllegalCharacterException(
