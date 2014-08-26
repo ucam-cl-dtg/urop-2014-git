@@ -297,6 +297,7 @@ public class Repository implements TesterInterface
             }
             catch (PushFailedException e)
             {
+                log.error("Failed to push parent repo onto child.", e);
                 throw new IOException(
                         "Failed to push parent repo onto child. "
                         + "You will get an empty repository.\n", e);
