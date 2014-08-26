@@ -4,6 +4,8 @@ package uk.ac.cam.cl.git;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -20,6 +22,8 @@ import uk.ac.cam.cl.git.api.Commit;
 import uk.ac.cam.cl.git.api.FileBean;
 import uk.ac.cam.cl.git.configuration.ConfigurationLoader;
 import uk.ac.cam.cl.git.interfaces.*;
+
+import com.jcraft.jsch.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -425,5 +429,65 @@ public class GitService implements WebInterface {
                         .getSecurityToken() + "\"");
             throw new SecurityException("The given securityToken is invalid!");
         }
+    }
+
+    public String getPrivateKey
+           (String securityToken
+          , String userName)
+            throws IOException, JSchException
+    {
+        File privKey = new File(ConfigurationLoader.getConfig()
+                .getGitoliteSSHKeyLocation() + "/" + "local/" +
+                userName);
+        File pubKey  = new File(ConfigurationLoader.getConfig()
+                .getGitoliteSSHKeyLocation() + "/" + "local/" +
+                userName + ".pub");
+        JSch jsch = new JSch();
+
+        if (!privKey.exists() || !pubKey.exists())
+        { /* Generate key pair */
+            log.info("Generating keys for " + userName +
+                    " for this machine");
+
+            if (!pubKey.getParentFile().exists())
+            {
+                pubKey.getParentFile().mkdirs();
+            }
+
+            try
+            {
+                KeyPair keyPair = KeyPair.genKeyPair(jsch, KeyPair.RSA, 2048);
+                keyPair.writePrivateKey(privKey.getAbsolutePath());
+                keyPair.writePublicKey(pubKey.getAbsolutePath(),
+                        "Local key for " + userName);
+                keyPair.dispose();
+            }
+            catch (JSchException e)
+            {
+                privKey.delete();
+                pubKey.delete();
+                throw e;
+            }
+
+            log.info("Generated keys for " + userName +
+                    " for this machine");
+        }
+
+        FileReader fileReader = new FileReader(privKey);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        StringBuilder rtn = new StringBuilder();
+        String line = null;
+        String lineSeparator = System.getProperty("line.separator");
+
+        while ((line = bufferedReader.readLine()) != null)
+        {
+            rtn.append(line);
+            rtn.append(lineSeparator);
+        }
+
+        /* Remove last line separator */
+        rtn.deleteCharAt(rtn.length()-1);
+
+        return rtn.toString();
     }
 }

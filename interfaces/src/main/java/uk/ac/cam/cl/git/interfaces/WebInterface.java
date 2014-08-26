@@ -17,6 +17,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 
+import com.jcraft.jsch.JSchException;
+
 /**
  * This is the web interface that is to be used for accessing
  * repositories and their contents, making fork requests to
@@ -261,4 +263,11 @@ public interface WebInterface {
     public void rebuildDatabase
            (@QueryParam("securityToken") String securityToken)
            throws IOException, DuplicateRepoNameException;
+
+    @GET
+    @Path("/ssh/get/{userName}")
+    public String getPrivateKey
+           (@QueryParam("securityToken") String securityToken
+          , @PathParam("userName") String userName)
+           throws IOException, JSchException;
 }
