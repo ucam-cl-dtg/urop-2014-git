@@ -80,7 +80,7 @@ public class Repository implements TesterInterface
         ) throws IllegalCharacterException
     {
         Matcher illegalChar =
-            Pattern.compile("[^0-9a-zA-Z_-/]").matcher(name);
+            Pattern.compile("[^0-9a-zA-Z_/-]").matcher(name);
         if (name.charAt(0) == '_')
         {
             throw new IllegalCharacterException("You can not start" +
@@ -141,7 +141,7 @@ public class Repository implements TesterInterface
         , String parent
         ) throws IllegalCharacterException
     {
-        Pattern illegalChars = Pattern.compile("[^0-9a-zA-Z_-/]");
+        Pattern illegalChars = Pattern.compile("[^0-9a-zA-Z_/-]");
         Matcher nameIllegalChar =
             illegalChars.matcher(name);
         Matcher parentIllegalChar =
@@ -160,7 +160,7 @@ public class Repository implements TesterInterface
         {
             boolean singular = true;
             StringBuilder match = new StringBuilder(
-                    "\"" + nameIllegalChar.group() "\"");
+                    "\"" + nameIllegalChar.group() + "\"");
 
             while (nameIllegalChar.find())
             {
