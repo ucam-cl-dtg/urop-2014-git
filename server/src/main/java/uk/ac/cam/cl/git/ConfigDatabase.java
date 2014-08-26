@@ -183,6 +183,18 @@ public class ConfigDatabase {
         buffWriter.flush();
         buffWriter.close();
 
+        rescanSSHKeys();
+
+        log.debug("Finished adding key for \"" + userName + "\"");
+    }
+
+    /**
+     * Re-scans SSH keys using gitolite.
+     *
+     * @throws KeyException  The list of broken SSH keys that had to be removed.
+     */
+    public void rescanSSHKeys() throws KeyException, IOException
+    {
         String taintedKeys = "";
         while (true)
         {
@@ -220,8 +232,6 @@ public class ConfigDatabase {
         }
 
         if (taintedKeys.length() > 0) throw new KeyException(taintedKeys);
-
-        log.debug("Finished adding key for \"" + userName + "\"");
     }
 
     /**

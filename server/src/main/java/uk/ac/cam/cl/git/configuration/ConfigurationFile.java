@@ -19,6 +19,7 @@ public class ConfigurationFile
     private String sshPrivateKeyFile = System.getProperty("user.home") + "/.ssh/id_rsa";
     private String knownHostsFile = System.getProperty("user.home") + "/.ssh/known_hosts";
     private String securityToken = null;
+    private int gitDefaultMaxPerRoute = 8;
 
     /**
      * @return the repoHost
@@ -194,5 +195,21 @@ public class ConfigurationFile
     public void setSecurityToken(String securityToken)
     {
         this.securityToken = securityToken;
+    }
+
+    /**
+     * @return the gitDefaultMaxPerRoute
+     */
+    public int getGitDefaultMaxPerRoute()
+    {
+        return gitDefaultMaxPerRoute;
+    }
+
+    /**
+     * @param gitDefaultMaxPerRoute the gitDefaultMaxPerRoute to set
+     */
+    public void setGitDefaultMaxPerRoute(int gitDefaultMaxPerRoute)
+    {
+        this.gitDefaultMaxPerRoute = gitDefaultMaxPerRoute;
     }
 }

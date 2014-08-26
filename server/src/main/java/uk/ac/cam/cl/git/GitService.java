@@ -456,7 +456,9 @@ public class GitService implements WebInterface {
          */
         synchronized (sshKeyGeneration)
         {
-            while (sshKeyGeneration.contains(userName))
+            while (sshKeyGeneration.contains(userName)
+                 ||sshKeyGeneration.size() > ConfigurationLoader
+                             .getConfig().getGitDefaultMaxPerRoute())
             {
                 log.info("Waiting for another thread to finish with " +
                         userName);
@@ -495,6 +497,16 @@ public class GitService implements WebInterface {
                 privKey.delete();
                 pubKey.delete();
                 throw e;
+            }
+
+            try
+            {
+                ConfigDatabase.instance().rescanSSHKeys();
+            }
+            catch (KeyException e)
+            {
+                log.warn("The following keys have been removed: " +
+                        e.getMessage());
             }
 
             log.info("Generated keys for " + userName +
