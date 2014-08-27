@@ -78,7 +78,7 @@ public class ConfigDatabaseIntegrationTests {
             assertEquals(br.readLine(),
                     "     RW = repository-owner tomcat7 adminUser1 adminUser2");
             assertEquals(br.readLine(),
-                    "     R  = unitTest readonlyUser1 readonlyUser2 readonlyUser3");
+                    "     R  = ro-repository-owner readonlyUser1 readonlyUser2 readonlyUser3");
             assertEquals("# p1", br.readLine());
             assertEquals(br.readLine(), "");
             assertEquals(br.readLine(),
@@ -86,7 +86,7 @@ public class ConfigDatabaseIntegrationTests {
             assertEquals(br.readLine(),
                     "     RW = other-owner tomcat7 adminUser1 adminUser2");
             assertEquals(br.readLine(),
-                    "     R  = unitTest");
+                    "     R  = ro-other-owner");
             assertEquals("# p2", br.readLine());
             assertEquals(br.readLine(), "");
             assertNull(br.readLine()); // end of file reached

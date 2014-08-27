@@ -56,22 +56,22 @@ public class RepositoryTest
         String shouldBeTestRepo1 =
                 "repo test-repo-name1" + "\n" +
                 "     RW = repository-owner tomcat7 adminUser1 adminUser2" + "\n" +
-                "     R  = unitTest readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
+                "     R  = ro-repository-owner readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
                 "# parent1" + "\n";
         String shouldBeTestRepo2 =
                 "repo test-repo-name2" + "\n" +
                 "     RW = repository-owner tomcat7 adminUser1 adminUser2" + "\n" +
-                "     R  = unitTest" + "\n" +
+                "     R  = ro-repository-owner" + "\n" +
                 "# parent2" + "\n";
         String shouldBeTestRepo3 =
                 "repo test-repo-name3" + "\n" +
                 "     RW = other-repository-owner tomcat7" + "\n" +
-                "     R  = unitTest readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
+                "     R  = ro-other-repository-owner readonlyUser1 readonlyUser2 readonlyUser3" + "\n" +
                 "# parent3" + "\n";
         String shouldBeTestRepo4 =
                 "repo test-repo-name4" + "\n" +
                 "     RW = yet-another-repository-owner tomcat7" + "\n" +
-                "     R  = unitTest" + "\n" +
+                "     R  = ro-yet-another-repository-owner" + "\n" +
                 "# parent4" + "\n";
         assertEquals(shouldBeTestRepo1, testRepo1.toString());
         assertEquals(shouldBeTestRepo2, testRepo2.toString());

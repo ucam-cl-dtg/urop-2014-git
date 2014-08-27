@@ -3,7 +3,7 @@
   <groupId>uk.ac.cam.cl</groupId>
   <artifactId>git</artifactId>
   <version>3.0.4-SNAPSHOT</version>
-  <name>UROP_GIT_TEST</name>
+  <name>UROP_GIT_SECURED</name>
   <description>Git integration for UROP 2014 at Cambridge CL, DTG.</description>
   <packaging>war</packaging>
 

@@ -551,7 +551,7 @@ public class Repository implements TesterInterface
         strb.append("\n");
 
         strb.append("     R  =");
-        strb.append(" unitTest");
+        strb.append(" ro-" + owner);
         if (read_only != null)
             /* Usernames or groups */
             for ( String name : read_only)

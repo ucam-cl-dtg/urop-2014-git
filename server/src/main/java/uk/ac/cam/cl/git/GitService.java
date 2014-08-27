@@ -443,10 +443,10 @@ public class GitService implements WebInterface {
             throws IOException, JSchException
     {
         File privKey = new File(ConfigurationLoader.getConfig()
-                .getGitoliteSSHKeyLocation() + "/" + "local/" +
+                .getGitoliteSSHKeyLocation() + "/" + "local/ro-" +
                 userName);
         File pubKey  = new File(ConfigurationLoader.getConfig()
-                .getGitoliteSSHKeyLocation() + "/" + "local/" +
+                .getGitoliteSSHKeyLocation() + "/" + "local/ro-" +
                 userName + ".pub");
         JSch jsch = new JSch();
 
