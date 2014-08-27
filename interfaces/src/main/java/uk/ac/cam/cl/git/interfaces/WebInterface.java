@@ -59,7 +59,7 @@ public interface WebInterface {
      *
      * @param repoName The name of the repository whose files are to be listed
      * @param commitID Either a SHA-1 or some other way for git to
-     * identify the commit, e.g. HEAD or master TODO: <- Check validity.
+     * identify the commit, e.g. HEAD or master.
      * @return A list of the filenames in the given repository
      * @throws IOException
      * @throws RepositoryNotFoundException
@@ -76,7 +76,7 @@ public interface WebInterface {
     /**
      * @param repoName The name of the repository whose files are to be listed
      * @param commitID Either a SHA-1 or some other way for git to
-     * identify the commit, e.g. HEAD or master TODO: <- Check validity.
+     * identify the commit, e.g. HEAD or master.
      * @return A list of the filenames in the given repository
      * @throws IOException
      * @throws RepositoryNotFoundException

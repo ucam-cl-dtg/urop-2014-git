@@ -3,8 +3,6 @@
 
 package uk.ac.cam.cl.git.api;
 
-import java.util.List;
-
 /**
  * @author rmk35
  *
