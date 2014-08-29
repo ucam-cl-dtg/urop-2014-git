@@ -10,6 +10,9 @@ import uk.ac.cam.cl.git.interfaces.*;
 
 import org.eclipse.jgit.treewalk.*;
 import org.eclipse.jgit.revwalk.*;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.util.Collection;
 import java.util.Date;
@@ -259,14 +262,22 @@ public class Repository implements TesterInterface
         if (directory.listFiles() == null || directory.listFiles().length != 0)
             throw new EmptyDirectoryExpectedException();
 
-        handle = new GitDb(
-                 /* src            */ getRepoPath()
-                ,/* dest           */ directory
-                ,/* bare           */ false
-                ,/* branch         */ "master"
-                ,/* remote         */ "origin"
-                ,/* privateKeyPath */ ConfigurationLoader.getConfig()
-                                            .getSshPrivateKeyFile());
+        try
+        {
+            handle = new GitDb(
+                     /* src            */ getRepoPath()
+                    ,/* dest           */ directory
+                    ,/* bare           */ false
+                    ,/* branch         */ "master"
+                    ,/* remote         */ "origin"
+                    ,/* privateKeyPath */ ConfigurationLoader.getConfig()
+                                                .getSshPrivateKeyFile());
+        }
+        catch (GitAPIException e)
+        {
+            log.error("Configuration is probably not set up correctly!", e);
+            throw new IOException("Something broke, please contact an admin.");
+        }
 
         if (workingCommit == null)
             workingCommit = handle.getHeadSha();
